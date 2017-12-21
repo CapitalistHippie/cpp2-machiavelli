@@ -22,15 +22,15 @@ class CliCommand : public Command
 
 namespace detail
 {
-template<typename... Parameters>
+template<typename... TParameters>
 struct ParseCliCommandParametersImpl;
 
-template<typename Parameter, typename... Parameters>
-struct ParseCliCommandParametersImpl<Parameter, Parameters...>
+template<typename TParameter, typename... TParameters>
+struct ParseCliCommandParametersImpl<TParameter, TParameters...>
 {
     static void Parse(std::istream& stream, CliCommand& command)
     {
-        Parameter parameter;
+        TParameter parameter;
 
         stream >> parameter;
         if (stream.fail())
@@ -38,14 +38,14 @@ struct ParseCliCommandParametersImpl<Parameter, Parameters...>
             throw std::system_error(std::make_error_code(FunctionalError::CliCommandInvalidParameterInputType));
         }
 
-        command.parameters.push_back(std::make_shared<Parameter>(std::move(parameter)));
+        command.parameters.push_back(std::make_shared<TParameter>(std::move(parameter)));
 
-        ParseCliCommandParametersImpl<Parameters...>::Parse(stream, command);
+        ParseCliCommandParametersImpl<TParameters...>::Parse(stream, command);
     }
 };
 
-template<typename... Parameters>
-struct ParseCliCommandParametersImpl<std::string, Parameters...>
+template<typename... TParameters>
+struct ParseCliCommandParametersImpl<std::string, TParameters...>
 {
     static void Parse(std::istream& stream, CliCommand& command)
     {
@@ -59,7 +59,7 @@ struct ParseCliCommandParametersImpl<std::string, Parameters...>
 
         command.parameters.push_back(std::make_shared<std::string>(std::move(parameter)));
 
-        ParseCliCommandParametersImpl<Parameters...>::Parse(stream, command);
+        ParseCliCommandParametersImpl<TParameters...>::Parse(stream, command);
     }
 };
 
@@ -86,10 +86,10 @@ struct ParseCliCommandParametersImpl<>
     static void Parse(std::istream& stream, CliCommand& command) {}
 };
 
-template<typename... Parameters>
+template<typename... TParameters>
 void ParseCliCommandParameters(std::istream& stream, CliCommand& command)
 {
-    ParseCliCommandParametersImpl<Parameters...>::Parse(stream, command);
+    ParseCliCommandParametersImpl<TParameters...>::Parse(stream, command);
 }
 }
 } // namespace infra

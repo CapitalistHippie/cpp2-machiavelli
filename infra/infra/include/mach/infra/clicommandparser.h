@@ -22,12 +22,12 @@ class CliCommandParametersParser
     virtual void Parse(std::istream& stream, CliCommand& command) const = 0;
 }; // class CliCommandParametersParser
 
-template<typename... Parameters>
+template<typename... TParameters>
 class CliCommandParametersParserImpl : public CliCommandParametersParser
 {
     void Parse(std::istream& stream, CliCommand& command) const override
     {
-        ParseCliCommandParameters<Parameters...>(stream, command);
+        ParseCliCommandParameters<TParameters...>(stream, command);
     }
 }; // class CliCommandParametersParserImpl
 } // namespace detail
@@ -38,11 +38,11 @@ class CliCommandParser
     std::unordered_map<std::string, std::shared_ptr<detail::CliCommandParametersParser>> commandParameterParsers;
 
   public:
-    template<typename... Parameters>
+    template<typename... TParameters>
     void RegisterCommand(std::string commandName)
     {
         commandParameterParsers.emplace(std::move(commandName),
-                                        std::make_shared<detail::CliCommandParametersParserImpl<Parameters...>>());
+                                        std::make_shared<detail::CliCommandParametersParserImpl<TParameters...>>());
     }
 
     void Clear();
