@@ -1,0 +1,13 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\view",
+    "\\view\\servercli",
+    "\\view\\servercli\\src",
+    "\\view\\servercli\\src\\mach",
+    "\\view\\servercli\\src\\mach\\view",
+    "\\view\\servercli\\src\\mach\\view\\statehandlers"
+  ],
+  "SelectedNode": "\\view\\servercli\\src\\mach\\view\\statehandlers\\statehandlerbase.h",
+  "PreviewInSolutionExplorer": false
+}

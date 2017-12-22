@@ -2,6 +2,7 @@
 
 #include <functional>
 
+#include <mach/infra/abstractfactory.h>
 #include <mach/infra/functionalerrorcategory.h>
 
 using namespace mach;
@@ -22,6 +23,8 @@ void ServerCli::Start()
     {
         return;
     }
+
+    isRunning = true;
 
     commandParser.RegisterCommand("quit");
     commandParser.RegisterCommand("exit");
@@ -46,7 +49,7 @@ void ServerCli::Start()
           outputStream << "string parameter: " << stringParameter << "\nint parameter: " << intParameter << "\n\n";
       });
 
-    isRunning = true;
+    SetState(ServerState::ServerNotStarted);
 
     RenderConsole();
 
@@ -102,4 +105,20 @@ bool ServerCli::IsRunning() const
     return isRunning;
 }
 
-void ServerCli::RenderConsole() const {}
+void ServerCli::RenderConsole() const
+{
+}
+
+void ServerCli::SetState(ServerState state)
+{
+    if (stateHandler != nullptr)
+    {
+        stateHandler->ExitState();
+    }
+
+    auto& factory = infra::AbstractFactory<statehandlers::StateHandler, ServerState>::GetInstance();
+
+    stateHandler = factory.Construct(state, *this, server, commandParser, commandMediator, outputStream);
+
+    stateHandler->EnterState();
+}

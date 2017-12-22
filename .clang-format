@@ -1,6 +1,9 @@
 ---
 Language: Cpp
 BasedOnStyle: Mozilla
+AlignTrailingComments: true
+AllowShortBlocksOnASingleLine: false
+AllowShortFunctionsOnASingleLine: None
 AlwaysBreakAfterDefinitionReturnType: None
 AlwaysBreakAfterReturnType: None
 BraceWrapping:

@@ -9,6 +9,9 @@
 #include <mach/infra/clicommandparser.h>
 #include <mach/infra/commandmediator.h>
 
+#include "mach/view/serverstate.h"
+#include "mach/view/statehandlers/statehandler.h"
+
 namespace mach
 {
 namespace view
@@ -23,6 +26,8 @@ class ServerCli
     infra::CliCommandParser commandParser;
     infra::CommandMediator commandMediator;
 
+    std::shared_ptr<statehandlers::StateHandler> stateHandler;
+
     bool isRunning;
     bool shouldStop;
 
@@ -35,6 +40,8 @@ class ServerCli
     bool IsRunning() const;
 
     void RenderConsole() const;
+
+    void SetState(ServerState state);
 };
 }
 }
