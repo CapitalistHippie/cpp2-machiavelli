@@ -15,6 +15,7 @@ namespace infra
 {
 namespace detail
 {
+// Stolen from http://en.cppreference.com/w/cpp/utility/make_from_tuple
 template<class T, class Tuple, std::size_t... I>
 constexpr T make_from_tuple_impl(Tuple&& t, std::index_sequence<I...>)
 {
@@ -100,7 +101,6 @@ class AbstractFactory : infra::Noncopyable
     static AbstractFactory& GetInstance() noexcept
     {
         static AbstractFactory factory;
-        auto address = &factory;
         return factory;
     }
 
@@ -117,8 +117,8 @@ class AbstractFactory : infra::Noncopyable
     {
         productConstructors.emplace(identifier, std::make_shared<detail::ProductConstructorImpl<TProduct, TArgs...>>());
     }
-};
-}
-}
+}; // class AbstractFactory
+} // namespace infra
+} // namespace mach
 
 #endif // MACHIAVELLI_MACH_INFRA_ABSTRACTFACTORY_H_INCLUDED

@@ -16,8 +16,8 @@ class Noncopyable
     ~Noncopyable() = default;
     Noncopyable(Noncopyable&& other) = default;
     Noncopyable& operator=(Noncopyable&& other) = default;
-};
-}
-}
+}; // class Noncopyable
+} // namespace infra
+} // namespace mach
 
 #endif // MACHIAVELLI_MACH_INFRA_NONCOPYABLE_H_INCLUDED
