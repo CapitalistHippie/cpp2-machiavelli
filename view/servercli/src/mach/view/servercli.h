@@ -39,7 +39,7 @@ class ServerCli
 
     bool IsRunning() const;
 
-    void RenderConsole() const;
+    void Render() const;
 
     void SetState(ServerState state);
 };

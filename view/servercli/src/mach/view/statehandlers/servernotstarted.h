@@ -30,7 +30,7 @@ class ServerNotStarted : public StateHandlerBase<ServerNotStarted, ServerState::
 
     void RenderConsole() const override
     {
-        outputStream << "Enter 'start' to start.\n";
+        outputStream << "Top kek.\n";
     }
 };
 }

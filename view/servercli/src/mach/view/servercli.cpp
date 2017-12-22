@@ -1,5 +1,7 @@
 #include "mach/view/servercli.h"
 
+#include <stdlib.h>
+
 #include <functional>
 
 #include <mach/infra/abstractfactory.h>
@@ -7,6 +9,18 @@
 
 using namespace mach;
 using namespace mach::view;
+
+inline void ClearConsole()
+{
+#ifdef _WIN32
+    system("cls");
+#else
+    for (int i = 0; i < 100; ++i)
+    {
+        std::cout << '\n';
+    }
+#endif
+}
 
 ServerCli::ServerCli(std::shared_ptr<app::Server> server, std::istream& inputStream, std::ostream& outputStream)
   : server(server)
@@ -51,7 +65,7 @@ void ServerCli::Start()
 
     SetState(ServerState::ServerNotStarted);
 
-    RenderConsole();
+    Render();
 
     do
     {
@@ -60,19 +74,19 @@ void ServerCli::Start()
             auto command = commandParser.ParseCommand(inputStream);
             commandMediator.HandleCommand(command);
 
-            RenderConsole();
+            Render();
         }
         catch (const std::system_error& e)
         {
             if (e.code() == infra::FunctionalError::CliCommandNotRegistered)
             {
-                RenderConsole();
+                Render();
 
                 outputStream << "Unavailable or unknown command. Please try something else!\n\n";
             }
             else if (e.code() == infra::FunctionalError::CliCommandInvalidParameterInputType)
             {
-                RenderConsole();
+                Render();
 
                 outputStream << "Invalid parameter type. Please try something else!\n\n";
             }
@@ -105,8 +119,21 @@ bool ServerCli::IsRunning() const
     return isRunning;
 }
 
-void ServerCli::RenderConsole() const
+void ServerCli::Render() const
 {
+    ClearConsole();
+
+    if (stateHandler == nullptr)
+    {
+        // TODO: Throw.
+    }
+
+    outputStream << "Welcome to Machiavelli server!\n"
+                 << "Enter exit, quit or stop to exit the application.\n\n";
+
+    stateHandler->RenderConsole();
+
+    outputStream << '\n';
 }
 
 void ServerCli::SetState(ServerState state)
