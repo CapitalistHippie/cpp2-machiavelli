@@ -18,6 +18,8 @@ std::string FunctionalErrorCategory::message(int ev) const
             return "Command not registered.";
         case FunctionalError::CliCommandInvalidParameterInputType:
             return "Invalid parameter input type.";
+        case FunctionalError::TcpServerIsNotListening:
+            return "TCP Server is not in a listening state.";
         default:
             return "Unknown error.";
     }

@@ -4,6 +4,7 @@
 #include <istream>
 #include <memory>
 #include <ostream>
+#include <vector>
 
 #include <mach/app/server.h>
 #include <mach/infra/clicommandparser.h>
@@ -20,6 +21,8 @@ class ServerCli
 {
   private:
     std::shared_ptr<app::Server> server;
+    std::vector<app::ServerClient> clients;
+
     std::istream& inputStream;
     std::ostream& outputStream;
 
@@ -30,6 +33,8 @@ class ServerCli
 
     bool isRunning;
     bool shouldStop;
+
+    void AcceptClient();
 
   public:
     ServerCli(std::shared_ptr<app::Server> server, std::istream& inputStream, std::ostream& outputStream);

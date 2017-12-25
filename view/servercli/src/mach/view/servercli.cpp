@@ -3,9 +3,13 @@
 #include <stdlib.h>
 
 #include <functional>
+#include <system_error>
 
 #include <mach/infra/abstractfactory.h>
 #include <mach/infra/functionalerrorcategory.h>
+
+#include "mach/view/technicalerror.h"
+#include "mach/view/technicalerrorcategory.h"
 
 using namespace mach;
 using namespace mach::view;
@@ -20,6 +24,15 @@ inline void ClearConsole()
         std::cout << '\n';
     }
 #endif
+}
+
+void mach::view::ServerCli::AcceptClient()
+{
+    auto client = server->AcceptClient();
+
+    outputStream << "Client connected from '" << client.GetSource() << "'.\n";
+
+    clients.push_back(std::move(client));
 }
 
 ServerCli::ServerCli(std::shared_ptr<app::Server> server, std::istream& inputStream, std::ostream& outputStream)
@@ -62,6 +75,16 @@ void ServerCli::Start()
           auto intParameter = *std::static_pointer_cast<int>(command.parameters[1]);
           outputStream << "string parameter: " << stringParameter << "\nint parameter: " << intParameter << "\n\n";
       });
+
+    // Wait for two clients to connect.
+    outputStream << "Waiting for clients to connect...\n";
+
+    server->StartListening();
+
+    AcceptClient();
+    AcceptClient();
+
+    server->StopListening();
 
     SetState(ServerState::ServerNotStarted);
 
@@ -125,7 +148,7 @@ void ServerCli::Render() const
 
     if (stateHandler == nullptr)
     {
-        // TODO: Throw.
+        throw std::system_error(std::make_error_code(TechnicalError::NoStateHandler));
     }
 
     outputStream << "Welcome to Machiavelli server!\n"

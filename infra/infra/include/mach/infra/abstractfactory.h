@@ -71,16 +71,12 @@ class ProductConstructorImpl : public ProductConstructor
 } // namespace detail
 
 template<typename TBase, typename TIdentifier>
-class AbstractFactory : infra::Noncopyable
+class AbstractFactory : public infra::Noncopyable
 {
   private:
     std::unordered_map<TIdentifier, std::shared_ptr<detail::ProductConstructor>> productConstructors;
 
   public:
-    AbstractFactory()
-    {
-    }
-
     template<typename TProduct, typename... TArgs>
     class ProductRegistrar
     {

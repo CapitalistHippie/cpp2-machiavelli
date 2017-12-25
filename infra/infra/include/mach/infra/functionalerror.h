@@ -9,7 +9,8 @@ enum class FunctionalError
 {
     None,
     CliCommandNotRegistered,
-    CliCommandInvalidParameterInputType
+    CliCommandInvalidParameterInputType,
+    TcpServerIsNotListening
 };
 }
 }
