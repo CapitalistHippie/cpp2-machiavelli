@@ -26,15 +26,6 @@ inline void ClearConsole()
 #endif
 }
 
-void mach::view::ServerCli::AcceptClient()
-{
-    auto client = server->AcceptClient();
-
-    outputStream << "Client connected from '" << client.GetSource() << "'.\n";
-
-    clients.push_back(std::move(client));
-}
-
 ServerCli::ServerCli(std::shared_ptr<app::Server> server, std::istream& inputStream, std::ostream& outputStream)
   : server(server)
   , inputStream(inputStream)
@@ -57,8 +48,6 @@ void ServerCli::Start()
     commandParser.RegisterCommand("exit");
     commandParser.RegisterCommand("stop");
 
-    commandParser.RegisterCommand<std::string, int>("test");
-
     auto stopCommandHandler = std::bind(&ServerCli::Stop, this);
 
     commandMediator.RegisterCommandHandler<infra::CliCommand>(
@@ -68,25 +57,8 @@ void ServerCli::Start()
     commandMediator.RegisterCommandHandler<infra::CliCommand>(
       [](const infra::CliCommand& command) { return command.name == "stop"; }, stopCommandHandler);
 
-    commandMediator.RegisterCommandHandler<infra::CliCommand>(
-      [](const infra::CliCommand& command) { return command.name == "test"; },
-      [&](const infra::CliCommand& command) {
-          auto stringParameter = *std::static_pointer_cast<std::string>(command.parameters[0]);
-          auto intParameter = *std::static_pointer_cast<int>(command.parameters[1]);
-          outputStream << "string parameter: " << stringParameter << "\nint parameter: " << intParameter << "\n\n";
-      });
-
-    // Wait for two clients to connect.
-    outputStream << "Waiting for clients to connect...\n";
-
-    server->StartListening();
-
-    AcceptClient();
-    AcceptClient();
-
-    server->StopListening();
-
-    SetState(ServerCliState::ServerNotStarted);
+    // Set the initial state.
+    SetState(ServerCliState::ConfigureServer);
 
     Render();
 

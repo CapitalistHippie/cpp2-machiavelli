@@ -68,17 +68,12 @@ int mach::infra::CloseSocket(Socket socket)
     int status = 0;
 
 #ifdef _WIN32
-    status = shutdown(socket, SD_BOTH);
-    if (status == 0)
+    if (closesocket(socket) == SOCKET_ERROR)
     {
-        status = closesocket(socket);
+        status = WSAGetLastError();
     }
 #else // Assuming POSIX.
-    status = shutdown(sock, SHUT_RDWR);
-    if (status == 0)
-    {
-        status = close(sock);
-    }
+    status = close(socket);
 #endif
 
     return status;

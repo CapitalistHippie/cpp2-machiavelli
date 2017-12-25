@@ -7,7 +7,7 @@ namespace view
 {
 enum class ServerCliState
 {
-    ServerNotStarted
+    ConfigureServer
 };
 }
 }

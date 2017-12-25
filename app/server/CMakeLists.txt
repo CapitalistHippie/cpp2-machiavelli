@@ -8,6 +8,7 @@ add_library(${MACHIAVELLI_SERVER_TARGET_NAME}
     STATIC
     "${CMAKE_CURRENT_LIST_DIR}/include/mach/app/server.h"
     "${CMAKE_CURRENT_LIST_DIR}/include/mach/app/serverclient.h"
+    "${CMAKE_CURRENT_LIST_DIR}/include/mach/app/serverconfiguration.h"
     "${CMAKE_CURRENT_LIST_DIR}/src/mach/app/server.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/src/mach/app/serverclient.cpp")
 

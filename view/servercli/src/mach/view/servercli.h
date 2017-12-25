@@ -34,8 +34,6 @@ class ServerCli
     bool isRunning;
     bool shouldStop;
 
-    void AcceptClient();
-
   public:
     ServerCli(std::shared_ptr<app::Server> server, std::istream& inputStream, std::ostream& outputStream);
 

@@ -4,6 +4,7 @@
 #include <mach/infra/tcpserver.h>
 
 #include "mach/app/serverclient.h"
+#include "mach/app/serverconfiguration.h"
 
 namespace mach
 {
@@ -11,18 +12,18 @@ namespace app
 {
 class Server
 {
-  public:
-    const static infra::Port DefaultPort = 4321;
-
   private:
     infra::TcpServer tcpServer;
 
-  public:
-    void StartListening();
-    void StopListening();
-    bool IsListening();
+    ServerConfiguration configuration;
 
-    ServerClient AcceptClient();
+  public:
+    void Start();
+    void Stop();
+    bool IsRunning();
+
+    const ServerConfiguration& GetConfiguration() const;
+    void SetConfiguration(ServerConfiguration configuration);
 };
 }
 }

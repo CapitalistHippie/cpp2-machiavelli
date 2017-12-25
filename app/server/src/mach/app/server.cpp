@@ -2,22 +2,27 @@
 
 using namespace mach::app;
 
-void Server::StartListening()
+void Server::Start()
 {
-    tcpServer.StartListening(DefaultPort);
+    tcpServer.StartListening(configuration.port);
 }
 
-void Server::StopListening()
+void Server::Stop()
 {
     tcpServer.StopListening();
 }
 
-bool mach::app::Server::IsListening()
+bool Server::IsRunning()
 {
     return tcpServer.IsListening();
 }
 
-ServerClient Server::AcceptClient()
+const ServerConfiguration& Server::GetConfiguration() const
 {
-    return ServerClient(tcpServer.AcceptClient());
+    return configuration;
+}
+
+void Server::SetConfiguration(ServerConfiguration configuration)
+{
+    this->configuration = configuration;
 }
