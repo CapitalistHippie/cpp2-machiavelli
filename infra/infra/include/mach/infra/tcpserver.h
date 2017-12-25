@@ -11,10 +11,11 @@
 #include <Windows.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
-#endif
+#endif // #ifdef _WIN32
 
 #include "mach/infra/noncopyable.h"
 #include "mach/infra/tcpserverclient.h"
+#include "mach/infra/wsainitializer.h"
 
 namespace mach
 {
@@ -38,8 +39,8 @@ class TcpServer : public Noncopyable
     bool IsListening();
 
     TcpServerClient AcceptClient();
-};
-}
-}
+}; // class TcpServer
+} // namespace infra
+} // namespace mach
 
 #endif // MACHIAVELLI_MACH_INFRA_TCPSERVER_H_INCLUDED

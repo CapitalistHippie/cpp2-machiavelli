@@ -14,14 +14,18 @@ add_library(${MACHIAVELLI_INFRA_TARGET_NAME}
     "${CMAKE_CURRENT_LIST_DIR}/include/mach/infra/functionalerror.h"
     "${CMAKE_CURRENT_LIST_DIR}/include/mach/infra/functionalerrorcategory.h"
     "${CMAKE_CURRENT_LIST_DIR}/include/mach/infra/noncopyable.h"
+    "${CMAKE_CURRENT_LIST_DIR}/include/mach/infra/tcpclient.h"
     "${CMAKE_CURRENT_LIST_DIR}/include/mach/infra/tcpserver.h"
     "${CMAKE_CURRENT_LIST_DIR}/include/mach/infra/tcpserverclient.h"
+    "${CMAKE_CURRENT_LIST_DIR}/include/mach/infra/wsainitializer.h"
 	"${CMAKE_CURRENT_LIST_DIR}/src/mach/infra/clicommandparser.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/src/mach/infra/command.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/src/mach/infra/commandmediator.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/src/mach/infra/functionalerrorcategory.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/src/mach/infra/tcpclient.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/src/mach/infra/tcpserver.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/src/mach/infra/tcpserverclient.cpp")
+    "${CMAKE_CURRENT_LIST_DIR}/src/mach/infra/tcpserverclient.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/src/mach/infra/wsainitializer.cpp")
 
 set_target_properties(${MACHIAVELLI_INFRA_TARGET_NAME} PROPERTIES
     CXX_STANDARD_REQUIRED 14)

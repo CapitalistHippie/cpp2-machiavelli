@@ -27,6 +27,9 @@ TcpServer::TcpServer()
   : isListening(false)
   , listenSocket(INVALID_SOCKET)
 {
+#ifdef _WIN32
+    InitializeWsa();
+#endif // #ifdef _WIN32
 }
 
 void TcpServer::StartListening(Port port)
@@ -34,14 +37,6 @@ void TcpServer::StartListening(Port port)
     if (IsListening())
     {
         return;
-    }
-
-    // Initialize Winsock.
-    WSADATA wsaData;
-    auto result = WSAStartup(MAKEWORD(2, 2), &wsaData);
-    if (result != NOERROR)
-    {
-        throw std::system_error(result, std::system_category());
     }
 
     // Resolve the server address and port.
@@ -62,7 +57,7 @@ void TcpServer::StartListening(Port port)
     }
 
     // Setup the TCP listening socket.
-    result = bind(listenSocket, addrInfo->ai_addr, addrInfo->ai_addrlen);
+    auto result = bind(listenSocket, addrInfo->ai_addr, addrInfo->ai_addrlen);
     if (result != NOERROR)
     {
         closesocket(listenSocket);
