@@ -2,10 +2,6 @@
 
 using namespace mach::app;
 
-Server::Server()
-{
-}
-
 void Server::StartListening()
 {
     tcpServer.StartListening(DefaultPort);

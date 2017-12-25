@@ -11,7 +11,7 @@ add_executable(${MACHIAVELLI_SERVER_CLI_TARGET_NAME}
     "${CMAKE_CURRENT_LIST_DIR}/src/mach/view/init.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/src/mach/view/servercli.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/src/mach/view/servercli.h"
-    "${CMAKE_CURRENT_LIST_DIR}/src/mach/view/serverstate.h"
+    "${CMAKE_CURRENT_LIST_DIR}/src/mach/view/serverclistate.h"
     "${CMAKE_CURRENT_LIST_DIR}/src/mach/view/technicalerror.h"
     "${CMAKE_CURRENT_LIST_DIR}/src/mach/view/technicalerrorcategory.h"
     "${CMAKE_CURRENT_LIST_DIR}/src/mach/view/technicalerrorcategory.cpp"

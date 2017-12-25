@@ -10,7 +10,7 @@
 #include <mach/infra/clicommandparser.h>
 #include <mach/infra/commandmediator.h>
 
-#include "mach/view/serverstate.h"
+#include "mach/view/serverclistate.h"
 #include "mach/view/statehandlers/statehandler.h"
 
 namespace mach
@@ -46,7 +46,7 @@ class ServerCli
 
     void Render() const;
 
-    void SetState(ServerState state);
+    void SetState(ServerCliState state);
 };
 }
 }

@@ -12,14 +12,12 @@ namespace app
 class Server
 {
   public:
-    const static infra::TcpServer::Port DefaultPort = 4321;
+    const static infra::Port DefaultPort = 4321;
 
   private:
     infra::TcpServer tcpServer;
 
   public:
-    Server();
-
     void StartListening();
     void StopListening();
     bool IsListening();

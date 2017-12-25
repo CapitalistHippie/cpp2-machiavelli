@@ -4,7 +4,7 @@
 #include <string>
 #include <utility>
 
-#include <mach/infra/tcpserverclient.h>
+#include <mach/infra/tcpclient.h>
 
 namespace mach
 {
@@ -13,10 +13,10 @@ namespace app
 class ServerClient
 {
   private:
-    infra::TcpServerClient tcpClient;
+    infra::TcpClient tcpClient;
 
   public:
-    ServerClient(infra::TcpServerClient tcpClient);
+    ServerClient(infra::TcpClient tcpClient);
 
     std::string GetSource() const;
 };

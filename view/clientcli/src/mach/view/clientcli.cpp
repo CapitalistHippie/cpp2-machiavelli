@@ -1,4 +1,4 @@
-#include "mach/view/servercli.h"
+#include "mach/view/clientcli.h"
 
 #include <stdlib.h>
 
@@ -26,25 +26,15 @@ inline void ClearConsole()
 #endif
 }
 
-void mach::view::ServerCli::AcceptClient()
-{
-    auto client = server->AcceptClient();
-
-    outputStream << "Client connected from '" << client.GetSource() << "'.\n";
-
-    clients.push_back(std::move(client));
-}
-
-ServerCli::ServerCli(std::shared_ptr<app::Server> server, std::istream& inputStream, std::ostream& outputStream)
-  : server(server)
-  , inputStream(inputStream)
+ClientCli::ClientCli(std::istream& inputStream, std::ostream& outputStream)
+  : inputStream(inputStream)
   , outputStream(outputStream)
   , isRunning(false)
   , shouldStop(false)
 {
 }
 
-void ServerCli::Start()
+void ClientCli::Start()
 {
     if (IsRunning())
     {
@@ -59,7 +49,7 @@ void ServerCli::Start()
 
     commandParser.RegisterCommand<std::string, int>("test");
 
-    auto stopCommandHandler = std::bind(&ServerCli::Stop, this);
+    auto stopCommandHandler = std::bind(&ClientCli::Stop, this);
 
     commandMediator.RegisterCommandHandler<infra::CliCommand>(
       [](const infra::CliCommand& command) { return command.name == "quit"; }, stopCommandHandler);
@@ -76,17 +66,10 @@ void ServerCli::Start()
           outputStream << "string parameter: " << stringParameter << "\nint parameter: " << intParameter << "\n\n";
       });
 
-    // Wait for two clients to connect.
-    outputStream << "Waiting for clients to connect...\n";
+    // Connect to the server.
+    multiplayerClient.Connect("localhost");
 
-    server->StartListening();
-
-    AcceptClient();
-    AcceptClient();
-
-    server->StopListening();
-
-    SetState(ServerCliState::ServerNotStarted);
+    SetState(ClientCliState::ServerNotStarted);
 
     Render();
 
@@ -127,7 +110,7 @@ void ServerCli::Start()
     shouldStop = false;
 }
 
-void ServerCli::Stop()
+void ClientCli::Stop()
 {
     if (!IsRunning())
     {
@@ -137,38 +120,21 @@ void ServerCli::Stop()
     shouldStop = true;
 }
 
-bool ServerCli::IsRunning() const
+bool ClientCli::IsRunning() const
 {
     return isRunning;
 }
 
-void ServerCli::Render() const
+void ClientCli::Render() const
 {
-    if (stateHandler == nullptr)
-    {
-        throw std::system_error(std::make_error_code(TechnicalError::NoStateHandler));
-    }
-
     ClearConsole();
 
-    outputStream << "Welcome to Machiavelli server!\n"
+    outputStream << "Welcome to Machiavelli!\n"
                  << "Enter exit, quit or stop to exit the application.\n\n";
-
-    stateHandler->RenderConsole();
 
     outputStream << '\n';
 }
 
-void ServerCli::SetState(ServerCliState state)
+void ClientCli::SetState(ClientCliState state)
 {
-    if (stateHandler != nullptr)
-    {
-        stateHandler->ExitState();
-    }
-
-    auto& factory = infra::AbstractFactory<statehandlers::StateHandler, ServerCliState>::GetInstance();
-
-    stateHandler = factory.Construct(state, *this, server, commandParser, commandMediator, outputStream);
-
-    stateHandler->EnterState();
 }

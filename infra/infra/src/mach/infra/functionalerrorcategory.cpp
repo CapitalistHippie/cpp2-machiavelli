@@ -20,6 +20,10 @@ std::string FunctionalErrorCategory::message(int ev) const
             return "Invalid parameter input type.";
         case FunctionalError::TcpServerIsNotListening:
             return "TCP Server is not in a listening state.";
+        case FunctionalError::TcpServerClientInitializedWithInvalidSocket:
+            return "TCP Server Client initialized with invalid socket.";
+        case FunctionalError::TcpClientAlreadyConnected:
+            return "TCP Client is already connected to a server.";
         default:
             return "Unknown error.";
     }

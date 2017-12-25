@@ -3,7 +3,7 @@
 
 #include <mach/infra/clicommand.h>
 
-#include "mach/view/serverstate.h"
+#include "mach/view/serverclistate.h"
 #include "mach/view/statehandlers/statehandlerbase.h"
 
 namespace mach
@@ -12,7 +12,7 @@ namespace view
 {
 namespace statehandlers
 {
-class ServerNotStarted : public StateHandlerBase<ServerNotStarted, ServerState::ServerNotStarted>
+class ServerNotStarted : public StateHandlerBase<ServerNotStarted, ServerCliState::ServerNotStarted>
 {
   public:
     using StateHandlerBase::StateHandlerBase;

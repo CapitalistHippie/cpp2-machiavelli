@@ -5,7 +5,7 @@ namespace mach
 {
 namespace view
 {
-enum class ServerState
+enum class ClientCliState
 {
     ServerNotStarted
 };

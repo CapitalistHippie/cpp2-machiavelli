@@ -1,7 +1,7 @@
 #ifndef MACHIAVELLI_MACH_VIEW_STATEHANDLERS_STATEHANDLER_H_INCLUDED
 #define MACHIAVELLI_MACH_VIEW_STATEHANDLERS_STATEHANDLER_H_INCLUDED
 
-#include "mach/view/serverstate.h"
+#include "mach/view/serverclistate.h"
 
 namespace mach
 {
@@ -18,7 +18,7 @@ class StateHandler
     virtual void ExitState() noexcept = 0;
     virtual void RenderConsole() const = 0;
 
-    virtual ServerState GetState() const noexcept = 0;
+    virtual ServerCliState GetState() const noexcept = 0;
 };
 }
 }

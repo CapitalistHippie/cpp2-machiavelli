@@ -7,29 +7,34 @@
 
 using namespace mach::infra;
 
-std::unique_ptr<addrinfo, void(__stdcall*)(addrinfo*)> GetAddrInfoRaii(TcpServer::Port port, const addrinfo& hints)
-{
-    addrinfo* addrInfoResultBuffer = nullptr;
-    std::unique_ptr<addrinfo, void(__stdcall*)(addrinfo*)> addrInfoResult(nullptr, &freeaddrinfo);
-
-    auto result = getaddrinfo(nullptr, std::to_string(port).c_str(), &hints, &addrInfoResultBuffer);
-    if (result != NOERROR)
-    {
-        throw std::system_error(result, std::system_category());
-    }
-
-    addrInfoResult.reset(addrInfoResultBuffer);
-
-    return addrInfoResult;
-}
-
 TcpServer::TcpServer()
   : isListening(false)
-  , listenSocket(INVALID_SOCKET)
+  , listeningSocket(InvalidSocket)
 {
-#ifdef _WIN32
-    InitializeWsa();
-#endif // #ifdef _WIN32
+}
+
+mach::infra::TcpServer::TcpServer(TcpServer&& other)
+  : isListening(other.isListening)
+  , listeningSocket(other.listeningSocket)
+{
+    other.isListening = false;
+    other.listeningSocket = InvalidSocket;
+}
+
+TcpServer& mach::infra::TcpServer::operator=(TcpServer&& other)
+{
+    isListening = other.isListening;
+    listeningSocket = other.listeningSocket;
+
+    other.isListening = false;
+    other.listeningSocket = InvalidSocket;
+
+    return *this;
+}
+
+mach::infra::TcpServer::~TcpServer()
+{
+    StopListening();
 }
 
 void TcpServer::StartListening(Port port)
@@ -47,29 +52,29 @@ void TcpServer::StartListening(Port port)
     hints.ai_protocol = IPPROTO_TCP;
     hints.ai_flags = AI_PASSIVE;
 
-    auto addrInfo = GetAddrInfoRaii(port, hints);
+    auto addrInfo = GetAddrInfo(nullptr, port, hints);
 
     // Create a socket for connecting to the server.
-    listenSocket = socket(addrInfo->ai_family, addrInfo->ai_socktype, addrInfo->ai_protocol);
-    if (listenSocket == INVALID_SOCKET)
+    listeningSocket = socket(addrInfo->ai_family, addrInfo->ai_socktype, addrInfo->ai_protocol);
+    if (IsInvalidSocket(listeningSocket))
     {
         throw std::system_error(WSAGetLastError(), std::system_category());
     }
 
     // Setup the TCP listening socket.
-    auto result = bind(listenSocket, addrInfo->ai_addr, addrInfo->ai_addrlen);
+    auto result = bind(listeningSocket, addrInfo->ai_addr, addrInfo->ai_addrlen);
     if (result != NOERROR)
     {
-        closesocket(listenSocket);
+        CloseSocket(listeningSocket);
 
         throw std::system_error(result, std::system_category());
     }
 
     // Start listening for connecting clients.
-    result = listen(listenSocket, SOMAXCONN);
+    result = listen(listeningSocket, SOMAXCONN);
     if (result != NOERROR)
     {
-        closesocket(listenSocket);
+        CloseSocket(listeningSocket);
 
         throw std::system_error(result, std::system_category());
     }
@@ -84,7 +89,7 @@ void TcpServer::StopListening()
         return;
     }
 
-    auto result = closesocket(listenSocket);
+    auto result = CloseSocket(listeningSocket);
     if (result != NOERROR)
     {
         throw std::system_error(result, std::system_category());
@@ -98,18 +103,18 @@ bool TcpServer::IsListening()
     return isListening;
 }
 
-TcpServerClient TcpServer::AcceptClient()
+TcpClient TcpServer::AcceptClient()
 {
     if (!IsListening())
     {
         throw std::system_error(FunctionalError::TcpServerIsNotListening);
     }
 
-    auto clientSocket = accept(listenSocket, nullptr, nullptr);
-    if (clientSocket == INVALID_SOCKET)
+    auto clientSocket = accept(listeningSocket, nullptr, nullptr);
+    if (IsInvalidSocket(clientSocket))
     {
         throw std::system_error(WSAGetLastError(), std::system_category());
     }
 
-    return TcpServerClient(clientSocket);
+    return TcpClient(clientSocket);
 }

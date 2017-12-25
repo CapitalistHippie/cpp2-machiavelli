@@ -14,7 +14,7 @@
 #include <mach/infra/commandmediator.h>
 
 #include "mach/view/servercli.h"
-#include "mach/view/serverstate.h"
+#include "mach/view/serverclistate.h"
 #include "mach/view/statehandlers/statehandler.h"
 
 namespace mach
@@ -23,16 +23,16 @@ namespace view
 {
 namespace statehandlers
 {
-template<typename TDerived, ServerState state>
+template<typename TDerived, ServerCliState state>
 class StateHandlerBase : public StateHandler
 {
   private:
-    static const infra::AbstractFactory<StateHandler, ServerState>::ProductRegistrar<TDerived,
-                                                                                     ServerCli&,
-                                                                                     std::shared_ptr<app::Server>,
-                                                                                     infra::CliCommandParser&,
-                                                                                     infra::CommandMediator&,
-                                                                                     std::ostream&>
+    static const infra::AbstractFactory<StateHandler, ServerCliState>::ProductRegistrar<TDerived,
+                                                                                        ServerCli&,
+                                                                                        std::shared_ptr<app::Server>,
+                                                                                        infra::CliCommandParser&,
+                                                                                        infra::CommandMediator&,
+                                                                                        std::ostream&>
       registrar;
 
     std::vector<std::string> commandNamesToUnregister;
@@ -93,7 +93,7 @@ class StateHandlerBase : public StateHandler
         commandHandlerHandlesToUnregister.push_back(commandHandlerHandle);
     }
 
-    ServerState GetState() const noexcept override
+    ServerCliState GetState() const noexcept override
     {
         registrar.Dummy();
 
@@ -102,13 +102,13 @@ class StateHandlerBase : public StateHandler
 };
 
 // Static member StateHandlerBase::registrar initalization.
-template<typename TProduct, ServerState state>
-const infra::AbstractFactory<StateHandler, ServerState>::ProductRegistrar<TProduct,
-                                                                          ServerCli&,
-                                                                          std::shared_ptr<app::Server>,
-                                                                          infra::CliCommandParser&,
-                                                                          infra::CommandMediator&,
-                                                                          std::ostream&>
+template<typename TProduct, ServerCliState state>
+const infra::AbstractFactory<StateHandler, ServerCliState>::ProductRegistrar<TProduct,
+                                                                             ServerCli&,
+                                                                             std::shared_ptr<app::Server>,
+                                                                             infra::CliCommandParser&,
+                                                                             infra::CommandMediator&,
+                                                                             std::ostream&>
   StateHandlerBase<TProduct, state>::registrar(state);
 }
 }

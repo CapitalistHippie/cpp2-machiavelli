@@ -1,21 +1,9 @@
 #ifndef MACHIAVELLI_MACH_INFRA_TCPSERVER_H_INCLUDED
 #define MACHIAVELLI_MACH_INFRA_TCPSERVER_H_INCLUDED
 
-#include <cstdint>
-#include <memory>
-#include <string>
-
-#ifdef _WIN32
-#define WIN32_LEAN_AND_MEAN
-
-#include <Windows.h>
-#include <winsock2.h>
-#include <ws2tcpip.h>
-#endif // #ifdef _WIN32
-
 #include "mach/infra/noncopyable.h"
-#include "mach/infra/tcpserverclient.h"
-#include "mach/infra/wsainitializer.h"
+#include "mach/infra/sockets.h"
+#include "mach/infra/tcpclient.h"
 
 namespace mach
 {
@@ -23,24 +11,24 @@ namespace infra
 {
 class TcpServer : public Noncopyable
 {
-  public:
-    typedef uint16_t Port;
-
   private:
     bool isListening;
 
-    SOCKET listenSocket;
+    Socket listeningSocket;
 
   public:
     TcpServer();
+    TcpServer(TcpServer&& other);
+    TcpServer& operator=(TcpServer&& other);
+    ~TcpServer();
 
     void StartListening(Port port);
     void StopListening();
     bool IsListening();
 
-    TcpServerClient AcceptClient();
+    TcpClient AcceptClient();
 }; // class TcpServer
 } // namespace infra
 } // namespace mach
 
-#endif // MACHIAVELLI_MACH_INFRA_TCPSERVER_H_INCLUDED
+#endif // #ifndef MACHIAVELLI_MACH_INFRA_TCPSERVER_H_INCLUDED
