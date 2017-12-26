@@ -11,7 +11,7 @@
 #include <mach/infra/abstractfactory.h>
 #include <mach/infra/clicommand.h>
 #include <mach/infra/clicommandparser.h>
-#include <mach/infra/commandmediator.h>
+#include <mach/infra/subject.h>
 
 #include "mach/view/servercli.h"
 #include "mach/view/serverclistate.h"
@@ -31,30 +31,30 @@ class StateHandlerBase : public StateHandler
                                                                                         ServerCli&,
                                                                                         std::shared_ptr<app::Server>,
                                                                                         infra::CliCommandParser&,
-                                                                                        infra::CommandMediator&,
+                                                                                        infra::Subject&,
                                                                                         std::ostream&>
       registrar;
 
     std::vector<std::string> commandNamesToUnregister;
-    std::vector<infra::CommandMediator::CommandHandlerHandle> commandHandlerHandlesToUnregister;
+    std::vector<infra::Subject::ObserverHandle> commandObserverHandlesToUnregister;
 
   protected:
     ServerCli& context;
     std::shared_ptr<app::Server> server;
     infra::CliCommandParser& commandParser;
-    infra::CommandMediator& commandMediator;
+    infra::Subject& commandSubject;
     std::ostream& outputStream;
 
   public:
     StateHandlerBase(ServerCli& context,
                      std::shared_ptr<app::Server> server,
                      infra::CliCommandParser& commandParser,
-                     infra::CommandMediator& commandMediator,
+                     infra::Subject& commandSubject,
                      std::ostream& outputStream)
       : context(context)
       , server(server)
       , commandParser(commandParser)
-      , commandMediator(commandMediator)
+      , commandSubject(commandSubject)
       , outputStream(outputStream)
     {
     }
@@ -69,9 +69,9 @@ class StateHandlerBase : public StateHandler
             commandParser.UnregisterCommand(commandName);
         }
 
-        for (const auto& commandHandlerHandle : commandHandlerHandlesToUnregister)
+        for (const auto& commandObserverHandle : commandObserverHandlesToUnregister)
         {
-            commandMediator.UnregisterCommandHandler(commandHandlerHandle);
+            commandSubject.UnregisterPredicateObserver(commandObserverHandle);
         }
 
         ExitStateFromBase();
@@ -85,12 +85,12 @@ class StateHandlerBase : public StateHandler
         commandNamesToUnregister.push_back(commandName);
     }
 
-    template<typename TPredicate, typename THandler>
-    void RegisterCommandHandler(TPredicate predicate, THandler handler)
+    template<typename TPredicate, typename TObserver>
+    void RegisterCommandObserver(TPredicate predicate, TObserver observer)
     {
-        auto commandHandlerHandle = commandMediator.RegisterCommandHandler<infra::CliCommand>(predicate, handler);
+        auto commandObserverHandle = commandSubject.RegisterObserver<infra::CliCommand>(predicate, observer);
 
-        commandHandlerHandlesToUnregister.push_back(commandHandlerHandle);
+        commandObserverHandlesToUnregister.push_back(commandObserverHandle);
     }
 
     ServerCliState GetState() const noexcept override
@@ -107,7 +107,7 @@ const infra::AbstractFactory<StateHandler, ServerCliState>::ProductRegistrar<TPr
                                                                              ServerCli&,
                                                                              std::shared_ptr<app::Server>,
                                                                              infra::CliCommandParser&,
-                                                                             infra::CommandMediator&,
+                                                                             infra::Subject&,
                                                                              std::ostream&>
   StateHandlerBase<TProduct, state>::registrar(state);
 }

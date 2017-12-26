@@ -19,9 +19,9 @@ class ConfigureServer : public StateHandlerBase<ConfigureServer, ServerCliState:
   private:
     app::ServerConfiguration serverConfiguration;
 
-    void SetPlayerCountCommandHandler(const infra::CliCommand& command);
-    void SetPortCommandHandler(const infra::CliCommand& command);
-    void StartCommandHandler();
+    void SetPlayerCountCommandNotificationHandler(const infra::CliCommand& command);
+    void SetPortCommandNotificationHandler(const infra::CliCommand& command);
+    void StartCommandNotificationHandler();
 
   public:
     using StateHandlerBase::StateHandlerBase;

@@ -5,21 +5,21 @@
 using namespace mach;
 using namespace mach::view::statehandlers;
 
-void ConfigureServer::SetPlayerCountCommandHandler(const infra::CliCommand& command)
+void ConfigureServer::SetPlayerCountCommandNotificationHandler(const infra::CliCommand& command)
 {
     auto playerCount = *std::static_pointer_cast<int>(command.parameters[0]);
 
     serverConfiguration.playerCount = playerCount;
 }
 
-void ConfigureServer::SetPortCommandHandler(const infra::CliCommand& command)
+void ConfigureServer::SetPortCommandNotificationHandler(const infra::CliCommand& command)
 {
     auto port = *std::static_pointer_cast<unsigned int>(command.parameters[0]);
 
     serverConfiguration.port = port;
 }
 
-void ConfigureServer::StartCommandHandler()
+void ConfigureServer::StartCommandNotificationHandler()
 {
     server->SetConfiguration(serverConfiguration);
     server->Start();
@@ -35,12 +35,14 @@ void ConfigureServer::EnterState()
     RegisterCommand<unsigned int>("setport");
     RegisterCommand("start");
 
-    RegisterCommandHandler([](const infra::CliCommand& command) { return command.name == "setplayercount"; },
-                           std::bind(&ConfigureServer::SetPlayerCountCommandHandler, this, std::placeholders::_1));
-    RegisterCommandHandler([](const infra::CliCommand& command) { return command.name == "setport"; },
-                           std::bind(&ConfigureServer::SetPortCommandHandler, this, std::placeholders::_1));
-    RegisterCommandHandler([](const infra::CliCommand& command) { return command.name == "start"; },
-                           std::bind(&ConfigureServer::StartCommandHandler, this));
+    RegisterCommandObserver(
+      [](const infra::CliCommand& command) { return command.name == "setplayercount"; },
+      std::bind(&ConfigureServer::SetPlayerCountCommandNotificationHandler, this, std::placeholders::_1));
+    RegisterCommandObserver(
+      [](const infra::CliCommand& command) { return command.name == "setport"; },
+      std::bind(&ConfigureServer::SetPortCommandNotificationHandler, this, std::placeholders::_1));
+    RegisterCommandObserver([](const infra::CliCommand& command) { return command.name == "start"; },
+                            std::bind(&ConfigureServer::StartCommandNotificationHandler, this));
 }
 
 void ConfigureServer::ExitStateFromBase() noexcept

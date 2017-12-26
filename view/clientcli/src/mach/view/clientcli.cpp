@@ -51,14 +51,14 @@ void ClientCli::Start()
 
     auto stopCommandHandler = std::bind(&ClientCli::Stop, this);
 
-    commandMediator.RegisterCommandHandler<infra::CliCommand>(
+    commandSubject.RegisterObserver<infra::CliCommand>(
       [](const infra::CliCommand& command) { return command.name == "quit"; }, stopCommandHandler);
-    commandMediator.RegisterCommandHandler<infra::CliCommand>(
+    commandSubject.RegisterObserver<infra::CliCommand>(
       [](const infra::CliCommand& command) { return command.name == "exit"; }, stopCommandHandler);
-    commandMediator.RegisterCommandHandler<infra::CliCommand>(
+    commandSubject.RegisterObserver<infra::CliCommand>(
       [](const infra::CliCommand& command) { return command.name == "stop"; }, stopCommandHandler);
 
-    commandMediator.RegisterCommandHandler<infra::CliCommand>(
+    commandSubject.RegisterObserver<infra::CliCommand>(
       [](const infra::CliCommand& command) { return command.name == "test"; },
       [&](const infra::CliCommand& command) {
           auto stringParameter = *std::static_pointer_cast<std::string>(command.parameters[0]);
@@ -78,7 +78,7 @@ void ClientCli::Start()
         try
         {
             auto command = commandParser.ParseCommand(inputStream);
-            commandMediator.HandleCommand(command);
+            commandSubject.NotfiyObservers(command);
 
             Render();
         }
@@ -104,7 +104,7 @@ void ClientCli::Start()
     } while (!shouldStop);
 
     commandParser.Clear();
-    commandMediator.Clear();
+    commandSubject.Clear();
 
     isRunning = false;
     shouldStop = false;

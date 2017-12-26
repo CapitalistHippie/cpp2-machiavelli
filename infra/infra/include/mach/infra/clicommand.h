@@ -5,15 +5,15 @@
 #include <string>
 #include <vector>
 
-#include "mach/infra/command.h"
 #include "mach/infra/functionalerror.h"
 #include "mach/infra/functionalerrorcategory.h"
+#include "mach/infra/thing.h"
 
 namespace mach
 {
 namespace infra
 {
-class CliCommand : public Command
+class CliCommand : public Thing
 {
   public:
     std::vector<std::shared_ptr<void>> parameters;
@@ -83,7 +83,9 @@ struct ParseCliCommandParametersImpl<std::string>
 template<>
 struct ParseCliCommandParametersImpl<>
 {
-    static void Parse(std::istream& stream, CliCommand& command) {}
+    static void Parse(std::istream& stream, CliCommand& command)
+    {
+    }
 };
 
 template<typename... TParameters>

@@ -7,7 +7,7 @@
 
 #include <mach/app/server.h>
 #include <mach/infra/clicommandparser.h>
-#include <mach/infra/commandmediator.h>
+#include <mach/infra/subject.h>
 
 #include "mach/view/serverclistate.h"
 #include "mach/view/statehandlers/statehandler.h"
@@ -25,7 +25,7 @@ class ServerCli
     std::ostream& outputStream;
 
     infra::CliCommandParser commandParser;
-    infra::CommandMediator commandMediator;
+    infra::Subject commandSubject;
 
     std::shared_ptr<statehandlers::StateHandler> stateHandler;
 

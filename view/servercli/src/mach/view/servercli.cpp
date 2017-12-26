@@ -48,14 +48,14 @@ void ServerCli::Start()
     commandParser.RegisterCommand("exit");
     commandParser.RegisterCommand("stop");
 
-    auto stopCommandHandler = std::bind(&ServerCli::Stop, this);
+    auto stopCommandNotificationHandler = std::bind(&ServerCli::Stop, this);
 
-    commandMediator.RegisterCommandHandler<infra::CliCommand>(
-      [](const infra::CliCommand& command) { return command.name == "quit"; }, stopCommandHandler);
-    commandMediator.RegisterCommandHandler<infra::CliCommand>(
-      [](const infra::CliCommand& command) { return command.name == "exit"; }, stopCommandHandler);
-    commandMediator.RegisterCommandHandler<infra::CliCommand>(
-      [](const infra::CliCommand& command) { return command.name == "stop"; }, stopCommandHandler);
+    commandSubject.RegisterObserver<infra::CliCommand>(
+      [](const infra::CliCommand& command) { return command.name == "quit"; }, stopCommandNotificationHandler);
+    commandSubject.RegisterObserver<infra::CliCommand>(
+      [](const infra::CliCommand& command) { return command.name == "exit"; }, stopCommandNotificationHandler);
+    commandSubject.RegisterObserver<infra::CliCommand>(
+      [](const infra::CliCommand& command) { return command.name == "stop"; }, stopCommandNotificationHandler);
 
     // Set the initial state.
     SetState(ServerCliState::ConfigureServer);
@@ -67,7 +67,7 @@ void ServerCli::Start()
         try
         {
             auto command = commandParser.ParseCommand(inputStream);
-            commandMediator.HandleCommand(command);
+            commandSubject.NotfiyObservers(command);
 
             Render();
         }
@@ -93,7 +93,7 @@ void ServerCli::Start()
     } while (!shouldStop);
 
     commandParser.Clear();
-    commandMediator.Clear();
+    commandSubject.Clear();
 
     isRunning = false;
     shouldStop = false;
@@ -140,7 +140,7 @@ void ServerCli::SetState(ServerCliState state)
 
     auto& factory = infra::AbstractFactory<statehandlers::StateHandler, ServerCliState>::GetInstance();
 
-    stateHandler = factory.Construct(state, *this, server, commandParser, commandMediator, outputStream);
+    stateHandler = factory.Construct(state, *this, server, commandParser, commandSubject, outputStream);
 
     stateHandler->EnterState();
 }

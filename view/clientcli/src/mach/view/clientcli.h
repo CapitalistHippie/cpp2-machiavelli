@@ -7,7 +7,7 @@
 
 #include <mach/app/multiplayerclient.h>
 #include <mach/infra/clicommandparser.h>
-#include <mach/infra/commandmediator.h>
+#include <mach/infra/subject.h>
 
 #include "mach/view/clientclistate.h"
 
@@ -24,7 +24,7 @@ class ClientCli
     std::ostream& outputStream;
 
     infra::CliCommandParser commandParser;
-    infra::CommandMediator commandMediator;
+    infra::Subject commandSubject;
 
     bool isRunning;
     bool shouldStop;
