@@ -7,6 +7,8 @@ project("Machiavelli Server CLI")
 add_executable(${MACHIAVELLI_SERVER_CLI_TARGET_NAME}
     "${CMAKE_CURRENT_LIST_DIR}/src/mach/view/statehandlers/configureserver.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/src/mach/view/statehandlers/configureserver.h"
+    "${CMAKE_CURRENT_LIST_DIR}/src/mach/view/statehandlers/serverrunning.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/src/mach/view/statehandlers/serverrunning.h"
     "${CMAKE_CURRENT_LIST_DIR}/src/mach/view/statehandlers/statehandler.h"
     "${CMAKE_CURRENT_LIST_DIR}/src/mach/view/statehandlers/statehandlerbase.h"
     "${CMAKE_CURRENT_LIST_DIR}/src/mach/view/init.cpp"

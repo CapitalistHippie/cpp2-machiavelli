@@ -6,6 +6,7 @@
 #include <typeindex>
 #include <unordered_map>
 #include <utility>
+#include <vector>
 
 #include "mach/infra/command.h"
 
@@ -92,14 +93,23 @@ class CommandMediator
     template<typename TCommand>
     void HandleCommand(const TCommand& command) const
     {
+        // We split the finding of handlers and running them so if the handler unregisters a handler the container isn't
+        // modified while we're iterating over it.
+        std::vector<std::shared_ptr<detail::CommandHandler>> handlersToRun;
+
         for (auto predicateHandlerMapPair : predicateHandlers)
         {
             const auto& predicateHandler = predicateHandlerMapPair.second;
 
             if (predicateHandler.first->CanHandleType(typeid(TCommand)) && predicateHandler.first->Predicate(command))
             {
-                predicateHandler.second->Handle(command);
+                handlersToRun.push_back(predicateHandler.second);
             }
+        }
+
+        for (auto handler : handlersToRun)
+        {
+            handler->Handle(command);
         }
     }
 

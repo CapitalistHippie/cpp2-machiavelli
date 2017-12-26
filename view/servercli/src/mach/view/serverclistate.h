@@ -7,7 +7,8 @@ namespace view
 {
 enum class ServerCliState
 {
-    ConfigureServer
+    ConfigureServer,
+    ServerRunning
 };
 }
 }

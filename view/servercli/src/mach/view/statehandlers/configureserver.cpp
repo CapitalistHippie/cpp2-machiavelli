@@ -24,7 +24,7 @@ void ConfigureServer::StartCommandHandler()
     server->SetConfiguration(serverConfiguration);
     server->Start();
 
-    // TODO: Set state.
+    context.SetState(ServerCliState::ServerRunning);
 }
 
 void ConfigureServer::EnterState()

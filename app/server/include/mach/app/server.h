@@ -1,6 +1,8 @@
 #ifndef MACHIAVELLI_MACH_APP_SERVER_H_INCLUDED
 #define MACHIAVELLI_MACH_APP_SERVER_H_INCLUDED
 
+#include <vector>
+
 #include <mach/infra/tcpserver.h>
 
 #include "mach/app/serverclient.h"
@@ -14,6 +16,7 @@ class Server
 {
   private:
     infra::TcpServer tcpServer;
+    std::vector<app::ServerClient> clients;
 
     ServerConfiguration configuration;
 
