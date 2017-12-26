@@ -19,7 +19,7 @@ namespace view
 class ServerCli
 {
   private:
-    std::shared_ptr<app::Server> server;
+    app::Server& server;
 
     std::istream& inputStream;
     std::ostream& outputStream;
@@ -33,7 +33,7 @@ class ServerCli
     bool shouldStop;
 
   public:
-    ServerCli(std::shared_ptr<app::Server> server, std::istream& inputStream, std::ostream& outputStream);
+    ServerCli(app::Server& server, std::istream& inputStream, std::ostream& outputStream);
 
     void Start();
     void Stop();

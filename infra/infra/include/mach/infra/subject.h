@@ -6,7 +6,6 @@
 #include <typeindex>
 #include <unordered_map>
 #include <utility>
-#include <vector>
 
 #include "mach/infra/observable.h"
 
@@ -91,7 +90,7 @@ class Subject
     Subject();
 
     template<typename TObservable>
-    void NotfiyObservers(const TObservable& observable) const
+    void NotifyObservers(const TObservable& observable) const
     {
         // We split the finding of observers and notifying them so if the observer unregisters an observer the container
         // isn't modified while we're iterating over it.
@@ -150,4 +149,4 @@ class Subject
 } // namespace infra
 } // namespace mach
 
-#endif // MACHIAVELLI_MACH_INFRA_COMMANDMEDIATOR_H_INCLUDED
+#endif // #ifndef MACHIAVELLI_MACH_INFRA_COMMANDMEDIATOR_H_INCLUDED

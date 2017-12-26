@@ -30,4 +30,4 @@ struct is_error_code_enum<mach::infra::FunctionalError> : true_type
 error_code make_error_code(mach::infra::FunctionalError);
 } // namespace std
 
-#endif // MACHIAVELLI_MACH_INFRA_FUNCTIONALERRORCATEGORY_H_INCLUDED
+#endif // #ifndef MACHIAVELLI_MACH_INFRA_FUNCTIONALERRORCATEGORY_H_INCLUDED

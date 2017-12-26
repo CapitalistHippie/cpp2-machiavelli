@@ -21,15 +21,15 @@ void ConfigureServer::SetPortCommandNotificationHandler(const infra::CliCommand&
 
 void ConfigureServer::StartCommandNotificationHandler()
 {
-    server->SetConfiguration(serverConfiguration);
-    server->Start();
+    server.SetConfiguration(serverConfiguration);
+    server.Start();
 
     context.SetState(ServerCliState::ServerRunning);
 }
 
 void ConfigureServer::EnterState()
 {
-    serverConfiguration = server->GetConfiguration();
+    serverConfiguration = server.GetConfiguration();
 
     RegisterCommand<int>("setplayercount");
     RegisterCommand<unsigned int>("setport");

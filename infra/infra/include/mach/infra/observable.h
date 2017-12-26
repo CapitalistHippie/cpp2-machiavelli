@@ -11,4 +11,4 @@ typedef Thing Observable;
 }
 }
 
-#endif // MACHIAVELLI_MACH_INFRA_OBSERVABLE_H_INCLUDED
+#endif // #ifndef MACHIAVELLI_MACH_INFRA_OBSERVABLE_H_INCLUDED

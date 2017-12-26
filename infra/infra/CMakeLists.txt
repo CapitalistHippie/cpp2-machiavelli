@@ -9,6 +9,7 @@ add_library(${MACHIAVELLI_INFRA_TARGET_NAME}
     "${CMAKE_CURRENT_LIST_DIR}/include/mach/infra/abstractfactory.h"
     "${CMAKE_CURRENT_LIST_DIR}/include/mach/infra/clicommand.h"
     "${CMAKE_CURRENT_LIST_DIR}/include/mach/infra/clicommandparser.h"
+    "${CMAKE_CURRENT_LIST_DIR}/include/mach/infra/concurrentqueue.h"
     "${CMAKE_CURRENT_LIST_DIR}/include/mach/infra/functionalerror.h"
     "${CMAKE_CURRENT_LIST_DIR}/include/mach/infra/functionalerrorcategory.h"
     "${CMAKE_CURRENT_LIST_DIR}/include/mach/infra/noncopyable.h"
@@ -18,12 +19,14 @@ add_library(${MACHIAVELLI_INFRA_TARGET_NAME}
     "${CMAKE_CURRENT_LIST_DIR}/include/mach/infra/tcpclient.h"
     "${CMAKE_CURRENT_LIST_DIR}/include/mach/infra/tcpserver.h"
     "${CMAKE_CURRENT_LIST_DIR}/include/mach/infra/thing.h"
+    "${CMAKE_CURRENT_LIST_DIR}/include/mach/infra/threadpool.h"
 	"${CMAKE_CURRENT_LIST_DIR}/src/mach/infra/clicommandparser.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/src/mach/infra/functionalerrorcategory.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/src/mach/infra/sockets.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/src/mach/infra/subject.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/src/mach/infra/tcpclient.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/src/mach/infra/tcpserver.cpp")
+    "${CMAKE_CURRENT_LIST_DIR}/src/mach/infra/tcpserver.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/src/mach/infra/threadpool.cpp")
 
 set_target_properties(${MACHIAVELLI_INFRA_TARGET_NAME} PROPERTIES
     CXX_STANDARD_REQUIRED 14)

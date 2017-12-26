@@ -1,20 +1,17 @@
 #include "mach/infra/tcpserver.h"
 
-#include <system_error>
-
-#include "mach/infra/functionalerror.h"
-#include "mach/infra/functionalerrorcategory.h"
-
 using namespace mach::infra;
 
-TcpServer::TcpServer()
-  : isListening(false)
+TcpServer::TcpServer(ThreadPool& threadPool)
+  : threadPool(threadPool)
+  , isListening(false)
   , listeningSocket(InvalidSocket)
 {
 }
 
 mach::infra::TcpServer::TcpServer(TcpServer&& other)
-  : isListening(other.isListening)
+  : threadPool(other.threadPool)
+  , isListening(other.isListening)
   , listeningSocket(other.listeningSocket)
 {
     other.isListening = false;
@@ -58,7 +55,7 @@ void TcpServer::StartListening(Port port)
     listeningSocket = socket(addrInfo->ai_family, addrInfo->ai_socktype, addrInfo->ai_protocol);
     if (IsInvalidSocket(listeningSocket))
     {
-        throw std::system_error(WSAGetLastError(), std::system_category());
+        throw std::system_error(GetLastSocketErrorCode(), std::system_category());
     }
 
     // Setup the TCP listening socket.
@@ -110,10 +107,12 @@ TcpClient TcpServer::AcceptClient()
         throw std::system_error(FunctionalError::TcpServerIsNotListening);
     }
 
+    SetSocketNonBlockingMode(listeningSocket, false);
+
     auto clientSocket = accept(listeningSocket, nullptr, nullptr);
     if (IsInvalidSocket(clientSocket))
     {
-        throw std::system_error(WSAGetLastError(), std::system_category());
+        throw std::system_error(GetLastSocketErrorCode(), std::system_category());
     }
 
     return TcpClient(clientSocket);

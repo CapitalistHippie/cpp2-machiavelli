@@ -42,9 +42,12 @@ std::unique_ptr<addrinfo, void(__stdcall*)(addrinfo*)> GetAddrInfo(const char* h
 std::unique_ptr<addrinfo, void(__stdcall*)(addrinfo*)> GetAddrInfo(const char* hostname,
                                                                    Port port,
                                                                    const addrinfo& hints);
+void SetSocketNonBlockingMode(Socket socket, bool enabled);
 
 int CloseSocket(Socket socket);
+
+int GetLastSocketErrorCode();
 } // namespace infra
 } // namespace mach
 
-#endif // MACHIAVELLI_MACH_INFRA_SOCKETS_H_INCLUDED
+#endif // #ifndef MACHIAVELLI_MACH_INFRA_SOCKETS_H_INCLUDED

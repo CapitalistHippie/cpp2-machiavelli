@@ -10,6 +10,8 @@
 #include <iostream>
 #include <memory>
 
+#include <mach/infra/threadpool.h>
+
 #include <mach/app/server.h>
 
 #include "mach/view/servercli.h"
@@ -30,7 +32,9 @@ int main()
     try
     {
 #endif
-        auto server = std::make_shared<app::Server>();
+        infra::ThreadPool threadPool(2);
+
+        app::Server server(threadPool);
 
         ServerCli serverCli(server, std::cin, std::cout);
         serverCli.Start();

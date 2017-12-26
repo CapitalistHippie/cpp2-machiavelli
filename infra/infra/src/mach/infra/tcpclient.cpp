@@ -71,7 +71,7 @@ void TcpClient::Connect(const std::string& hostname, Port port)
         clientSocket = socket(addr->ai_family, addr->ai_socktype, addr->ai_protocol);
         if (IsInvalidSocket(clientSocket))
         {
-            throw std::system_error(WSAGetLastError(), std::system_category());
+            throw std::system_error(GetLastSocketErrorCode(), std::system_category());
         }
 
         // Connect to the server.
@@ -88,7 +88,7 @@ void TcpClient::Connect(const std::string& hostname, Port port)
 
     if (IsInvalidSocket(clientSocket))
     {
-        throw std::system_error(WSAGetLastError(), std::system_category(), "Unable to connect to a server.");
+        throw std::system_error(GetLastSocketErrorCode(), std::system_category(), "Unable to connect to a server.");
     }
 
     isConnected = true;

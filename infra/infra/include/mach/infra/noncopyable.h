@@ -20,4 +20,4 @@ class Noncopyable
 } // namespace infra
 } // namespace mach
 
-#endif // MACHIAVELLI_MACH_INFRA_NONCOPYABLE_H_INCLUDED
+#endif // #ifndef MACHIAVELLI_MACH_INFRA_NONCOPYABLE_H_INCLUDED

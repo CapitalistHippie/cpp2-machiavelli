@@ -78,7 +78,7 @@ void ClientCli::Start()
         try
         {
             auto command = commandParser.ParseCommand(inputStream);
-            commandSubject.NotfiyObservers(command);
+            commandSubject.NotifyObservers(command);
 
             Render();
         }

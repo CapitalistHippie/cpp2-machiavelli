@@ -97,4 +97,4 @@ void ParseCliCommandParameters(std::istream& stream, CliCommand& command)
 } // namespace infra
 } // namespace mach
 
-#endif // MACHIAVELLI_MACH_INFRA_CLICOMMAND_H_INCLUDED
+#endif // #ifndef MACHIAVELLI_MACH_INFRA_CLICOMMAND_H_INCLUDED

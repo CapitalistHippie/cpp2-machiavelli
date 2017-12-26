@@ -53,4 +53,4 @@ class CliCommandParser
 } // namespace infra
 } // namespace mach
 
-#endif // MACHIAVELLI_MACH_INFRA_CLICOMMANDPARSER_H_INCLUDED
+#endif // #ifndef MACHIAVELLI_MACH_INFRA_CLICOMMANDPARSER_H_INCLUDED

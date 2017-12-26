@@ -26,7 +26,7 @@ inline void ClearConsole()
 #endif
 }
 
-ServerCli::ServerCli(std::shared_ptr<app::Server> server, std::istream& inputStream, std::ostream& outputStream)
+ServerCli::ServerCli(app::Server& server, std::istream& inputStream, std::ostream& outputStream)
   : server(server)
   , inputStream(inputStream)
   , outputStream(outputStream)
@@ -67,7 +67,7 @@ void ServerCli::Start()
         try
         {
             auto command = commandParser.ParseCommand(inputStream);
-            commandSubject.NotfiyObservers(command);
+            commandSubject.NotifyObservers(command);
 
             Render();
         }

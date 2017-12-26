@@ -2,7 +2,6 @@
 #define MACHIAVELLI_MACH_VIEW_STATEHANDLERS_BASESTATEHANDLER_H_INCLUDED
 
 #include <istream>
-#include <memory>
 #include <ostream>
 #include <string>
 #include <vector>
@@ -27,27 +26,23 @@ template<typename TDerived, ServerCliState state>
 class StateHandlerBase : public StateHandler
 {
   private:
-    static const infra::AbstractFactory<StateHandler, ServerCliState>::ProductRegistrar<TDerived,
-                                                                                        ServerCli&,
-                                                                                        std::shared_ptr<app::Server>,
-                                                                                        infra::CliCommandParser&,
-                                                                                        infra::Subject&,
-                                                                                        std::ostream&>
-      registrar;
+    static const infra::AbstractFactory<StateHandler, ServerCliState>::
+      ProductRegistrar<TDerived, ServerCli&, app::Server&, infra::CliCommandParser&, infra::Subject&, std::ostream&>
+        registrar;
 
     std::vector<std::string> commandNamesToUnregister;
     std::vector<infra::Subject::ObserverHandle> commandObserverHandlesToUnregister;
 
   protected:
     ServerCli& context;
-    std::shared_ptr<app::Server> server;
+    app::Server& server;
     infra::CliCommandParser& commandParser;
     infra::Subject& commandSubject;
     std::ostream& outputStream;
 
   public:
     StateHandlerBase(ServerCli& context,
-                     std::shared_ptr<app::Server> server,
+                     app::Server& server,
                      infra::CliCommandParser& commandParser,
                      infra::Subject& commandSubject,
                      std::ostream& outputStream)
@@ -103,13 +98,9 @@ class StateHandlerBase : public StateHandler
 
 // Static member StateHandlerBase::registrar initalization.
 template<typename TProduct, ServerCliState state>
-const infra::AbstractFactory<StateHandler, ServerCliState>::ProductRegistrar<TProduct,
-                                                                             ServerCli&,
-                                                                             std::shared_ptr<app::Server>,
-                                                                             infra::CliCommandParser&,
-                                                                             infra::Subject&,
-                                                                             std::ostream&>
-  StateHandlerBase<TProduct, state>::registrar(state);
+const infra::AbstractFactory<StateHandler, ServerCliState>::
+  ProductRegistrar<TProduct, ServerCli&, app::Server&, infra::CliCommandParser&, infra::Subject&, std::ostream&>
+    StateHandlerBase<TProduct, state>::registrar(state);
 }
 }
 }

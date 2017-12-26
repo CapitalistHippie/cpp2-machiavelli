@@ -117,4 +117,4 @@ class AbstractFactory : public infra::Noncopyable
 } // namespace infra
 } // namespace mach
 
-#endif // MACHIAVELLI_MACH_INFRA_ABSTRACTFACTORY_H_INCLUDED
+#endif // #ifndef MACHIAVELLI_MACH_INFRA_ABSTRACTFACTORY_H_INCLUDED
