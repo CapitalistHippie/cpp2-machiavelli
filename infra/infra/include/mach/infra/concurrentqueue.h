@@ -55,6 +55,13 @@ class ConcurrentQueue
 
         return queue.empty();
     }
+
+    void Clear() noexcept
+    {
+        std::lock_guard<std::mutex> lock(queueMutex);
+
+        queue = std::queue<T>();
+    }
 }; // class ConcurrentQueue
 } // namespace infra
 } // namespace mach

@@ -8,6 +8,7 @@
 #include <mach/infra/tcpserver.h>
 #include <mach/infra/threadpool.h>
 
+#include "mach/app/events/clientconnectedevent.h"
 #include "mach/app/serverclient.h"
 #include "mach/app/serverconfiguration.h"
 

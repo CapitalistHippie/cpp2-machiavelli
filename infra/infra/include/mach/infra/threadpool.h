@@ -59,7 +59,7 @@ class ThreadPool : public Noncopyable
     ThreadPool(unsigned int threadCount);
     ThreadPool(ThreadPool&&) = default;
     ThreadPool& operator=(ThreadPool&&) = default;
-    ~ThreadPool();
+    ~ThreadPool() noexcept;
 
     template<typename TTask>
     void QueueTask(TTask task)

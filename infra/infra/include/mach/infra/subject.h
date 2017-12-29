@@ -101,7 +101,7 @@ class Subject
             const auto& predicateHandler = predicateHandlerMapPair.second;
 
             if (predicateHandler.second->CanHandleType(typeid(TObservable)) &&
-                predicateHandler.first->Predicate(observable))
+                predicateHandler.first->Predicate(static_cast<const Observable&>(observable)))
             {
                 observersToNotify.push_back(predicateHandler.second);
             }

@@ -2,6 +2,7 @@
 
 using namespace mach;
 using namespace mach::app;
+using namespace mach::app::events;
 
 void Server::AcceptClientAsync()
 {
@@ -22,6 +23,12 @@ void Server::AcceptClientAsyncCallbackHandler(infra::TcpClient tcpClient)
     }
 
     clients.push_back(std::move(tcpClient));
+
+    // NOTE: This is dangerous as the clients container can change while the event is being handled and invalidate the
+    // reference. Should probably place it before the AcceptClientAsync call or make a ClientInfo struct or something.
+    ClientConnectedEvent evt(clients[clients.size() - 1]);
+
+    eventSubject.NotifyObservers(evt);
 }
 
 Server::Server(infra::ThreadPool& threadPool)

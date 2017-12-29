@@ -39,8 +39,10 @@ ThreadPool::ThreadPool(unsigned int threadCount)
     InitializeThreads(threadCount);
 }
 
-ThreadPool::~ThreadPool()
+ThreadPool::~ThreadPool() noexcept
 {
+    taskQueue.Clear();
+
     shouldTerminate = true;
 
     waitForNewTaskCondition.notify_all();
