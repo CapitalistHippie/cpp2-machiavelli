@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include <utility>
 
+#include "mach/infra/concurrentautoincrement.h"
 #include "mach/infra/observable.h"
 
 namespace mach
@@ -55,6 +56,10 @@ class ObserverImpl : public Observer
     TObserver observer;
 
   public:
+    typedef unsigned int Id;
+
+    infra::ConcurrentAutoIncrement<Id> id;
+
     ObserverImpl(TObserver observer)
       : observer(observer)
     {
@@ -75,7 +80,7 @@ class ObserverImpl : public Observer
 class Subject
 {
   public:
-    typedef int ObserverHandle;
+    typedef unsigned int ObserverHandle;
 
   private:
     std::unordered_map<int, std::pair<std::shared_ptr<detail::ObservablePredicate>, std::shared_ptr<detail::Observer>>>
@@ -83,12 +88,7 @@ class Subject
 
     std::unordered_map<int, std::shared_ptr<detail::Observer>> observers;
 
-    ObserverHandle predicateObserversIncrementalHandle;
-    ObserverHandle observersIncrementalHandle;
-
   public:
-    Subject();
-
     template<typename TObservable>
     void NotifyObservers(const TObservable& observable) const
     {
@@ -124,21 +124,24 @@ class Subject
     template<typename TObservable, typename TPredicate, typename TObserver>
     ObserverHandle RegisterObserver(TPredicate predicate, TObserver observer)
     {
-        predicateObservers.emplace(
-          predicateObserversIncrementalHandle,
-          std::make_pair(std::make_shared<detail::ObservablePredicateImpl<TObservable, TPredicate>>(predicate),
-                         std::make_shared<detail::ObserverImpl<TObservable, TObserver>>(observer)));
+        auto observerObj = std::make_shared<detail::ObserverImpl<TObservable, TObserver>>(observer);
 
-        return predicateObserversIncrementalHandle++;
+        predicateObservers.emplace(
+          observerObj->id,
+          std::make_pair(std::make_shared<detail::ObservablePredicateImpl<TObservable, TPredicate>>(predicate),
+                         observerObj));
+
+        return observerObj->id;
     }
 
     template<typename TObservable, typename TObserver>
     ObserverHandle RegisterObserver(TObserver observer)
     {
-        observers.emplace(observersIncrementalHandle,
-                          std::make_shared<detail::ObserverImpl<TObservable, TObserver>>(observer));
+        auto observerObj = std::make_shared<detail::ObserverImpl<TObservable, TObserver>>(observer);
 
-        return observersIncrementalHandle++;
+        observers.emplace(observerObj->id, observerObj);
+
+        return observerObj->id;
     }
 
     void UnregisterPredicateObserver(ObserverHandle handle);

@@ -22,7 +22,7 @@ void ConfigureServer::SetPortCommandNotificationHandler(const infra::CliCommand&
 void ConfigureServer::StartCommandNotificationHandler()
 {
     server.SetConfiguration(serverConfiguration);
-    server.Start();
+    server.StartAsync();
 
     context.SetState(ServerCliState::ServerRunning);
 }

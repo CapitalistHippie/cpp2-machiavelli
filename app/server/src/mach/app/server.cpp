@@ -22,11 +22,13 @@ void Server::AcceptClientAsyncCallbackHandler(infra::TcpClient tcpClient)
         tcpServer.StopListening();
     }
 
-    clients.push_back(std::move(tcpClient));
+    ServerClient serverClient(std::move(tcpClient));
 
-    // NOTE: This is dangerous as the clients container can change while the event is being handled and invalidate the
-    // reference. Should probably place it before the AcceptClientAsync call or make a ClientInfo struct or something.
-    ClientConnectedEvent evt(clients[clients.size() - 1]);
+    ClientConnectedEvent evt;
+    evt.clientInfo.id = serverClient.id;
+    evt.clientInfo.source = serverClient.GetSource();
+
+    clients.emplace(serverClient.id, std::move(serverClient));
 
     eventSubject.NotifyObservers(evt);
 }
@@ -34,25 +36,40 @@ void Server::AcceptClientAsyncCallbackHandler(infra::TcpClient tcpClient)
 Server::Server(infra::ThreadPool& threadPool)
   : tcpServer(threadPool)
   , threadPool(threadPool)
+  , isRunning(false)
 {
 }
 
-void Server::Start()
+void Server::StartAsync()
 {
+    if (isRunning)
+    {
+        return;
+    }
+
     tcpServer.StartListening(configuration.port);
 
     // Start accepting clients.
     AcceptClientAsync();
+
+    isRunning = true;
 }
 
 void Server::Stop()
 {
+    if (!isRunning)
+    {
+        return;
+    }
+
     tcpServer.StopListening();
+
+    isRunning = false;
 }
 
 bool Server::IsRunning()
 {
-    return tcpServer.IsListening();
+    return isRunning;
 }
 
 const ServerConfiguration& Server::GetConfiguration() const

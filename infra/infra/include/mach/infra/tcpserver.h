@@ -49,6 +49,11 @@ class TcpServer : public Noncopyable
         threadPool.QueueTask([=]() {
             while (true)
             {
+                if (!IsListening())
+                {
+                    return;
+                }
+
                 SetSocketNonBlockingMode(listeningSocket, true);
 
                 auto clientSocket = accept(listeningSocket, nullptr, nullptr);

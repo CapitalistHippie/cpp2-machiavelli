@@ -3,7 +3,7 @@
 
 #include <mach/infra/observable.h>
 
-#include "mach/app/serverclient.h"
+#include "mach/app/models/clientinfo.h"
 
 namespace mach
 {
@@ -14,12 +14,7 @@ namespace events
 class ClientConnectedEvent : public infra::Observable
 {
   public:
-    const ServerClient& client;
-
-    ClientConnectedEvent(const ServerClient& client)
-      : client(client)
-    {
-    }
+    models::ClientInfo clientInfo;
 };
 }
 }

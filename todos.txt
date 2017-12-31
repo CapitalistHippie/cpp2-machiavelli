@@ -1,7 +1,6 @@
 Machiavelli TODOs
  - Overkoepelende app library maken waar commands en events enzo in komen te staan
  - Domain library maken met domein logica
- - ConcurrentVector maken
  - Versturen en ontvangen data TcpClient
  - Data parsing iets bouwen
  - DAL library maken met repositories voor ophalen data

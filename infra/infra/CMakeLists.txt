@@ -1,12 +1,13 @@
 cmake_minimum_required(VERSION 3.2)
 
-set(MACHIAVELLI_INFRA_TARGET_NAME "machiavelli-infra")
+set(MACHIAVELLI_INFRA_COMMON_TARGET_NAME "machiavelli-infra-common")
 
-project("Machiavelli Infra")
+project("Machiavelli Infra Common library")
 
-add_library(${MACHIAVELLI_INFRA_TARGET_NAME}
+add_library(${MACHIAVELLI_INFRA_COMMON_TARGET_NAME}
     STATIC
     "${CMAKE_CURRENT_LIST_DIR}/include/mach/infra/abstractfactory.h"
+    "${CMAKE_CURRENT_LIST_DIR}/include/mach/infra/concurrentautoincrement.h"
     "${CMAKE_CURRENT_LIST_DIR}/include/mach/infra/clicommand.h"
     "${CMAKE_CURRENT_LIST_DIR}/include/mach/infra/clicommandparser.h"
     "${CMAKE_CURRENT_LIST_DIR}/include/mach/infra/concurrentqueue.h"
@@ -28,14 +29,14 @@ add_library(${MACHIAVELLI_INFRA_TARGET_NAME}
     "${CMAKE_CURRENT_LIST_DIR}/src/mach/infra/tcpserver.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/src/mach/infra/threadpool.cpp")
 
-set_target_properties(${MACHIAVELLI_INFRA_TARGET_NAME} PROPERTIES
+set_target_properties(${MACHIAVELLI_INFRA_COMMON_TARGET_NAME} PROPERTIES
     CXX_STANDARD_REQUIRED 14)
 
-target_include_directories(${MACHIAVELLI_INFRA_TARGET_NAME}
+target_include_directories(${MACHIAVELLI_INFRA_COMMON_TARGET_NAME}
     PUBLIC "${CMAKE_CURRENT_LIST_DIR}/include")
 
 if (WIN32)
-    target_link_libraries(${MACHIAVELLI_INFRA_TARGET_NAME}
-        wsock32
-        ws2_32)
+    target_link_libraries(${MACHIAVELLI_INFRA_COMMON_TARGET_NAME}
+        "wsock32"
+        "ws2_32")
 endif()

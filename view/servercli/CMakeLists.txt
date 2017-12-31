@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.2)
 
-set(MACHIAVELLI_SERVER_CLI_TARGET_NAME "machiavelli-server-cli")
+set(MACHIAVELLI_VIEW_SERVER_CLI_TARGET_NAME "machiavelli-view-server-cli")
 
-project("Machiavelli Server CLI")
+project("Machiavelli View Server CLI")
 
-add_executable(${MACHIAVELLI_SERVER_CLI_TARGET_NAME}
+add_executable(${MACHIAVELLI_VIEW_SERVER_CLI_TARGET_NAME}
     "${CMAKE_CURRENT_LIST_DIR}/src/mach/view/statehandlers/configureserver.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/src/mach/view/statehandlers/configureserver.h"
     "${CMAKE_CURRENT_LIST_DIR}/src/mach/view/statehandlers/serverrunning.cpp"
@@ -20,9 +20,9 @@ add_executable(${MACHIAVELLI_SERVER_CLI_TARGET_NAME}
     "${CMAKE_CURRENT_LIST_DIR}/src/mach/view/technicalerrorcategory.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/src/main.cpp")
 
-target_include_directories(${MACHIAVELLI_SERVER_CLI_TARGET_NAME}
+target_include_directories(${MACHIAVELLI_VIEW_SERVER_CLI_TARGET_NAME}
     PRIVATE "${CMAKE_CURRENT_LIST_DIR}/src")
 
-target_link_libraries(${MACHIAVELLI_SERVER_CLI_TARGET_NAME}
-    "machiavelli-infra"
-    "machiavelli-server")
+target_link_libraries(${MACHIAVELLI_VIEW_SERVER_CLI_TARGET_NAME}
+    "machiavelli-infra-common"
+    "machiavelli-app-server")

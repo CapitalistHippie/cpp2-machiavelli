@@ -1,16 +1,17 @@
 cmake_minimum_required(VERSION 3.2)
 
-set(MACHIAVELLI_CLIENT_TARGET_NAME "machiavelli-client")
+set(MACHIAVELLI_APP_CLIENT_TARGET_NAME "machiavelli-app-client")
 
-project("Machiavelli Client")
+project("Machiavelli App Client library")
 
-add_library(${MACHIAVELLI_CLIENT_TARGET_NAME}
+add_library(${MACHIAVELLI_APP_CLIENT_TARGET_NAME}
     STATIC
     "${CMAKE_CURRENT_LIST_DIR}/include/mach/app/multiplayerclient.h"
     "${CMAKE_CURRENT_LIST_DIR}/src/mach/app/multiplayerclient.cpp")
 
-target_include_directories(${MACHIAVELLI_CLIENT_TARGET_NAME}
+target_include_directories(${MACHIAVELLI_APP_CLIENT_TARGET_NAME}
     PUBLIC "${CMAKE_CURRENT_LIST_DIR}/include")
 
-target_link_libraries(${MACHIAVELLI_CLIENT_TARGET_NAME}
-    "machiavelli-infra")
+target_link_libraries(${MACHIAVELLI_APP_CLIENT_TARGET_NAME}
+    "machiavelli-infra-common"
+    "machiavelli-app-common")

@@ -4,6 +4,7 @@ project("Machiavelli")
 
 add_subdirectory("infra/infra")
 
+add_subdirectory("app/app")
 add_subdirectory("app/server")
 add_subdirectory("app/client")
 

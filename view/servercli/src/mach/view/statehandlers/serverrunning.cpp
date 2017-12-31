@@ -11,7 +11,8 @@ void ServerRunning::EnterState()
 {
     handle = server.eventSubject.RegisterObserver<app::events::ClientConnectedEvent>(
       [&](const app::events::ClientConnectedEvent& evt) {
-          outputStream << "Client connected from '" << evt.client.GetSource() << "'.\n";
+          outputStream << "Client with id '" << evt.clientInfo.id << "' connected from '" << evt.clientInfo.source
+                       << "'.\n";
       });
 }
 

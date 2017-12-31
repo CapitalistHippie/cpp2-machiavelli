@@ -4,6 +4,7 @@
 #include <string>
 #include <utility>
 
+#include <mach/infra/concurrentautoincrement.h>
 #include <mach/infra/tcpclient.h>
 
 namespace mach
@@ -16,6 +17,10 @@ class ServerClient
     infra::TcpClient tcpClient;
 
   public:
+    typedef unsigned int Id;
+
+    infra::ConcurrentAutoIncrement<Id> id;
+
     ServerClient(infra::TcpClient tcpClient);
 
     std::string GetSource() const;

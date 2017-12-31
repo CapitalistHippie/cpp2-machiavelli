@@ -2,12 +2,6 @@
 
 using namespace mach::infra;
 
-Subject::Subject()
-  : predicateObserversIncrementalHandle(0)
-  , observersIncrementalHandle(0)
-{
-}
-
 void Subject::UnregisterPredicateObserver(ObserverHandle handle)
 {
     predicateObservers.erase(handle);
