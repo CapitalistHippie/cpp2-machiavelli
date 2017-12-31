@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.2)
 
-set(MACHIAVELLI_VIEW_CLIENT_CLI_TARGET_NAME "machiavelli-view-client-cli")
+set(MACHIAVELLI_VIEW_CLIENT_CLI_TARGET_NAME "machiavelli-view-clientcli")
 
 project("Machiavelli View Client CLI")
 
