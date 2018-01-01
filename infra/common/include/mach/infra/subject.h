@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "mach/infra/concurrentautoincrement.h"
-#include "mach/infra/observable.h"
 
 namespace mach
 {
@@ -20,7 +19,7 @@ class ObservablePredicate
 {
   public:
     virtual ~ObservablePredicate() noexcept = default;
-    virtual bool Predicate(const Observable& command) const = 0;
+    virtual bool Predicate(const void* command) const = 0;
 }; // class ObservablePredicate
 
 template<typename TObservable, typename TPredicate>
@@ -35,9 +34,9 @@ class ObservablePredicateImpl : public ObservablePredicate
     {
     }
 
-    bool Predicate(const Observable& command) const override
+    bool Predicate(const void* command) const override
     {
-        return predicate(static_cast<const TObservable&>(command));
+        return predicate(*static_cast<const TObservable*>(command));
     }
 }; // class ObservablePredicateImpl
 
@@ -46,7 +45,7 @@ class Observer
   public:
     virtual ~Observer() noexcept = default;
     virtual bool CanHandleType(std::type_index type) const = 0;
-    virtual void Notify(const Observable& command) const = 0;
+    virtual void Notify(const void* command) const = 0;
 }; // class Observer
 
 template<typename TObservable, typename TObserver>
@@ -70,9 +69,9 @@ class ObserverImpl : public Observer
         return type == typeid(TObservable);
     }
 
-    void Notify(const Observable& command) const override
+    void Notify(const void* command) const override
     {
-        return observer(static_cast<const TObservable&>(command));
+        return observer(*static_cast<const TObservable*>(command));
     }
 }; // class ObserverImpl
 } // namespace detail
@@ -101,7 +100,7 @@ class Subject
             const auto& predicateHandler = predicateHandlerMapPair.second;
 
             if (predicateHandler.second->CanHandleType(typeid(TObservable)) &&
-                predicateHandler.first->Predicate(static_cast<const Observable&>(observable)))
+                predicateHandler.first->Predicate(static_cast<const void*>(&observable)))
             {
                 observersToNotify.push_back(predicateHandler.second);
             }
@@ -117,7 +116,7 @@ class Subject
 
         for (auto observer : observersToNotify)
         {
-            observer->Notify(observable);
+            observer->Notify(&observable);
         }
     }
 

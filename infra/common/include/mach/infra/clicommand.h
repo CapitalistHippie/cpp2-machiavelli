@@ -7,13 +7,12 @@
 
 #include "mach/infra/functionalerror.h"
 #include "mach/infra/functionalerrorcategory.h"
-#include "mach/infra/thing.h"
 
 namespace mach
 {
 namespace infra
 {
-class CliCommand : public Thing
+class CliCommand
 {
   public:
     std::vector<std::shared_ptr<void>> parameters;

@@ -9,14 +9,13 @@ namespace app
 {
 namespace models
 {
-class ClientInfo
+struct ClientInfo
 {
-  public:
     unsigned int id;
     std::string source;
-};
-}
-}
-}
+}; // struct ClientInfo
+} // namespace models
+} // namespace app
+} // namespace mach
 
-#endif // MACHIAVELLI_MACH_APP_MODELS_CLIENTINFO_H_INCLUDED
+#endif // #ifndef MACHIAVELLI_MACH_APP_MODELS_CLIENTINFO_H_INCLUDED

@@ -7,7 +7,12 @@ project("Machiavelli App Common library")
 add_library(${MACHIAVELLI_APP_COMMON_TARGET_NAME}
     STATIC
     "${CMAKE_CURRENT_LIST_DIR}/include/mach/app/events/clientconnectedevent.h"
+    "${CMAKE_CURRENT_LIST_DIR}/include/mach/app/events/event.h"
+    "${CMAKE_CURRENT_LIST_DIR}/include/mach/app/events/eventbase.h"
     "${CMAKE_CURRENT_LIST_DIR}/include/mach/app/models/clientinfo.h"
+    "${CMAKE_CURRENT_LIST_DIR}/include/mach/app/constants.h"
+    "${CMAKE_CURRENT_LIST_DIR}/include/mach/app/eventtype.h"
+    "${CMAKE_CURRENT_LIST_DIR}/include/mach/app/eventvisitor.h"
     "${CMAKE_CURRENT_LIST_DIR}/src/placeholder.cpp")
 
 target_include_directories(${MACHIAVELLI_APP_COMMON_TARGET_NAME}

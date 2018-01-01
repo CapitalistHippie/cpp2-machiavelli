@@ -1,6 +1,8 @@
 #ifndef MACHIAVELLI_MACH_INFRA_TCPCLIENT_H_INCLUDED
 #define MACHIAVELLI_MACH_INFRA_TCPCLIENT_H_INCLUDED
 
+#include <ostream>
+#include <sstream>
 #include <string>
 
 #include "mach/infra/noncopyable.h"
@@ -27,6 +29,12 @@ class TcpClient : public Noncopyable
     void Connect(const std::string& hostname, Port port);
     void Disconnect();
     bool IsConnected() const;
+
+    void Write(const std::string& data) const;
+    void Write(const char* data, unsigned int dataLength) const;
+
+    void Read(unsigned int dataLength, std::ostream& outputBuffer) const;
+    void ReadUntilIncluding(char delimiter, std::ostream& outputBuffer) const;
 
     std::string GetPeerAddress() const;
 

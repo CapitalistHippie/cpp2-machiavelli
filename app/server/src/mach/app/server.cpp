@@ -30,7 +30,7 @@ void Server::AcceptClientAsyncCallbackHandler(infra::TcpClient tcpClient)
 
     clients.emplace(serverClient.id, std::move(serverClient));
 
-    eventSubject.NotifyObservers(evt);
+    NotifyObservers(evt);
 }
 
 Server::Server(infra::ThreadPool& threadPool)

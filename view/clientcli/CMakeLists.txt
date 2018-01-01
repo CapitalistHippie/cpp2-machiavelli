@@ -19,4 +19,8 @@ target_include_directories(${MACHIAVELLI_VIEW_CLIENT_CLI_TARGET_NAME}
 
 target_link_libraries(${MACHIAVELLI_VIEW_CLIENT_CLI_TARGET_NAME}
     "machiavelli-infra-common"
+    "machiavelli-app-common"
     "machiavelli-app-client")
+
+# set_target_properties(${MACHIAVELLI_VIEW_CLIENT_CLI_TARGET_NAME} PROPERTIES
+#     LINK_FLAGS "/WHOLEARCHIVE:machiavelli-app-common")

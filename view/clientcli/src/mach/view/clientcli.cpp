@@ -5,6 +5,7 @@
 #include <functional>
 #include <system_error>
 
+#include <mach/app/events/clientconnectedevent.h>
 #include <mach/infra/abstractfactory.h>
 #include <mach/infra/functionalerrorcategory.h>
 
@@ -66,8 +67,15 @@ void ClientCli::Start()
           outputStream << "string parameter: " << stringParameter << "\nint parameter: " << intParameter << "\n\n";
       });
 
+    client.eventSubject.RegisterObserver<app::events::ClientConnectedEvent>(
+      [&](const app::events::ClientConnectedEvent& evt) {
+          outputStream << "Client with id '" << evt.clientInfo.id << "' connected from '" << evt.clientInfo.source
+                       << "'.\n";
+      });
+
     // Connect to the server.
-    multiplayerClient.Connect("localhost");
+    client.Connect();
+    client.StartAsync();
 
     SetState(ClientCliState::ServerNotStarted);
 

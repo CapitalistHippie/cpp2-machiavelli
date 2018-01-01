@@ -13,10 +13,9 @@ namespace app
 {
 class ServerClient
 {
-  private:
+  public:
     infra::TcpClient tcpClient;
 
-  public:
     typedef unsigned int Id;
 
     infra::ConcurrentAutoIncrement<Id> id;

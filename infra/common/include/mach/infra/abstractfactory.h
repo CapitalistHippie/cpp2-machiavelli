@@ -97,11 +97,12 @@ class AbstractFactory : public infra::Noncopyable
     static AbstractFactory& GetInstance() noexcept
     {
         static AbstractFactory factory;
+
         return factory;
     }
 
     template<typename... TArgs>
-    std::shared_ptr<TBase> Construct(const TIdentifier& identifier, TArgs&&... args) const
+    std::shared_ptr<TBase> Construct(TIdentifier identifier, TArgs&&... args) const
     {
         return std::static_pointer_cast<TBase>(
           productConstructors.at(identifier)

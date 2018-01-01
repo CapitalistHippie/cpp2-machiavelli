@@ -14,7 +14,7 @@ mach::infra::TcpClient::TcpClient()
 }
 
 mach::infra::TcpClient::TcpClient(Socket socket)
-  : isConnected(false)
+  : isConnected(true)
   , clientSocket(socket)
 {
     if (IsInvalidSocket(socket))
@@ -109,6 +109,93 @@ void TcpClient::Disconnect()
 bool TcpClient::IsConnected() const
 {
     return isConnected;
+}
+
+void TcpClient::Write(const std::string& data) const
+{
+    Write(data.c_str(), data.length());
+}
+
+void TcpClient::Write(const char* data, unsigned int dataLength) const
+{
+    if (!IsConnected())
+    {
+        throw std::system_error(FunctionalError::TcpClientNotConnected);
+    }
+
+    auto result = send(clientSocket, data, dataLength, 0);
+
+    if (result == -1)
+    {
+        throw std::system_error(GetLastSocketErrorCode(), std::system_category());
+    }
+}
+
+void TcpClient::Read(unsigned int dataLength, std::ostream& outputBuffer) const
+{
+    if (!IsConnected())
+    {
+        throw std::system_error(FunctionalError::TcpClientNotConnected);
+    }
+
+    char dataBuffer[64];
+    unsigned int totalDataReceived = 0;
+
+    while (true)
+    {
+        int dataLeftToReceive = dataLength - totalDataReceived;
+        int dataToReceive = 0;
+
+        if (dataLeftToReceive > 64)
+        {
+            dataToReceive = 64;
+        }
+        else
+        {
+            dataToReceive = dataLeftToReceive;
+        }
+
+        auto dataReceived = recv(clientSocket, dataBuffer, dataToReceive, 0);
+
+        if (totalDataReceived == -1)
+        {
+            throw std::system_error(GetLastSocketErrorCode(), std::system_category());
+        }
+
+        totalDataReceived += dataReceived;
+
+        dataBuffer[dataReceived] = '\0';
+        outputBuffer << dataBuffer;
+
+        if (totalDataReceived == dataLength)
+        {
+            break;
+        }
+    }
+}
+
+void TcpClient::ReadUntilIncluding(char delimiter, std::ostream& outputBuffer) const
+{
+    if (!IsConnected())
+    {
+        throw std::system_error(FunctionalError::TcpClientNotConnected);
+    }
+
+    while (true)
+    {
+        std::stringstream dataBuffer;
+
+        Read(1, dataBuffer);
+
+        auto data = dataBuffer.str();
+
+        outputBuffer << data[0];
+
+        if (data[0] == delimiter)
+        {
+            break;
+        }
+    }
 }
 
 std::string TcpClient::GetPeerAddress() const

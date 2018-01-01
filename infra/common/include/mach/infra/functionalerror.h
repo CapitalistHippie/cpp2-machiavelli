@@ -12,7 +12,8 @@ enum class FunctionalError
     CliCommandInvalidParameterInputType,
     TcpServerIsNotListening,
     TcpServerClientInitializedWithInvalidSocket,
-    TcpClientAlreadyConnected
+    TcpClientAlreadyConnected,
+    TcpClientNotConnected
 };
 }
 }

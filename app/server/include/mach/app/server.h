@@ -3,6 +3,7 @@
 
 #include <unordered_map>
 
+#include <mach/infra/serializer.h>
 #include <mach/infra/subject.h>
 #include <mach/infra/tcpclient.h>
 #include <mach/infra/tcpserver.h>
@@ -25,12 +26,29 @@ class Server
     infra::TcpServer tcpServer;
     std::unordered_map<ServerClient::Id, ServerClient> clients;
 
+    infra::Serializer serializer;
+
     ServerConfiguration configuration;
 
     bool isRunning;
 
     void AcceptClientAsync();
     void AcceptClientAsyncCallbackHandler(infra::TcpClient tcpClient);
+
+    template<typename T>
+    void NotifyObservers(const T& evt)
+    {
+        eventSubject.NotifyObservers(evt);
+
+        auto data = serializer.Serialize(evt);
+
+        for (const auto& clientPair : clients)
+        {
+            const auto& client = clientPair.second;
+
+            client.tcpClient.Write(data);
+        }
+    }
 
   public:
     infra::Subject eventSubject;

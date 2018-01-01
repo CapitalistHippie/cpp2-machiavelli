@@ -5,7 +5,7 @@
 #include <memory>
 #include <ostream>
 
-#include <mach/app/multiplayerclient.h>
+#include <mach/app/onlineclient.h>
 #include <mach/infra/clicommandparser.h>
 #include <mach/infra/subject.h>
 
@@ -18,7 +18,7 @@ namespace view
 class ClientCli
 {
   private:
-    app::MultiplayerClient multiplayerClient;
+    app::OnlineClient client;
 
     std::istream& inputStream;
     std::ostream& outputStream;

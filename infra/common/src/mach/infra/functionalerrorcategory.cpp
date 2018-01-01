@@ -24,6 +24,8 @@ std::string FunctionalErrorCategory::message(int ev) const
             return "TCP Server Client initialized with invalid socket.";
         case FunctionalError::TcpClientAlreadyConnected:
             return "TCP Client is already connected to a server.";
+        case FunctionalError::TcpClientNotConnected:
+            return "TCP Client is not connected to a server.";
         default:
             return "Unknown error.";
     }
