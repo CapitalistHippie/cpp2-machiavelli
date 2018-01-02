@@ -2,7 +2,7 @@
 #define MACHIAVELLI_MACH_APP_SERVERCONFIGURATION_H_INCLUDED
 
 #include <mach/app/constants.h>
-#include <mach/infra/sockets.h>
+#include <mach/infra/socket.h>
 
 namespace mach
 {

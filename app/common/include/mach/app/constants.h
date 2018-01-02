@@ -1,7 +1,7 @@
 #ifndef MACHIAVELLI_MACH_APP_CONSTANTS_H_INCLUDED
 #define MACHIAVELLI_MACH_APP_CONSTANTS_H_INCLUDED
 
-#include <mach/infra/sockets.h>
+#include <mach/infra/socket.h>
 
 namespace mach
 {

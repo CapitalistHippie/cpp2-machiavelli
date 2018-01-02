@@ -55,25 +55,25 @@ void TcpServer::StartListening(Port port)
     listeningSocket = socket(addrInfo->ai_family, addrInfo->ai_socktype, addrInfo->ai_protocol);
     if (IsInvalidSocket(listeningSocket))
     {
-        throw std::system_error(GetLastSocketErrorCode(), std::system_category());
+        throw std::system_error(GetLastSocketErrorCode());
     }
 
     // Setup the TCP listening socket.
     auto result = bind(listeningSocket, addrInfo->ai_addr, addrInfo->ai_addrlen);
-    if (result != NOERROR)
+    if (result == SocketErrorResult)
     {
         CloseSocket(listeningSocket);
 
-        throw std::system_error(result, std::system_category());
+        throw std::system_error(ConvertSystemSocketErrorCode(result));
     }
 
     // Start listening for connecting clients.
     result = listen(listeningSocket, SOMAXCONN);
-    if (result != NOERROR)
+    if (result == SocketErrorResult)
     {
         CloseSocket(listeningSocket);
 
-        throw std::system_error(result, std::system_category());
+        throw std::system_error(ConvertSystemSocketErrorCode(result));
     }
 
     isListening = true;
@@ -86,11 +86,7 @@ void TcpServer::StopListening()
         return;
     }
 
-    auto result = CloseSocket(listeningSocket);
-    if (result != NOERROR)
-    {
-        throw std::system_error(result, std::system_category());
-    }
+    CloseSocket(listeningSocket);
 
     isListening = false;
 }
@@ -112,7 +108,7 @@ TcpClient TcpServer::AcceptClient()
     auto clientSocket = accept(listeningSocket, nullptr, nullptr);
     if (IsInvalidSocket(clientSocket))
     {
-        throw std::system_error(GetLastSocketErrorCode(), std::system_category());
+        throw std::system_error(GetLastSocketErrorCode());
     }
 
     return TcpClient(clientSocket);

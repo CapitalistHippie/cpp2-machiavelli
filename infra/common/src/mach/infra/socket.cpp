@@ -1,4 +1,8 @@
-#include "mach/infra/sockets.h"
+#include "mach/infra/socket.h"
+
+#include "mach/infra/socketerrorcategory.h"
+
+using namespace mach::infra;
 
 #ifdef _WIN32
 namespace
@@ -10,19 +14,19 @@ class WsaInitializer
     {
         WSADATA wsaData;
         auto result = WSAStartup(MAKEWORD(2, 2), &wsaData);
-        if (result != NOERROR)
+        if (result != 0)
         {
-            throw std::system_error(result, std::system_category());
+            throw std::system_error(ConvertSystemSocketErrorCode(result));
         }
     }
 
     ~WsaInitializer() noexcept
     {
         auto result = WSACleanup();
-        if (result != NOERROR)
+        if (result != 0)
         {
             // We shouldn't throw in a destructor.
-            // throw std::system_error(result, std::system_category());
+            // throw std::system_error(ConvertSystemSocketErrorCode(result));
         }
     }
 } wsaInitializer;
@@ -46,9 +50,9 @@ std::unique_ptr<addrinfo, void(__stdcall*)(addrinfo*)> mach::infra::GetAddrInfo(
     std::unique_ptr<addrinfo, void(__stdcall*)(addrinfo*)> addrInfoResult(nullptr, &freeaddrinfo);
 
     auto result = getaddrinfo(hostname, service, &hints, &addrInfoResultBuffer);
-    if (result != NOERROR)
+    if (result != 0)
     {
-        throw std::system_error(result, std::system_category());
+        throw std::system_error(ConvertSystemSocketErrorCode(result));
     }
 
     addrInfoResult.reset(addrInfoResultBuffer);
@@ -68,41 +72,71 @@ void mach::infra::SetSocketNonBlockingMode(Socket socket, bool enabled)
 #ifdef _WIN32
     u_long blocking = static_cast<u_long>(enabled);
     int result = ioctlsocket(socket, FIONBIO, &blocking);
-    if (result != NOERROR)
+    if (result == SOCKET_ERROR)
     {
-        throw std::system_error(GetLastSocketErrorCode(), std::system_category());
+        throw std::system_error(GetLastSocketErrorCode());
     }
 #else // Assuming POSIX.
     int flags = fcntl(sock, F_GETFL, NULL);
     errno = 0;
     if (flags < 0 || fcntl(sock, F_SETFL, flags | O_NONBLOCK) < 0)
     {
-        throw std::system_error(GetLastSocketErrorCode(), std::system_category());
+        throw std::system_error(GetLastSocketErrorCode());
     }
 #endif
 }
 
-int mach::infra::CloseSocket(Socket socket)
+void mach::infra::CloseSocket(Socket socket)
 {
-    int status = 0;
-
 #ifdef _WIN32
     if (closesocket(socket) == SOCKET_ERROR)
     {
-        status = GetLastSocketErrorCode();
+        throw std::system_error(GetLastSocketErrorCode());
     }
 #else // Assuming POSIX.
-    status = close(socket);
+    if (close(socket) == -1)
+    {
+        throw std::system_error(GetLastSocketErrorCode());
+    }
 #endif
-
-    return status;
 }
 
-int mach::infra::GetLastSocketErrorCode()
+SocketError mach::infra::GetLastSocketErrorCode()
 {
 #ifdef _WIN32
-    return WSAGetLastError();
+    return ConvertSystemSocketErrorCode(WSAGetLastError());
 #else // Assuming POSIX.
-    return errno;
+    return ConvertSystemSocketErrorCode(errno);
+#endif
+}
+
+SocketError mach::infra::ConvertSystemSocketErrorCode(int errorCode)
+{
+#ifdef _WIN32
+    switch (errorCode)
+    {
+        case 0:
+            return SocketError::None;
+        case WSAEWOULDBLOCK:
+            return SocketError::Wouldblock;
+        case WSAECONNRESET:
+            return SocketError::Connreset;
+        default:
+            return SocketError::Other;
+    }
+#else // TODO: Assuming POSIX.
+    switch (errno)
+    {
+        case 0:
+            return SocketError::None;
+        case EWOULDBLOCK:
+            return SocketError::Wouldblock;
+        case EAGAIN:
+            return SocketError::Again;
+        case ECONNRESET:
+            return SocketError::Connreset;
+        default:
+            return SocketError::Other;
+    }
 #endif
 }

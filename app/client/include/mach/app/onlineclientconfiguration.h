@@ -4,7 +4,7 @@
 #include <string>
 
 #include <mach/app/constants.h>
-#include <mach/infra/sockets.h>
+#include <mach/infra/socket.h>
 
 namespace mach
 {

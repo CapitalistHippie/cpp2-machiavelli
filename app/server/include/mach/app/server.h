@@ -1,9 +1,12 @@
 #ifndef MACHIAVELLI_MACH_APP_SERVER_H_INCLUDED
 #define MACHIAVELLI_MACH_APP_SERVER_H_INCLUDED
 
+#include <system_error>
 #include <unordered_map>
+#include <vector>
 
 #include <mach/infra/serializer.h>
+#include <mach/infra/socketerrorcategory.h>
 #include <mach/infra/subject.h>
 #include <mach/infra/tcpclient.h>
 #include <mach/infra/tcpserver.h>
@@ -42,11 +45,32 @@ class Server
 
         auto data = serializer.Serialize(evt);
 
-        for (const auto& clientPair : clients)
-        {
-            const auto& client = clientPair.second;
+        std::vector<ServerClient::Id> clientsToRemove;
 
-            client.tcpClient.Write(data);
+        for (auto& clientPair : clients)
+        {
+            auto& client = clientPair.second;
+
+            try
+            {
+                client.tcpClient.Write(data);
+            }
+            catch (std::system_error& e)
+            {
+                if (e.code() == infra::SocketError::Connreset)
+                {
+                    clientsToRemove.push_back(client.id);
+                }
+            }
+        }
+
+        for (auto clientId : clientsToRemove)
+        {
+            // If the connection was forcibly closed on the other side we close the socket, remove the client and go on.
+            clients.at(clientId).tcpClient.Disconnect();
+            clients.erase(clientId);
+
+            // TODO: Throw clientdisconnected event.
         }
     }
 

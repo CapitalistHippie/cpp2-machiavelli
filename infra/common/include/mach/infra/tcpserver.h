@@ -9,7 +9,8 @@
 #include "mach/infra/functionalerror.h"
 #include "mach/infra/functionalerrorcategory.h"
 #include "mach/infra/noncopyable.h"
-#include "mach/infra/sockets.h"
+#include "mach/infra/socket.h"
+#include "mach/infra/socketerrorcategory.h"
 #include "mach/infra/tcpclient.h"
 #include "mach/infra/threadpool.h"
 
@@ -61,17 +62,14 @@ class TcpServer : public Noncopyable
                 if (IsInvalidSocket(clientSocket))
                 {
                     auto errorCode = GetLastSocketErrorCode();
-#ifdef _WIN32
-                    if (errorCode == WSAEWOULDBLOCK)
-#else // Assuming POSIX.
-                    if (errorCode == EAGAIN || errorCode == EWOULDBLOCK)
-#endif
+
+                    if (errorCode == SocketError::Wouldblock || errorCode == SocketError::Again)
                     {
                         std::this_thread::sleep_for(std::chrono::milliseconds(100));
                     }
                     else
                     {
-                        throw std::system_error(errorCode, std::system_category());
+                        throw std::system_error(errorCode);
                     }
                 }
                 else

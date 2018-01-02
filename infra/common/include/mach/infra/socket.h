@@ -1,5 +1,5 @@
-#ifndef MACHIAVELLI_MACH_INFRA_SOCKETS_H_INCLUDED
-#define MACHIAVELLI_MACH_INFRA_SOCKETS_H_INCLUDED
+#ifndef MACHIAVELLI_MACH_INFRA_SOCKET_H_INCLUDED
+#define MACHIAVELLI_MACH_INFRA_SOCKET_H_INCLUDED
 
 #include <cstdint>
 #include <memory>
@@ -15,6 +15,7 @@
 typedef SOCKET Socket;
 
 #define InvalidSocket INVALID_SOCKET
+#define SocketErrorResult SOCKET_ERROR
 
 #else // Assuming POSIX.
 #include <arpa/inet.h>
@@ -25,8 +26,11 @@ typedef SOCKET Socket;
 typedef int Socket;
 
 #define InvalidSocket -1
+#define SocketError -1
 
 #endif
+
+#include "mach/infra/socketerror.h"
 
 namespace mach
 {
@@ -44,10 +48,12 @@ std::unique_ptr<addrinfo, void(__stdcall*)(addrinfo*)> GetAddrInfo(const char* h
                                                                    const addrinfo& hints);
 void SetSocketNonBlockingMode(Socket socket, bool enabled);
 
-int CloseSocket(Socket socket);
+void CloseSocket(Socket socket);
 
-int GetLastSocketErrorCode();
+SocketError GetLastSocketErrorCode();
+
+SocketError ConvertSystemSocketErrorCode(int errorCode);
 } // namespace infra
 } // namespace mach
 
-#endif // #ifndef MACHIAVELLI_MACH_INFRA_SOCKETS_H_INCLUDED
+#endif // #ifndef MACHIAVELLI_MACH_INFRA_SOCKET_H_INCLUDED

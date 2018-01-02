@@ -4,6 +4,7 @@
 
 #include "mach/infra/functionalerror.h"
 #include "mach/infra/functionalerrorcategory.h"
+#include "mach/infra/socketerrorcategory.h"
 
 using namespace mach::infra;
 
@@ -71,12 +72,12 @@ void TcpClient::Connect(const std::string& hostname, Port port)
         clientSocket = socket(addr->ai_family, addr->ai_socktype, addr->ai_protocol);
         if (IsInvalidSocket(clientSocket))
         {
-            throw std::system_error(GetLastSocketErrorCode(), std::system_category());
+            throw std::system_error(GetLastSocketErrorCode());
         }
 
         // Connect to the server.
         auto result = connect(clientSocket, addr->ai_addr, addr->ai_addrlen);
-        if (result != NOERROR)
+        if (result == SocketErrorResult)
         {
             CloseSocket(clientSocket);
             clientSocket = InvalidSocket;
@@ -88,7 +89,7 @@ void TcpClient::Connect(const std::string& hostname, Port port)
 
     if (IsInvalidSocket(clientSocket))
     {
-        throw std::system_error(GetLastSocketErrorCode(), std::system_category(), "Unable to connect to a server.");
+        throw std::system_error(GetLastSocketErrorCode(), "Unable to connect to a server.");
     }
 
     isConnected = true;
@@ -102,6 +103,7 @@ void TcpClient::Disconnect()
     }
 
     CloseSocket(clientSocket);
+    clientSocket = InvalidSocket;
 
     isConnected = false;
 }
@@ -125,9 +127,11 @@ void TcpClient::Write(const char* data, unsigned int dataLength) const
 
     auto result = send(clientSocket, data, dataLength, 0);
 
-    if (result == -1)
+    if (result == SocketErrorResult)
     {
-        throw std::system_error(GetLastSocketErrorCode(), std::system_category());
+        auto error = GetLastSocketErrorCode();
+
+        throw std::system_error(GetLastSocketErrorCode());
     }
 }
 
@@ -159,7 +163,7 @@ void TcpClient::Read(unsigned int dataLength, std::ostream& outputBuffer) const
 
         if (totalDataReceived == -1)
         {
-            throw std::system_error(GetLastSocketErrorCode(), std::system_category());
+            throw std::system_error(GetLastSocketErrorCode());
         }
 
         totalDataReceived += dataReceived;
@@ -204,9 +208,9 @@ std::string TcpClient::GetPeerAddress() const
     int clientInfoSize = sizeof(clientInfo);
 
     auto result = getpeername(clientSocket, &clientInfo, &clientInfoSize);
-    if (result != NOERROR)
+    if (result == SocketErrorResult)
     {
-        throw std::system_error(result, std::system_category());
+        throw std::system_error(GetLastSocketErrorCode());
     }
 
     return inet_ntoa(reinterpret_cast<sockaddr_in&>(clientInfo).sin_addr);
