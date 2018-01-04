@@ -10,6 +10,7 @@
 #include <mach/infra/subject.h>
 
 #include "mach/view/clientclistate.h"
+#include "mach/view/statehandlers/statehandler.h"
 
 namespace mach
 {
@@ -26,6 +27,8 @@ class ClientCli
     infra::CliCommandParser commandParser;
     infra::Subject commandSubject;
 
+    std::shared_ptr<statehandlers::StateHandler> stateHandler;
+
     bool isRunning;
     bool shouldStop;
 
@@ -36,8 +39,6 @@ class ClientCli
     void Stop();
 
     bool IsRunning() const;
-
-    void Render() const;
 
     void SetState(ClientCliState state);
 };

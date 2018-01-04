@@ -73,13 +73,7 @@ void ClientCli::Start()
                        << "'.\n";
       });
 
-    // Connect to the server.
-    client.Connect();
-    client.StartAsync();
-
-    SetState(ClientCliState::ServerNotStarted);
-
-    Render();
+    SetState(ClientCliState::ConnectToServer);
 
     do
     {
@@ -87,21 +81,15 @@ void ClientCli::Start()
         {
             auto command = commandParser.ParseCommand(inputStream);
             commandSubject.NotifyObservers(command);
-
-            Render();
         }
         catch (const std::system_error& e)
         {
             if (e.code() == infra::FunctionalError::CliCommandNotRegistered)
             {
-                Render();
-
                 outputStream << "Unavailable or unknown command. Please try something else!\n\n";
             }
             else if (e.code() == infra::FunctionalError::CliCommandInvalidParameterInputType)
             {
-                Render();
-
                 outputStream << "Invalid parameter type. Please try something else!\n\n";
             }
             else
@@ -133,16 +121,16 @@ bool ClientCli::IsRunning() const
     return isRunning;
 }
 
-void ClientCli::Render() const
-{
-    ClearConsole();
-
-    outputStream << "Welcome to Machiavelli!\n"
-                 << "Enter exit, quit or stop to exit the application.\n\n";
-
-    outputStream << '\n';
-}
-
 void ClientCli::SetState(ClientCliState state)
 {
+    if (stateHandler != nullptr)
+    {
+        stateHandler->ExitState();
+    }
+
+    auto& factory = infra::AbstractFactory<statehandlers::StateHandler, ClientCliState>::GetInstance();
+
+    stateHandler = factory.Construct(state, *this, client, commandParser, commandSubject, outputStream);
+
+    stateHandler->EnterState();
 }

@@ -1,5 +1,5 @@
-#ifndef MACHIAVELLI_MACH_VIEW_SERVERSTATE_H_INCLUDED
-#define MACHIAVELLI_MACH_VIEW_SERVERSTATE_H_INCLUDED
+#ifndef MACHIAVELLI_MACH_VIEW_CLIENTCLISTATE_H_INCLUDED
+#define MACHIAVELLI_MACH_VIEW_CLIENTCLISTATE_H_INCLUDED
 
 namespace mach
 {
@@ -7,9 +7,9 @@ namespace view
 {
 enum class ClientCliState
 {
-    ServerNotStarted
-};
-}
-}
+    ConnectToServer
+}; // enum class ClientCliState
+} // namespace view
+} // namespace mach
 
-#endif // #ifndef MACHIAVELLI_MACH_VIEW_SERVERSTATE_H_INCLUDED
+#endif // #ifndef MACHIAVELLI_MACH_VIEW_CLIENTCLISTATE_H_INCLUDED
