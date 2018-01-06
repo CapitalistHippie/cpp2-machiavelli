@@ -20,6 +20,8 @@ void Server::AcceptClientAsyncCallbackHandler(infra::TcpClient tcpClient)
     {
         // Else we're done listening for new clients.
         tcpServer.StopListening();
+
+        // gameController.Start();
     }
 
     ServerClient serverClient(std::move(tcpClient));

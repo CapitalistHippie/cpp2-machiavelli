@@ -1,11 +1,8 @@
 #include "mach/view/clientcli.h"
 
-#include <stdlib.h>
-
 #include <functional>
 #include <system_error>
 
-#include <mach/app/events/clientconnectedevent.h>
 #include <mach/infra/abstractfactory.h>
 #include <mach/infra/functionalerrorcategory.h>
 
@@ -14,18 +11,6 @@
 
 using namespace mach;
 using namespace mach::view;
-
-inline void ClearConsole()
-{
-#ifdef _WIN32
-    system("cls");
-#else
-    for (int i = 0; i < 100; ++i)
-    {
-        std::cout << '\n';
-    }
-#endif
-}
 
 ClientCli::ClientCli(std::istream& inputStream, std::ostream& outputStream)
   : threadPool(2)
@@ -67,12 +52,6 @@ void ClientCli::Start()
           auto stringParameter = *std::static_pointer_cast<std::string>(command.parameters[0]);
           auto intParameter = *std::static_pointer_cast<int>(command.parameters[1]);
           outputStream << "string parameter: " << stringParameter << "\nint parameter: " << intParameter << "\n\n";
-      });
-
-    client.eventSubject.RegisterObserver<app::events::ClientConnectedEvent>(
-      [&](const app::events::ClientConnectedEvent& evt) {
-          outputStream << "Client with id '" << evt.clientInfo.id << "' connected from '" << evt.clientInfo.source
-                       << "'.\n";
       });
 
     SetState(ClientCliState::ConnectToServer);

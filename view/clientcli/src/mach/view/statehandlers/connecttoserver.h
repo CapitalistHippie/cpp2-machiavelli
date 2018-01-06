@@ -1,8 +1,6 @@
 #ifndef MACHIAVELLI_MACH_VIEW_STATEHANDLERS_CONNECTTOSERVER_H_INCLUDED
 #define MACHIAVELLI_MACH_VIEW_STATEHANDLERS_CONNECTTOSERVER_H_INCLUDED
 
-#include <mach/app/onlineclientconfiguration.h>
-
 #include <mach/infra/clicommand.h>
 
 #include "mach/view/clientclistate.h"
@@ -18,6 +16,12 @@ class ConnectToServer : public StateHandlerBase<ConnectToServer, ClientCliState:
 {
   private:
     app::OnlineClientConfiguration clientConfiguration;
+
+    void SetHostCommandHandler(const infra::CliCommand& command);
+    void SetPortCommandHandler(const infra::CliCommand& command);
+    void StartCommandHandler();
+
+    void RenderConsole() const;
 
   public:
     using StateHandlerBase::StateHandlerBase;

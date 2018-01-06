@@ -36,6 +36,7 @@ class StateHandlerBase : public StateHandler
 
     std::vector<std::string> commandNamesToUnregister;
     std::vector<infra::Subject::ObserverHandle> commandObserverHandlesToUnregister;
+    std::vector<infra::Subject::ObserverHandle> clientObserverHandlesToUnregister;
 
   protected:
     ClientCli& context;
@@ -73,6 +74,11 @@ class StateHandlerBase : public StateHandler
             commandSubject.UnregisterPredicateObserver(commandObserverHandle);
         }
 
+        for (const auto& clientObserverHandle : clientObserverHandlesToUnregister)
+        {
+            client.eventSubject.UnregisterObserver(clientObserverHandle);
+        }
+
         ExitStateFromBase();
     }
 
@@ -90,6 +96,14 @@ class StateHandlerBase : public StateHandler
         auto commandObserverHandle = commandSubject.RegisterObserver<infra::CliCommand>(predicate, observer);
 
         commandObserverHandlesToUnregister.push_back(commandObserverHandle);
+    }
+
+    template<typename TObservable, typename TObserver>
+    void RegisterClientObserver(TObserver observer)
+    {
+        auto clientObserverHandle = client.eventSubject.RegisterObserver<TObservable>(observer);
+
+        clientObserverHandlesToUnregister.push_back(clientObserverHandle);
     }
 
     ClientCliState GetState() const noexcept override

@@ -3,6 +3,7 @@
 
 #include <mutex>
 #include <queue>
+#include <utility>
 
 namespace mach
 {
@@ -43,7 +44,7 @@ class ConcurrentQueue
             return false;
         }
 
-        itemBuffer = queue.front();
+        itemBuffer = std::move(queue.front());
         queue.pop();
 
         return true;

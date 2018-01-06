@@ -24,5 +24,6 @@ target_include_directories(${MACHIAVELLI_VIEW_SERVER_CLI_TARGET_NAME}
     PRIVATE "${CMAKE_CURRENT_LIST_DIR}/src")
 
 target_link_libraries(${MACHIAVELLI_VIEW_SERVER_CLI_TARGET_NAME}
+    "machiavelli-view-common"
     "machiavelli-infra-common"
     "machiavelli-app-server")
