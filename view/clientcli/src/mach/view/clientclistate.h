@@ -7,7 +7,8 @@ namespace view
 {
 enum class ClientCliState
 {
-    ConnectToServer
+    ConnectToServer,
+    WaitForGameToStart
 }; // enum class ClientCliState
 } // namespace view
 } // namespace mach

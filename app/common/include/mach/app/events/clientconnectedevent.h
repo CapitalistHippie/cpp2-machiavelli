@@ -33,7 +33,7 @@ class ClientConnectedEvent : public EventBase<ClientConnectedEvent, EventType::C
     unsigned int GetDataLength() const override
     {
         std::stringstream data;
-        data << clientInfo.id << ',' << clientInfo.source;
+        Serialize(data);
 
         return data.str().length();
     }

@@ -3,7 +3,7 @@
 using namespace mach::infra;
 
 TcpServer::TcpServer(ThreadPool& threadPool)
-  : threadPool(threadPool)
+  : threadPool(&threadPool)
   , isListening(false)
   , listeningSocket(InvalidSocket)
 {
@@ -14,15 +14,18 @@ mach::infra::TcpServer::TcpServer(TcpServer&& other)
   , isListening(other.isListening)
   , listeningSocket(other.listeningSocket)
 {
+    other.threadPool = nullptr;
     other.isListening = false;
     other.listeningSocket = InvalidSocket;
 }
 
 TcpServer& mach::infra::TcpServer::operator=(TcpServer&& other)
 {
+    threadPool = other.threadPool;
     isListening = other.isListening;
     listeningSocket = other.listeningSocket;
 
+    other.threadPool = nullptr;
     other.isListening = false;
     other.listeningSocket = InvalidSocket;
 
@@ -111,5 +114,5 @@ TcpClient TcpServer::AcceptClient()
         throw std::system_error(GetLastSocketErrorCode());
     }
 
-    return TcpClient(clientSocket);
+    return TcpClient(*threadPool, clientSocket);
 }

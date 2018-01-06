@@ -24,7 +24,7 @@ namespace app
 class Server
 {
   private:
-    infra::ThreadPool& threadPool;
+    infra::ThreadPool* threadPool;
 
     infra::TcpServer tcpServer;
     std::unordered_map<ServerClient::Id, ServerClient> clients;

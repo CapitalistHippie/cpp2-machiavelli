@@ -91,7 +91,7 @@ class Serializer
 {
   private:
     template<typename TSerializable, typename TIdentifier>
-    std::shared_ptr<TSerializable> DeserializeData(std::istream& dataStream, TIdentifier identifier)
+    std::shared_ptr<TSerializable> DeserializeData(std::istream& dataStream, TIdentifier identifier) const
     {
         auto& factory = infra::AbstractFactory<TSerializable, TIdentifier>::GetInstance();
 
@@ -103,7 +103,7 @@ class Serializer
     }
 
   public:
-    std::string Serialize(const Serializable& serializable)
+    std::string Serialize(const Serializable& serializable) const
     {
         std::stringstream dataStream;
 
@@ -115,7 +115,7 @@ class Serializer
     }
 
     template<typename TSerializable, typename TIdentifier>
-    std::shared_ptr<TSerializable> Deserialize(std::istream& dataStream)
+    std::shared_ptr<TSerializable> Deserialize(std::istream& dataStream) const
     {
         TIdentifier identifier;
         dataStream >> identifier;
@@ -128,7 +128,7 @@ class Serializer
     }
 
     template<typename TSerializable, typename TIdentifier>
-    std::shared_ptr<TSerializable> Deserialize(const TcpClient& tcpClient)
+    std::shared_ptr<TSerializable> Deserialize(const TcpClient& tcpClient) const
     {
         std::stringstream dataStream;
         tcpClient.ReadUntilIncluding(',', dataStream);
@@ -142,8 +142,28 @@ class Serializer
         dataStream.ignore(1); // Ignore the ','.
 
         tcpClient.Read(dataLength, dataStream);
-
         return DeserializeData<TSerializable>(dataStream, identifier);
+    }
+
+    template<typename TSerializable, typename TIdentifier, typename TCallback>
+    void DeserializeAsync(const TcpClient& tcpClient, TCallback callback) const
+    {
+        auto dataStream = std::make_shared<std::stringstream>();
+
+        tcpClient.ReadUntilIncludingAsync(',', *dataStream, [=, &tcpClient] {
+            tcpClient.ReadUntilIncludingAsync(',', *dataStream, [=, &tcpClient] {
+                TIdentifier identifier;
+                *dataStream >> identifier;
+                dataStream->ignore(1); // Ignore the ','.
+                unsigned int dataLength;
+                *dataStream >> dataLength;
+                dataStream->ignore(1); // Ignore the ','.
+
+                tcpClient.ReadAsync(dataLength, *dataStream, [=, &tcpClient] {
+                    callback(DeserializeData<TSerializable>(*dataStream, identifier));
+                });
+            });
+        });
     }
 }; // class Serializer
 } // namespace infra

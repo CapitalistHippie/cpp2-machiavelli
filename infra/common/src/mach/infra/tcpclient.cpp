@@ -2,20 +2,20 @@
 
 #include <system_error>
 
-#include "mach/infra/functionalerror.h"
-#include "mach/infra/functionalerrorcategory.h"
 #include "mach/infra/socketerrorcategory.h"
 
 using namespace mach::infra;
 
-mach::infra::TcpClient::TcpClient()
-  : isConnected(false)
+mach::infra::TcpClient::TcpClient(ThreadPool& threadPool)
+  : threadPool(&threadPool)
+  , isConnected(false)
   , clientSocket(InvalidSocket)
 {
 }
 
-mach::infra::TcpClient::TcpClient(Socket socket)
-  : isConnected(true)
+mach::infra::TcpClient::TcpClient(ThreadPool& threadPool, Socket socket)
+  : threadPool(&threadPool)
+  , isConnected(true)
   , clientSocket(socket)
 {
     if (IsInvalidSocket(socket))
@@ -25,7 +25,8 @@ mach::infra::TcpClient::TcpClient(Socket socket)
 }
 
 mach::infra::TcpClient::TcpClient(TcpClient&& other)
-  : isConnected(other.isConnected)
+  : threadPool(other.threadPool)
+  , isConnected(other.isConnected)
   , clientSocket(other.clientSocket)
 {
     other.isConnected = false;
@@ -34,9 +35,11 @@ mach::infra::TcpClient::TcpClient(TcpClient&& other)
 
 TcpClient& mach::infra::TcpClient::operator=(TcpClient&& other)
 {
+    threadPool = other.threadPool;
     isConnected = other.isConnected;
     clientSocket = other.clientSocket;
 
+    other.threadPool = nullptr;
     other.isConnected = false;
     other.clientSocket = InvalidSocket;
 
@@ -159,9 +162,11 @@ void TcpClient::Read(unsigned int dataLength, std::ostream& outputBuffer) const
             dataToReceive = dataLeftToReceive;
         }
 
+        SetSocketNonBlockingMode(clientSocket, false);
+
         auto dataReceived = recv(clientSocket, dataBuffer, dataToReceive, 0);
 
-        if (totalDataReceived == -1)
+        if (dataReceived == -1)
         {
             throw std::system_error(GetLastSocketErrorCode());
         }

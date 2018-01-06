@@ -1,30 +1,17 @@
 #include "mach/view/servercli.h"
 
-#include <stdlib.h>
-
 #include <functional>
 #include <system_error>
 
 #include <mach/infra/abstractfactory.h>
 #include <mach/infra/functionalerrorcategory.h>
+#include <mach/view/console.h>
 
 #include "mach/view/technicalerror.h"
 #include "mach/view/technicalerrorcategory.h"
 
 using namespace mach;
 using namespace mach::view;
-
-inline void ClearConsole()
-{
-#ifdef _WIN32
-    system("cls");
-#else
-    for (int i = 0; i < 100; ++i)
-    {
-        std::cout << '\n';
-    }
-#endif
-}
 
 ServerCli::ServerCli(app::Server& server, std::istream& inputStream, std::ostream& outputStream)
   : server(server)

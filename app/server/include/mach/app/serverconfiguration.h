@@ -10,7 +10,7 @@ namespace app
 {
 struct ServerConfiguration
 {
-    static const unsigned int DefaultPlayerCount = 4;
+    static const unsigned int DefaultPlayerCount = 2;
 
     infra::Port port = Constants::DefaultTcpPort;
     unsigned int playerCount = DefaultPlayerCount;

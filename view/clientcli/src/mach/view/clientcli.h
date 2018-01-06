@@ -8,6 +8,7 @@
 #include <mach/app/onlineclient.h>
 #include <mach/infra/clicommandparser.h>
 #include <mach/infra/subject.h>
+#include <mach/infra/threadpool.h>
 
 #include "mach/view/clientclistate.h"
 #include "mach/view/statehandlers/statehandler.h"
@@ -19,6 +20,8 @@ namespace view
 class ClientCli
 {
   private:
+    infra::ThreadPool threadPool;
+
     app::OnlineClient client;
 
     std::istream& inputStream;
