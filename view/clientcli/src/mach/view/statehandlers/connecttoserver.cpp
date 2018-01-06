@@ -7,6 +7,15 @@
 using namespace mach;
 using namespace mach::view::statehandlers;
 
+void ConnectToServer::SetPlayerNameCommandHandler(const infra::CliCommand& command)
+{
+    auto playerName = *std::static_pointer_cast<std::string>(command.parameters[0]);
+
+    clientConfiguration.playerName = playerName;
+
+    RenderConsole();
+}
+
 void ConnectToServer::SetHostCommandHandler(const infra::CliCommand& command)
 {
     auto host = *std::static_pointer_cast<std::string>(command.parameters[0]);
@@ -41,9 +50,11 @@ void ConnectToServer::RenderConsole() const
 
     outputStream << "Here you can configure the client.\n"
                  << "The client currently has the following options set:\n"
+                 << "Player name: " << clientConfiguration.playerName << "\n"
                  << "Server host: " << clientConfiguration.hostname << "\n"
                  << "Server port: " << clientConfiguration.port << "\n"
                  << "\nThe following commands are available:\n"
+                 << "setname <name> - Sets the name you will join the game with.\n"
                  << "sethost <host> - Sets the server host to connect to.\n"
                  << "setport <port> - Sets the server port to connect to.\n"
                  << "start - Connect to the server and waits for the game to start.\n\n";
@@ -51,10 +62,13 @@ void ConnectToServer::RenderConsole() const
 
 void ConnectToServer::EnterState()
 {
+    RegisterCommand<std::string>("setname");
     RegisterCommand<std::string>("sethost");
     RegisterCommand<infra::Port>("setport");
     RegisterCommand("start");
 
+    RegisterCommandObserver([](const infra::CliCommand& command) { return command.name == "setname"; },
+                            std::bind(&ConnectToServer::SetPlayerNameCommandHandler, this, std::placeholders::_1));
     RegisterCommandObserver([](const infra::CliCommand& command) { return command.name == "sethost"; },
                             std::bind(&ConnectToServer::SetHostCommandHandler, this, std::placeholders::_1));
     RegisterCommandObserver([](const infra::CliCommand& command) { return command.name == "setport"; },

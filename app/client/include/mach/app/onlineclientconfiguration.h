@@ -6,11 +6,13 @@
 #include <mach/app/constants.h>
 #include <mach/infra/socket.h>
 
+#include "mach/app/clientconfiguration.h"
+
 namespace mach
 {
 namespace app
 {
-struct OnlineClientConfiguration
+struct OnlineClientConfiguration : public ClientConfiguration
 {
     std::string hostname = "localhost";
     infra::Port port = Constants::DefaultTcpPort;

@@ -8,7 +8,7 @@ namespace app
 enum class EventType
 {
     ClientConnected
-}; // enum class Event
+}; // enum class EventType
 } // namespace app
 } // namespace mach
 

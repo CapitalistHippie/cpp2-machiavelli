@@ -17,6 +17,7 @@ class ConnectToServer : public StateHandlerBase<ConnectToServer, ClientCliState:
   private:
     app::OnlineClientConfiguration clientConfiguration;
 
+    void SetPlayerNameCommandHandler(const infra::CliCommand& command);
     void SetHostCommandHandler(const infra::CliCommand& command);
     void SetPortCommandHandler(const infra::CliCommand& command);
     void StartCommandHandler();

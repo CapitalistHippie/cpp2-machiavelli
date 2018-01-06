@@ -4,7 +4,6 @@
 #include <mach/infra/serializable.h>
 
 #include "mach/app/eventtype.h"
-#include "mach/app/models/clientinfo.h"
 
 namespace mach
 {

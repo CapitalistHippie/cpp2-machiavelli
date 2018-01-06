@@ -9,9 +9,8 @@
 #include <mach/infra/tcpclient.h>
 #include <mach/infra/threadpool.h>
 
-#include <mach/app/constants.h>
-
 #include "mach/app/client.h"
+#include "mach/app/constants.h"
 #include "mach/app/events/clientconnectedevent.h"
 #include "mach/app/events/event.h"
 #include "mach/app/eventtype.h"
@@ -58,7 +57,8 @@ class OnlineClient : public Client
 
     void NotifyObservers(std::shared_ptr<events::Event> evt) const;
 
-    void ReadEventAsync();
+    void JoinGame() const;
+    void ReadEventsAsync();
 
   public:
     OnlineClient(infra::ThreadPool& threadPool);

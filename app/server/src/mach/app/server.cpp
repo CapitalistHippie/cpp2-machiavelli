@@ -38,6 +38,7 @@ void Server::AcceptClientAsyncCallbackHandler(infra::TcpClient tcpClient)
 Server::Server(infra::ThreadPool& threadPool)
   : threadPool(&threadPool)
   , tcpServer(threadPool)
+  , commandHandlerVisitor(gameController)
   , isRunning(false)
 {
 }

@@ -5,6 +5,8 @@
 #include <unordered_map>
 #include <vector>
 
+#include <mach/domain/gamecontroller.h>
+
 #include <mach/infra/serializer.h>
 #include <mach/infra/socketerrorcategory.h>
 #include <mach/infra/subject.h>
@@ -12,6 +14,8 @@
 #include <mach/infra/tcpserver.h>
 #include <mach/infra/threadpool.h>
 
+#include <mach/app/commands/joingamecommand.h>
+#include <mach/app/commandvisitor.h>
 #include <mach/app/events/clientconnectedevent.h>
 
 #include "mach/app/serverclient.h"
@@ -21,6 +25,26 @@ namespace mach
 {
 namespace app
 {
+namespace detail
+{
+class CommandHandlerVisitor : public CommandVisitor
+{
+  private:
+    domain::GameController* gameController;
+
+  public:
+    CommandHandlerVisitor(domain::GameController& gameController)
+      : gameController(&gameController)
+    {
+    }
+
+    void Visit(const commands::JoinGameCommand& command) const override
+    {
+        gameController->AddPlayer(command.playerName);
+    }
+}; // class CommandHandlerVisitor
+} // namespace detail
+
 class Server
 {
   private:
@@ -32,6 +56,10 @@ class Server
     infra::Serializer serializer;
 
     ServerConfiguration configuration;
+
+    domain::GameController gameController;
+
+    detail::CommandHandlerVisitor commandHandlerVisitor;
 
     bool isRunning;
 

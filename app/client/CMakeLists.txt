@@ -7,6 +7,7 @@ project("Machiavelli App Client library")
 add_library(${MACHIAVELLI_APP_CLIENT_TARGET_NAME}
     STATIC
     "${CMAKE_CURRENT_LIST_DIR}/include/mach/app/client.h"
+    "${CMAKE_CURRENT_LIST_DIR}/include/mach/app/clientconfiguration.h"
     "${CMAKE_CURRENT_LIST_DIR}/include/mach/app/onlineclient.h"
     "${CMAKE_CURRENT_LIST_DIR}/include/mach/app/onlineclientconfiguration.h"
     "${CMAKE_CURRENT_LIST_DIR}/src/mach/app/onlineclient.cpp")

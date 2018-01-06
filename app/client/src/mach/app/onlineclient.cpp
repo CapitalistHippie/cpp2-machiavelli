@@ -1,5 +1,7 @@
 #include "mach/app/onlineclient.h"
 
+#include <mach/app/commands/joingamecommand.h>
+
 using namespace mach::app;
 
 void OnlineClient::NotifyObservers(std::shared_ptr<events::Event> evt) const
@@ -7,7 +9,17 @@ void OnlineClient::NotifyObservers(std::shared_ptr<events::Event> evt) const
     evt->Visit(eventObserverNotifierVisitor);
 }
 
-void mach::app::OnlineClient::ReadEventAsync()
+void OnlineClient::JoinGame() const
+{
+    commands::JoinGameCommand command;
+    command.playerName = configuration.playerName;
+
+    auto data = serializer.Serialize(command);
+
+    tcpClient.Write(data);
+}
+
+void OnlineClient::ReadEventsAsync()
 {
     serializer.DeserializeAsync<events::Event, EventType>(tcpClient, [&](std::shared_ptr<events::Event> evt) {
         if (!isRunning)
@@ -15,12 +27,12 @@ void mach::app::OnlineClient::ReadEventAsync()
             return;
         }
 
-        ReadEventAsync();
+        ReadEventsAsync();
         NotifyObservers(evt);
     });
 }
 
-mach::app::OnlineClient::OnlineClient(infra::ThreadPool& threadPool)
+OnlineClient::OnlineClient(infra::ThreadPool& threadPool)
   : threadPool(&threadPool)
   , tcpClient(threadPool)
   , eventObserverNotifierVisitor(eventSubject)
@@ -54,6 +66,8 @@ void OnlineClient::StartAsync()
     }
 
     isRunning = true;
+
+    JoinGame();
 
     ReadEventAsync();
 }
