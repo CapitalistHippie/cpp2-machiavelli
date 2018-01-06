@@ -1,6 +1,7 @@
 #ifndef MACHIAVELLI_MACH_INFRA_SERIALIZER_H_INCLUDED
 #define MACHIAVELLI_MACH_INFRA_SERIALIZER_H_INCLUDED
 
+#include <deque>
 #include <istream>
 #include <memory>
 #include <ostream>
@@ -11,6 +12,62 @@
 #include "mach/infra/abstractfactory.h"
 #include "mach/infra/serializable.h"
 #include "mach/infra/tcpclient.h"
+
+template<typename T>
+std::ostream& operator<<(std::ostream& stream, const std::vector<T>& e)
+{
+    stream << e.size() << ',';
+    for (auto item : e)
+    {
+        stream << item << ',';
+    }
+    return stream;
+}
+
+template<typename T>
+std::istream& operator>>(std::istream& stream, std::vector<T>& e)
+{
+    e.clear();
+    int size;
+    stream >> size;
+    stream.ignore();
+    for (; size > 0; size--)
+    {
+        T t;
+        stream >> t;
+        stream.ignore();
+        e.push_back(std::move(t));
+    }
+    return stream;
+}
+
+template<typename T>
+std::ostream& operator<<(std::ostream& stream, const std::deque<T>& e)
+{
+    stream << e.size() << ',';
+    for (auto item : e)
+    {
+        stream << item << ',';
+    }
+    return stream;
+}
+
+template<typename T>
+std::istream& operator>>(std::istream& stream, std::deque<T>& e)
+{
+    e.clear();
+    int size;
+    stream >> size;
+    stream.ignore();
+    for (; size > 0; size--)
+    {
+        T t;
+        stream >> t;
+        stream.ignore();
+        e.push_back(std::move(t));
+    }
+    return stream;
+}
 
 template<typename T>
 std::ostream& operator<<(typename std::enable_if<std::is_enum<T>::value, std::ostream>::type& stream, const T& e)
