@@ -32,7 +32,7 @@ void OnlineClient::ReadEventsAsync()
     });
 }
 
-OnlineClient::OnlineClient(infra::ThreadPool& threadPool)
+mach::app::OnlineClient::OnlineClient(infra::ThreadPool& threadPool)
   : threadPool(&threadPool)
   , tcpClient(threadPool)
   , eventObserverNotifierVisitor(eventSubject)
@@ -69,7 +69,7 @@ void OnlineClient::StartAsync()
 
     JoinGame();
 
-    ReadEventAsync();
+    ReadEventsAsync();
 }
 
 const OnlineClientConfiguration& OnlineClient::GetConfiguration() const

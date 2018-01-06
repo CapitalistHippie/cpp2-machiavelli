@@ -1,4 +1,6 @@
-#include "mach\domain\models\game.h"
+#include "mach/domain/models/game.h"
+
+using namespace mach::domain::models;
 
 std::ostream& operator<<(std::ostream& os, const Game& game)
 {

@@ -1,4 +1,6 @@
-#include "mach\domain\models\charactercard.h"
+#include "mach/domain/models/charactercard.h"
+
+using namespace mach::domain::models;
 
 CharacterCard::CharacterCard()
 {
@@ -7,10 +9,6 @@ CharacterCard::CharacterCard()
 CharacterCard::CharacterCard(int nr, std::string name)
   : nr{ nr }
   , name{ name }
-{
-}
-
-CharacterCard::~CharacterCard()
 {
 }
 
@@ -43,7 +41,7 @@ void CharacterCard::UseCharacterPower()
     //    case 2: // Dief
     //        // TODO choose a character and steal all their gold
     //        break;
-    //    case 3: // Magiër
+    //    case 3: // Magiï¿½r
     //        // TODO choose:
     //        // 1. Swap hands with another player
     //        // 2. Swap any number of cards for others from the stack
@@ -61,7 +59,7 @@ void CharacterCard::UseCharacterPower()
     //        // TODO: trek 2 bouwkaarten
     //        owner->buildingsStillAllowedToPlay += 2;
     //        break;
-    //    case 8: // Condotièrre
+    //    case 8: // Condotiï¿½rre
     //        // TODO verwijder gebouwen van andere spelers
     //        owner->gold += 1 + owner->GetAmountOfBuildingsByColor(BuildingColor::Red);
     //        break;

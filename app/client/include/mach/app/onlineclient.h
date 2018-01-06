@@ -61,6 +61,8 @@ class OnlineClient : public Client
     void ReadEventsAsync();
 
   public:
+    infra::Subject eventSubject;
+
     OnlineClient(infra::ThreadPool& threadPool);
 
     void Connect();

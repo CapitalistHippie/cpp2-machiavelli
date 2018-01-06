@@ -17,4 +17,5 @@ target_include_directories(${MACHIAVELLI_APP_SERVER_TARGET_NAME}
 
 target_link_libraries(${MACHIAVELLI_APP_SERVER_TARGET_NAME}
     "machiavelli-infra-common"
-    "machiavelli-app-common")
+    "machiavelli-app-common"
+    "machiavelli-domain-common")

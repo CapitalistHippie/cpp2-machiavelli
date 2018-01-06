@@ -1,7 +1,10 @@
-#include "mach\domain\models\player.h"
+#include "mach/domain/models/player.h"
+
 #include <algorithm>
 #include <iterator>
 #include <set>
+
+using namespace mach::domain::models;
 
 Player::Player()
 {

@@ -45,4 +45,4 @@ const infra::AbstractFactory<infra::Serializable, EventType>::ProductRegistrar<T
 } // namespace domain
 } // namespace mach
 
-#endif
+#endif // #ifndef MACHIAVELLI_MACH_DOMAIN_EVENTS_EVENTBASE_H_INCLUDED

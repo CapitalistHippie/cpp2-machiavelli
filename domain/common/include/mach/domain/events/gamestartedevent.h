@@ -5,7 +5,8 @@
 
 #include "mach/domain/events/eventbase.h"
 #include "mach/domain/eventtype.h"
-#include "mach\domain\models\game.h"
+#include "mach/domain/models/game.h"
+
 namespace mach
 {
 namespace domain
@@ -15,7 +16,7 @@ namespace events
 class GameStartedEvent : public EventBase<GameStartedEvent, EventType::GameStarted>
 {
   public:
-    Game game;
+    models::Game game;
 
     void Serialize(std::ostream& dataStream) const override
     {
@@ -30,7 +31,7 @@ class GameStartedEvent : public EventBase<GameStartedEvent, EventType::GameStart
     unsigned int GetDataLength() const override
     {
         std::stringstream data;
-        data << game;
+        Serialize(data);
 
         return data.str().length();
     }
@@ -39,4 +40,4 @@ class GameStartedEvent : public EventBase<GameStartedEvent, EventType::GameStart
 } // namespace domain
 } // namespace mach
 
-#endif
+#endif // #ifndef MACHIAVELLI_MACH_DOMAIN_EVENTS_GAMESTARTEDEVENT_H_INCLUDED

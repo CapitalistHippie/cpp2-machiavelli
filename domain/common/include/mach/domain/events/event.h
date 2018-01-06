@@ -18,4 +18,4 @@ class Event : public infra::Serializable
 } // namespace domain
 } // namespace mach
 
-#endif
+#endif // #ifndef MACHIAVELLI_MACH_DOMAIN_EVENTS_EVENT_H_INCLUDED

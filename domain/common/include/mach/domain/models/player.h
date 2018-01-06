@@ -1,9 +1,17 @@
 #pragma once
-#include "mach\domain\models\buildingcard.h"
-#include "mach\domain\models\charactercard.h"
+
 #include <string>
 #include <vector>
 
+#include "mach\domain\models\buildingcard.h"
+#include "mach\domain\models\charactercard.h"
+
+namespace mach
+{
+namespace domain
+{
+namespace models
+{
 class Player
 {
   public:
@@ -23,6 +31,10 @@ class Player
     int GetAmountOfBuildingsByColor(BuildingColor color);
     int GetPointsFromBuildings();
     int GetPoints();
-};
-std::ostream& operator<<(std::ostream& os, const Player& player);
-std::istream& operator>>(std::istream& is, Player& player);
+}; // class Player
+} // namespace models
+} // namespace domain
+} // namespace mach
+
+std::ostream& operator<<(std::ostream& os, const mach::domain::models::Player& player);
+std::istream& operator>>(std::istream& is, mach::domain::models::Player& player);

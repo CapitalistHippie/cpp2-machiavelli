@@ -1,4 +1,6 @@
-#include "mach\domain\models\buildingcard.h"
+#include "mach/domain/models/buildingcard.h"
+
+using namespace mach::domain::models;
 
 BuildingCard::BuildingCard()
 {
@@ -9,10 +11,6 @@ BuildingCard::BuildingCard(int cost, std::string name, BuildingColor color, std:
   , name{ name }
   , color{ color }
   , description{ description }
-{
-}
-
-BuildingCard::~BuildingCard()
 {
 }
 

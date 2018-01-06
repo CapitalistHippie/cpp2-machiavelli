@@ -16,5 +16,6 @@ target_include_directories(${MACHIAVELLI_APP_CLIENT_TARGET_NAME}
     PUBLIC "${CMAKE_CURRENT_LIST_DIR}/include")
 
 target_link_libraries(${MACHIAVELLI_APP_CLIENT_TARGET_NAME}
-    "machiavelli-infra-common"
-    "machiavelli-app-common")
+    "machiavelli-app-common"
+    "machiavelli-domain-common"
+    "machiavelli-infra-common")

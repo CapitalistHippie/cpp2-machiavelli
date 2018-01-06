@@ -1,17 +1,20 @@
-#include "mach\domain\controllers\gamecontroller.h"
+#include "mach\domain\gamecontroller.h"
 #include "mach\domain\events\gameendedevent.h"
 #include "mach\domain\events\gamestartedevent.h"
 
+using namespace mach::domain;
 using namespace mach::domain::events;
+using namespace mach::domain::models;
+
+GameController::GameController()
+{
+    game.isStarted = false;
+}
 
 GameController::GameController(Game game)
   : game{ game }
 {
     game.isStarted = false;
-}
-
-GameController::~GameController()
-{
 }
 
 void GameController::AddPlayer(std::string playerName)
