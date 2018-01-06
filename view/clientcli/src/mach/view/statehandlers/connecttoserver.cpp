@@ -12,7 +12,6 @@ void ConnectToServer::EnterState()
     // Connect to the server.
     client.Connect();
     client.StartAsync();
-    client.StartAsync();
 }
 
 void ConnectToServer::ExitStateFromBase() noexcept

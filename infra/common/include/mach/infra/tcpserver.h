@@ -21,11 +21,47 @@ namespace infra
 class TcpServer : public Noncopyable
 {
   private:
-    ThreadPool& threadPool;
+    ThreadPool* threadPool;
 
     bool isListening;
 
     Socket listeningSocket;
+
+    template<typename TCallback>
+    void AcceptClientAsyncImpl(TCallback callback)
+    {
+        threadPool->QueueTask([=]() {
+            if (!IsListening())
+            {
+                return;
+            }
+
+            SetSocketNonBlockingMode(listeningSocket, true);
+
+            auto clientSocket = accept(listeningSocket, nullptr, nullptr);
+
+            if (IsInvalidSocket(clientSocket))
+            {
+                auto errorCode = GetLastSocketErrorCode();
+
+                if (errorCode == SocketError::Wouldblock || errorCode == SocketError::Again)
+                {
+                    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                    AcceptClientAsyncImpl(callback);
+
+                    return;
+                }
+                else
+                {
+                    throw std::system_error(errorCode);
+                }
+            }
+            else
+            {
+                callback(TcpClient(*threadPool, clientSocket));
+            }
+        });
+    }
 
   public:
     TcpServer(ThreadPool& threadPool);
@@ -47,38 +83,7 @@ class TcpServer : public Noncopyable
             throw std::system_error(FunctionalError::TcpServerIsNotListening);
         }
 
-        threadPool.QueueTask([=]() {
-            while (true)
-            {
-                if (!IsListening())
-                {
-                    return;
-                }
-
-                SetSocketNonBlockingMode(listeningSocket, true);
-
-                auto clientSocket = accept(listeningSocket, nullptr, nullptr);
-
-                if (IsInvalidSocket(clientSocket))
-                {
-                    auto errorCode = GetLastSocketErrorCode();
-
-                    if (errorCode == SocketError::Wouldblock || errorCode == SocketError::Again)
-                    {
-                        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-                    }
-                    else
-                    {
-                        throw std::system_error(errorCode);
-                    }
-                }
-                else
-                {
-                    callback(TcpClient(clientSocket));
-                    break;
-                }
-            }
-        });
+        AcceptClientAsyncImpl(callback);
     }
 }; // class TcpServer
 } // namespace infra

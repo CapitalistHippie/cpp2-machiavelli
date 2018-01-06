@@ -34,8 +34,8 @@ void Server::AcceptClientAsyncCallbackHandler(infra::TcpClient tcpClient)
 }
 
 Server::Server(infra::ThreadPool& threadPool)
-  : tcpServer(threadPool)
-  , threadPool(threadPool)
+  : threadPool(&threadPool)
+  , tcpServer(threadPool)
   , isRunning(false)
 {
 }

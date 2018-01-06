@@ -5,3 +5,4 @@ Machiavelli TODOs
  - Alle destructors noexcept maken om te kijken of we nog ergens potentiele resource leaks hebben
  - ConcurrentOstream bouwen
  - Move ClearConsole to view cli common library
+ - Afhandelen wanneer een client niet met de server kan connecten.

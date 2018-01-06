@@ -7,6 +7,7 @@
 #include <mach/infra/serializer.h>
 #include <mach/infra/subject.h>
 #include <mach/infra/tcpclient.h>
+#include <mach/infra/threadpool.h>
 
 #include <mach/app/constants.h>
 
@@ -26,17 +27,17 @@ namespace detail
 class EventObserverNotifierVisitor : public EventVisitor
 {
   private:
-    infra::Subject& eventSubject;
+    infra::Subject* eventSubject;
 
   public:
     EventObserverNotifierVisitor(infra::Subject& eventSubject)
-      : eventSubject(eventSubject)
+      : eventSubject(&eventSubject)
     {
     }
 
     void Visit(const events::ClientConnectedEvent& evt) const override
     {
-        eventSubject.NotifyObservers(evt);
+        eventSubject->NotifyObservers(evt);
     }
 }; // class EventObserverNotifierVisitor
 } // namespace detail
@@ -44,6 +45,7 @@ class EventObserverNotifierVisitor : public EventVisitor
 class OnlineClient : public Client
 {
   private:
+    infra::ThreadPool* threadPool;
     infra::TcpClient tcpClient;
     infra::Serializer serializer;
 
@@ -51,10 +53,15 @@ class OnlineClient : public Client
 
     detail::EventObserverNotifierVisitor eventObserverNotifierVisitor;
 
+    bool isConnected;
+    bool isRunning;
+
     void NotifyObservers(std::shared_ptr<events::Event> evt) const;
 
+    void ReadEventAsync();
+
   public:
-    OnlineClient();
+    OnlineClient(infra::ThreadPool& threadPool);
 
     void Connect();
     void StartAsync() override;

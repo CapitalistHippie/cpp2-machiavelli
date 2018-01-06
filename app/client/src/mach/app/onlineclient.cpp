@@ -7,21 +7,55 @@ void OnlineClient::NotifyObservers(std::shared_ptr<events::Event> evt) const
     evt->Visit(eventObserverNotifierVisitor);
 }
 
-mach::app::OnlineClient::OnlineClient()
-  : eventObserverNotifierVisitor(eventSubject)
+void mach::app::OnlineClient::ReadEventAsync()
+{
+    serializer.DeserializeAsync<events::Event, EventType>(tcpClient, [&](std::shared_ptr<events::Event> evt) {
+        if (!isRunning)
+        {
+            return;
+        }
+
+        ReadEventAsync();
+        NotifyObservers(evt);
+    });
+}
+
+mach::app::OnlineClient::OnlineClient(infra::ThreadPool& threadPool)
+  : threadPool(&threadPool)
+  , tcpClient(threadPool)
+  , eventObserverNotifierVisitor(eventSubject)
+  , isConnected(false)
+  , isRunning(false)
 {
 }
 
 void OnlineClient::Connect()
 {
+    if (isConnected)
+    {
+        // TODO: Throw.
+    }
+
     tcpClient.Connect(configuration.hostname, configuration.port);
+
+    isConnected = true;
 }
 
 void OnlineClient::StartAsync()
 {
-    auto evt = serializer.Deserialize<events::Event, EventType>(tcpClient);
+    if (isRunning)
+    {
+        return;
+    }
 
-    NotifyObservers(evt);
+    if (!isConnected)
+    {
+        // TODO: Throw.
+    }
+
+    isRunning = true;
+
+    ReadEventAsync();
 }
 
 const OnlineClientConfiguration& OnlineClient::GetConfiguration() const

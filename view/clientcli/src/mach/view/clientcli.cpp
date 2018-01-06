@@ -28,7 +28,9 @@ inline void ClearConsole()
 }
 
 ClientCli::ClientCli(std::istream& inputStream, std::ostream& outputStream)
-  : inputStream(inputStream)
+  : threadPool(2)
+  , client(threadPool)
+  , inputStream(inputStream)
   , outputStream(outputStream)
   , isRunning(false)
   , shouldStop(false)
