@@ -12,14 +12,8 @@ CharacterCardRepository::CharacterCardRepository()
 
     while (parser.ParseNextRow(row) != infra::ParsingStatus::EndOfFile)
     {
-        // First column is just a number.
-        row.IgnoreNextColumn();
-
-        std::string characterName;
-        row.ParseNextColumn(characterName);
-
         models::CharacterCard characterCard;
-        characterCard.name = characterName;
+        row >> characterCard.number >> characterCard.name;
 
         characterCards.push_back(std::move(characterCard));
     }
