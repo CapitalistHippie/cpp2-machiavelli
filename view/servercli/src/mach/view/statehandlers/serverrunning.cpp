@@ -2,23 +2,29 @@
 
 #include <functional>
 
-#include <mach/app/events/clientconnectedevent.h>
+#include <mach/domain/events/clientconnectedevent.h>
+#include <mach/domain/events/gameendedevent.h>
+#include <mach/domain/events/gamestartedevent.h>
 
 using namespace mach;
 using namespace mach::view::statehandlers;
 
 void ServerRunning::EnterState()
 {
-    handle = server.eventSubject.RegisterObserver<app::events::ClientConnectedEvent>(
-      [&](const app::events::ClientConnectedEvent& evt) {
-          outputStream << "Client with id '" << evt.clientInfo.id << "' connected from '" << evt.clientInfo.source
-                       << "'.\n";
-      });
+    RegisterServerObserver<domain::events::ClientConnectedEvent>([&](const domain::events::ClientConnectedEvent& evt) {
+        outputStream << "Client with id '" << evt.clientInfo.id << "' connected from '" << evt.clientInfo.source
+                     << "'.\n";
+    });
+
+    RegisterServerObserver<domain::events::GameStartedEvent>(
+      [&](const domain::events::GameStartedEvent& evt) { outputStream << "Game started.\n"; });
+
+    RegisterServerObserver<domain::events::GameEndedEvent>(
+      [&](const domain::events::GameEndedEvent& evt) { outputStream << "Game ended.\n"; });
 }
 
 void ServerRunning::ExitStateFromBase() noexcept
 {
-    server.eventSubject.UnregisterObserver(handle);
 }
 
 void ServerRunning::RenderConsole() const

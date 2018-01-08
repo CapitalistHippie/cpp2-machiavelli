@@ -11,10 +11,10 @@ namespace domain
 namespace events
 {
 class ClientConnectedEvent;
-class NextRound;
-class NextTurn;
-class GameStarted;
-class GameEnded;
+class NextRoundEvent;
+class NextTurnEvent;
+class GameStartedEvent;
+class GameEndedEvent;
 } // namespace events
 
 class EventVisitor
@@ -23,10 +23,10 @@ class EventVisitor
     virtual ~EventVisitor() noexcept = default;
 
     MACHIAVELLI_MACH_DOMAIN_EVENTVISITOR_DEFINE_VISIT_METHOD(events::ClientConnectedEvent);
-    MACHIAVELLI_MACH_DOMAIN_EVENTVISITOR_DEFINE_VISIT_METHOD(events::NextRound);
-    MACHIAVELLI_MACH_DOMAIN_EVENTVISITOR_DEFINE_VISIT_METHOD(events::NextTurn);
-    MACHIAVELLI_MACH_DOMAIN_EVENTVISITOR_DEFINE_VISIT_METHOD(events::GameStarted);
-    MACHIAVELLI_MACH_DOMAIN_EVENTVISITOR_DEFINE_VISIT_METHOD(events::GameEnded);
+    MACHIAVELLI_MACH_DOMAIN_EVENTVISITOR_DEFINE_VISIT_METHOD(events::NextRoundEvent);
+    MACHIAVELLI_MACH_DOMAIN_EVENTVISITOR_DEFINE_VISIT_METHOD(events::NextTurnEvent);
+    MACHIAVELLI_MACH_DOMAIN_EVENTVISITOR_DEFINE_VISIT_METHOD(events::GameStartedEvent);
+    MACHIAVELLI_MACH_DOMAIN_EVENTVISITOR_DEFINE_VISIT_METHOD(events::GameEndedEvent);
 }; // class EventVisitor
 } // namespace domain
 } // namespace mach

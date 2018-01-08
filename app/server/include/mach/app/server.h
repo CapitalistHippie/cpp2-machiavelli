@@ -40,9 +40,13 @@ class CommandHandlerVisitor : public CommandVisitor
 
     void Visit(const commands::JoinGameCommand& command) const override
     {
-        // gameController->AddPlayer(command.playerName);
+        gameController->AddPlayer(command.playerName);
 
-        // TODO: If playercount reached, start game.
+        // TODO: Remove magic 2.
+        if (gameController->game.playersWaiting.size() == 2)
+        {
+            gameController->StartGame();
+        }
     }
 }; // class CommandHandlerVisitor
 } // namespace detail
