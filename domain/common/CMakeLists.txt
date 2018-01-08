@@ -12,6 +12,7 @@ add_library(${MACHIAVELLI_DOMAIN_COMMON_TARGET_NAME}
 	"${CMAKE_CURRENT_LIST_DIR}/include/mach/domain/models/player.h"
 	"${CMAKE_CURRENT_LIST_DIR}/include/mach/domain/models/game.h"
 	"${CMAKE_CURRENT_LIST_DIR}/include/mach/domain/gamecontroller.h"
+	"${CMAKE_CURRENT_LIST_DIR}/include/mach/domain/gamestate.h"
 	"${CMAKE_CURRENT_LIST_DIR}/include/mach/domain/eventtype.h"
 	"${CMAKE_CURRENT_LIST_DIR}/include/mach/domain/eventvisitor.h"
 	"${CMAKE_CURRENT_LIST_DIR}/include/mach/domain/events/event.h"

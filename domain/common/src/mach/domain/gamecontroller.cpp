@@ -13,20 +13,22 @@ using namespace mach::domain::events;
 using namespace mach::domain::models;
 
 GameController::GameController()
+
 {
-    game.isStarted = false;
+    game.state = GameState::Waiting;
 }
 
 GameController::GameController(Game game)
   : game{ game }
 {
-    game.isStarted = false;
+    game.state = GameState::Waiting;
 }
 
 void GameController::AddPlayer(std::string playerName)
 {
-    if (!game.isStarted && std::find(game.playersWaiting.begin(), game.playersWaiting.end(), playerName) ==
-                             game.playersWaiting.end()) // Player name is not already present
+    if (game.state == GameState::Waiting &&
+        std::find(game.playersWaiting.begin(), game.playersWaiting.end(), playerName) ==
+          game.playersWaiting.end()) // Player name is not already present
     {
         game.playersWaiting.push_back(playerName);
     }
@@ -39,6 +41,10 @@ void GameController::AddPlayer(std::string playerName)
 
 void GameController::RemovePlayer(std::string playerName)
 {
+    if (game.state != GameState::Waiting)
+    {
+        throw std::exception("Can not remove player: game has already started");
+    }
     auto it = std::find(game.playersWaiting.begin(), game.playersWaiting.end(), playerName);
     if (it != game.playersWaiting.end())
     {
@@ -48,11 +54,19 @@ void GameController::RemovePlayer(std::string playerName)
 
 void GameController::StartGame()
 {
+    if (game.state != GameState::Waiting)
+    {
+        throw std::exception("Game is already started");
+    }
     auto playersWaiting = game.playersWaiting;
     game = Game();
 
-    // TODO load stack and characters from file
-    // TODO remove hardcoded loading
+    game.characters = characterCardRepository.GetCards();
+    game.buildingCardStack.clear();
+    for (auto& card : buildingCardRepository.GetCards())
+    {
+        game.buildingCardStack.push_back(std::move(card));
+    }
 
     for (auto& playerName : playersWaiting)
     {
@@ -66,7 +80,7 @@ void GameController::StartGame()
         game.players.push_back(newPlayer);
     }
     game.king = game.players[0];
-    game.isStarted = true;
+    game.state = GameState::Running;
     NextRound();
 
     auto evt = GameStartedEvent();
@@ -76,6 +90,10 @@ void GameController::StartGame()
 
 void GameController::NextTurn()
 {
+    if (game.state != GameState::Running || game.state != GameState::FinalRound)
+    {
+        throw std::exception("Can not do next turn: Game is in illegal state");
+    }
     game.characterHasTurn++;
     if (game.killedCharacter == game.characterHasTurn)
     {
@@ -110,73 +128,84 @@ void GameController::NextTurn()
 
 void GameController::NextRound()
 {
-    if (game.isFinalRound)
+    if (game.state == GameState::FinalRound)
     {
         EndGame();
         return;
     }
-    for (auto player : game.players)
+    else if (game.state != GameState::Running)
     {
-        // Find the new king
-        auto findResult = std::find_if(player.characters.begin(),
-                                       player.characters.end(),
-                                       [](dal::models::CharacterCard card) { return card.number == 4; });
-        if (findResult != player.characters.end())
-        {
-            game.king = player;
-        }
-        player.characters.clear();
+        throw std::exception("Can not start next round: game is in illegal state");
     }
-    game.killedCharacter = 0;
-    game.characterHasTurn = 1;
+    else
+    {
+        for (auto player : game.players)
+        {
+            // Find the new king
+            auto findResult = std::find_if(player.characters.begin(),
+                                           player.characters.end(),
+                                           [](dal::models::CharacterCard card) { return card.number == 4; });
+            if (findResult != player.characters.end())
+            {
+                game.king = player;
+            }
+            player.characters.clear();
+        }
+        game.killedCharacter = 0;
+        game.characterHasTurn = 1;
 
-    // Shuffle character cards and remove a random one
-    game.charactersToChooseFrom = game.characters;
+        // Shuffle character cards and remove a random one
+        game.charactersToChooseFrom = game.characters;
 
-    std::random_device rd;
-    std::uniform_int_distribution<int> dist(0, game.charactersToChooseFrom.size() - 1);
-    int i = dist(rd);
-    // TODO Make random again
-    // game.charactersToChooseFrom.erase(game.charactersToChooseFrom.begin() + dist(rd));
-    game.charactersToChooseFrom.erase(game.charactersToChooseFrom.begin());
+        std::random_device rd;
+        std::uniform_int_distribution<int> dist(0, game.charactersToChooseFrom.size() - 1);
+        int i = dist(rd);
+        // TODO Make random again
+        // game.charactersToChooseFrom.erase(game.charactersToChooseFrom.begin() + dist(rd));
+        game.charactersToChooseFrom.erase(game.charactersToChooseFrom.begin());
 
-    // Initialize choosing turns for picking Character cards
-    choosingTurns.clear();
-    auto findResult = std::find_if(
-      game.players.begin(), game.players.end(), [=](Player player) { return player.name != game.king.name; });
+        // Initialize choosing turns for picking Character cards
+        choosingTurns.clear();
+        auto findResult = std::find_if(
+          game.players.begin(), game.players.end(), [=](Player player) { return player.name != game.king.name; });
 
-    auto otherPlayer = findResult->name;
+        auto otherPlayer = findResult->name;
 
-    // King chooses one and keeps it
-    choosingTurns.push_back(std::pair<std::string, bool>(game.king.name, true));
-    // Other player chooses one and discards one
-    choosingTurns.push_back(std::pair<std::string, bool>(otherPlayer, true));
-    choosingTurns.push_back(std::pair<std::string, bool>(otherPlayer, false));
-    // King chooses one and discards one
-    choosingTurns.push_back(std::pair<std::string, bool>(game.king.name, true));
-    choosingTurns.push_back(std::pair<std::string, bool>(game.king.name, false));
-    // Other player chooses one and discards one
-    choosingTurns.push_back(std::pair<std::string, bool>(otherPlayer, true));
-    choosingTurns.push_back(std::pair<std::string, bool>(otherPlayer, false));
+        // King chooses one and keeps it
+        choosingTurns.push_back(std::pair<std::string, bool>(game.king.name, true));
+        // Other player chooses one and discards one
+        choosingTurns.push_back(std::pair<std::string, bool>(otherPlayer, true));
+        choosingTurns.push_back(std::pair<std::string, bool>(otherPlayer, false));
+        // King chooses one and discards one
+        choosingTurns.push_back(std::pair<std::string, bool>(game.king.name, true));
+        choosingTurns.push_back(std::pair<std::string, bool>(game.king.name, false));
+        // Other player chooses one and discards one
+        choosingTurns.push_back(std::pair<std::string, bool>(otherPlayer, true));
+        choosingTurns.push_back(std::pair<std::string, bool>(otherPlayer, false));
 
-    game.playersChoosingCharacterCards = true;
+        game.state = GameState::ChoosingCharacters;
 
-    auto evt = NextRoundEvent();
-    evt.game = game;
+        auto evt = NextRoundEvent();
+        evt.game = game;
 
-    eventSubject.NotifyObservers(evt);
+        eventSubject.NotifyObservers(evt);
+    }
 }
 
 void mach::domain::GameController::StartRound()
 {
-    game.playersChoosingCharacterCards = false;
+    game.state = GameState::Running;
     game.characterHasTurn = 0;
     NextTurn();
 }
 
 void GameController::EndGame()
 {
-    game.isStarted = false;
+    if (game.state != GameState::FinalRound)
+    {
+        throw std::exception("Can not end game: game is in illegal state");
+    }
+    game.state = GameState::Ended;
     auto evt = GameEndedEvent();
     evt.game = game;
 
@@ -195,9 +224,9 @@ void GameController::EndGame()
 
 void GameController::EndTurn()
 {
-    if (game.playersChoosingCharacterCards)
+    if (game.state != GameState::Running)
     {
-        throw std::exception("Players are still choosing cards: there is no turn to end");
+        throw std::exception("Can not end turn: game is in illegal state");
     }
     else
     {
@@ -207,14 +236,14 @@ void GameController::EndTurn()
 
 void GameController::ChooseCharacterCard(int nr, std::string name)
 {
-    if (!game.playersChoosingCharacterCards)
+    if (game.state != GameState::ChoosingCharacters)
     {
-        throw std::exception("Players aren't choosing cards");
+        throw std::exception("Players aren't choosing character cards");
     }
-    else if (choosingTurns[0].first != name)
-    {
-        throw std::exception("It's not your turn to choose");
-    }
+    // else if (choosingTurns[0].first != name)
+    //{
+    //    throw std::exception("It's not your turn to choose");
+    //}
     else
     {
         auto findResult = std::find_if(game.charactersToChooseFrom.begin(),
@@ -304,8 +333,8 @@ void mach::domain::GameController::CurrentPlayerBuildsBuilding(unsigned int nr)
         }
         else
         {
-            currentPlayer.hand.erase(std::find_if(
-              currentPlayer.hand.begin(), currentPlayer.hand.end(), [&](const dal::models::BuildingCard& card) {
+            currentPlayer.hand.erase(
+              std::find_if(currentPlayer.hand.begin(), currentPlayer.hand.end(), [=](dal::models::BuildingCard card) {
                   return card.name == chosenCard.name;
               }));
             currentPlayer.gold -= chosenCard.cost;

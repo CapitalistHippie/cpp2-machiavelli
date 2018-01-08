@@ -13,6 +13,9 @@
 #include "mach/dal/models/buildingcard.h"
 #include "mach/dal/models/charactercard.h"
 
+#include "mach/dal/buildingcardrepository.h"
+#include "mach/dal/charactercardrepository.h"
+
 namespace mach
 {
 namespace domain
@@ -47,6 +50,9 @@ class GameController
     bool CharacterHasPlayer(int nr);
 
   private:
+    mach::dal::BuildingCardRepository buildingCardRepository;
+    mach::dal::CharacterCardRepository characterCardRepository;
+
     void NextTurn();
     void NextRound();
     void StartRound();

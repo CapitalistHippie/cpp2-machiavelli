@@ -1,6 +1,10 @@
 #ifndef MACHIAVELLI_MACH_INFRA_CSVPARSER_H_INCLUDED
 #define MACHIAVELLI_MACH_INFRA_CSVPARSER_H_INCLUDED
 
+#ifdef _WIN32
+#undef max
+#endif
+
 #include <fstream>
 #include <limits>
 #include <sstream>
