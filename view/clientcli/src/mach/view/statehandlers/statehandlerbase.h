@@ -60,7 +60,9 @@ class StateHandlerBase : public StateHandler
     }
     virtual ~StateHandlerBase() = default;
 
-    virtual void ExitStateFromBase() noexcept = 0;
+    virtual void ExitStateFromBase() noexcept
+    {
+    }
 
     void ExitState() noexcept override
     {

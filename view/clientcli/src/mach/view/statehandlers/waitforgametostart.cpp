@@ -16,12 +16,10 @@ void WaitForGameToStart::EnterState()
                      << "'.\n";
     });
 
-    RegisterClientObserver<domain::events::GameStartedEvent>(
-      [&](const domain::events::GameStartedEvent& evt) { outputStream << "Game started.\n"; });
+    RegisterClientObserver<domain::events::GameStartedEvent>([&](const domain::events::GameStartedEvent& evt) {
+        context.recentGameState = evt.game;
+        context.SetState(ClientCliState::ChooseCharacter);
+    });
 
     outputStream << "Waiting for game to start...\n";
-}
-
-void WaitForGameToStart::ExitStateFromBase() noexcept
-{
 }

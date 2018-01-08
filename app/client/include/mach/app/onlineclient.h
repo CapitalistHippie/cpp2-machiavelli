@@ -15,6 +15,7 @@
 #include <mach/domain/events/gamestartedevent.h>
 #include <mach/domain/events/nextroundevent.h>
 #include <mach/domain/events/nextturnevent.h>
+#include <mach/domain/events/serverdisconnectedevent.h>
 #include <mach/domain/eventvisitor.h>
 
 #include "mach/app/client.h"
@@ -49,6 +50,7 @@ class EventObserverNotifierVisitor : public domain::EventVisitor
     MACHIAVELLI_MACH_APP_ONLINECLIENT_DEFINE_VISIT_METHOD(domain::events::NextTurnEvent);
     MACHIAVELLI_MACH_APP_ONLINECLIENT_DEFINE_VISIT_METHOD(domain::events::GameStartedEvent);
     MACHIAVELLI_MACH_APP_ONLINECLIENT_DEFINE_VISIT_METHOD(domain::events::GameEndedEvent);
+    MACHIAVELLI_MACH_APP_ONLINECLIENT_DEFINE_VISIT_METHOD(domain::events::ServerDisconnectedEvent);
 
 }; // class EventObserverNotifierVisitor
 } // namespace detail

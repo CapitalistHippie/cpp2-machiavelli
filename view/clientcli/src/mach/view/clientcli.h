@@ -6,6 +6,7 @@
 #include <ostream>
 
 #include <mach/app/onlineclient.h>
+#include <mach/domain/models/game.h>
 #include <mach/infra/clicommandparser.h>
 #include <mach/infra/subject.h>
 #include <mach/infra/threadpool.h>
@@ -34,6 +35,8 @@ class ClientCli
     bool shouldStop;
 
   public:
+    domain::models::Game recentGameState;
+
     ClientCli(app::OnlineClient& client, std::istream& inputStream, std::ostream& outputStream);
 
     void Start();
