@@ -72,6 +72,14 @@ void OnlineClient::StartAsync()
     ReadEventsAsync();
 }
 
+void OnlineClient::Stop()
+{
+    isRunning = false;
+    isConnected = false;
+
+    tcpClient.Disconnect();
+}
+
 const OnlineClientConfiguration& OnlineClient::GetConfiguration() const
 {
     return configuration;

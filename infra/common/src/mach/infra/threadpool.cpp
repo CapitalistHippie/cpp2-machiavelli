@@ -4,6 +4,8 @@ using namespace mach::infra;
 
 void mach::infra::ThreadPool::InitializeThreads(unsigned int threadCount)
 {
+    shouldStop = false;
+
     while (threads.size() < threadCount)
     {
         threads.emplace_back(&ThreadPool::ThreadEntryPoint, this);
@@ -14,7 +16,7 @@ void ThreadPool::ThreadEntryPoint()
 {
     while (true)
     {
-        if (shouldTerminate)
+        if (shouldStop)
         {
             break;
         }
@@ -34,16 +36,21 @@ void ThreadPool::ThreadEntryPoint()
 }
 
 ThreadPool::ThreadPool(unsigned int threadCount)
-  : shouldTerminate(false)
+  : shouldStop(false)
 {
     InitializeThreads(threadCount);
 }
 
-ThreadPool::~ThreadPool() noexcept
+void mach::infra::ThreadPool::ClearTasks()
 {
     taskQueue.Clear();
+}
 
-    shouldTerminate = true;
+void mach::infra::ThreadPool::StopThreads()
+{
+    shouldStop = true;
+
+    ClearTasks();
 
     waitForNewTaskCondition.notify_all();
 

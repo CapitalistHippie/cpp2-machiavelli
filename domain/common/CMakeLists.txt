@@ -35,4 +35,5 @@ target_include_directories(${MACHIAVELLI_DOMAIN_COMMON_TARGET_NAME}
     PUBLIC "${CMAKE_CURRENT_LIST_DIR}/include")
 
 target_link_libraries(${MACHIAVELLI_DOMAIN_COMMON_TARGET_NAME}
-    "machiavelli-infra-common")
+	"machiavelli-infra-common"
+	"machiavelli-dal-common")

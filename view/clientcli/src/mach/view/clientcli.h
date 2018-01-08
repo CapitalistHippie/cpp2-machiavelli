@@ -20,9 +20,7 @@ namespace view
 class ClientCli
 {
   private:
-    infra::ThreadPool threadPool;
-
-    app::OnlineClient client;
+    app::OnlineClient* client;
 
     std::istream& inputStream;
     std::ostream& outputStream;
@@ -36,7 +34,7 @@ class ClientCli
     bool shouldStop;
 
   public:
-    ClientCli(std::istream& inputStream, std::ostream& outputStream);
+    ClientCli(app::OnlineClient& client, std::istream& inputStream, std::ostream& outputStream);
 
     void Start();
     void Stop();

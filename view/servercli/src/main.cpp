@@ -38,6 +38,9 @@ int main()
 
         ServerCli serverCli(server, std::cin, std::cout);
         serverCli.Start();
+
+        server.Stop();
+        threadPool.StopThreads();
 #ifdef NDEBUG
     }
     catch (const std::system_error& e)

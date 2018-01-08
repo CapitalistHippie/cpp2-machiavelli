@@ -13,9 +13,11 @@ enum class FunctionalError
     TcpServerIsNotListening,
     TcpServerClientInitializedWithInvalidSocket,
     TcpClientAlreadyConnected,
-    TcpClientNotConnected
-};
-}
-}
+    TcpClientNotConnected,
+    UnableToOpenFile,
+    NoFileOpened
+}; // enum class FunctionalError
+} // namespace infra
+} // namespace mach
 
 #endif // #ifndef MACHIAVELLI_MACH_INFRA_FUNCTIONALERROR_H_INCLUDED

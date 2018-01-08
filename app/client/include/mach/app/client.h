@@ -14,6 +14,7 @@ class Client
 
     virtual ~Client() noexcept = default;
     virtual void StartAsync() = 0;
+    virtual void Stop() = 0;
 }; // class Client
 } // namespace app
 } // namespace mach
