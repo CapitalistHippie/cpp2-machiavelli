@@ -2,9 +2,10 @@
 
 #include <mach/app/commands/joingamecommand.h>
 
+using namespace mach;
 using namespace mach::app;
 
-void OnlineClient::NotifyObservers(std::shared_ptr<events::Event> evt) const
+void OnlineClient::NotifyObservers(std::shared_ptr<domain::events::Event> evt) const
 {
     evt->Visit(eventObserverNotifierVisitor);
 }
@@ -21,15 +22,16 @@ void OnlineClient::JoinGame() const
 
 void OnlineClient::ReadEventsAsync()
 {
-    serializer.DeserializeAsync<events::Event, EventType>(tcpClient, [&](std::shared_ptr<events::Event> evt) {
-        if (!isRunning)
-        {
-            return;
-        }
+    serializer.DeserializeAsync<domain::events::Event, domain::EventType>(
+      tcpClient, [&](std::shared_ptr<domain::events::Event> evt) {
+          if (!isRunning)
+          {
+              return;
+          }
 
-        ReadEventsAsync();
-        NotifyObservers(evt);
-    });
+          ReadEventsAsync();
+          NotifyObservers(evt);
+      });
 }
 
 mach::app::OnlineClient::OnlineClient(infra::ThreadPool& threadPool)

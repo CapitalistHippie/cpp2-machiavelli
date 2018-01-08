@@ -1,6 +1,7 @@
 #include "mach/app/server.h"
 
 #include <mach/app/commandtype.h>
+#include <mach/domain/events/clientconnectedevent.h>
 #include <mach/domain/events/gameendedevent.h>
 #include <mach/domain/events/gamestartedevent.h>
 
@@ -21,7 +22,7 @@ void Server::AcceptClientAsyncCallbackHandler(infra::TcpClient tcpClient)
         return;
     }
 
-    if (clients.size() != configuration.playerCount - 1)
+    if (clients.size() < configuration.playerCount)
     {
         // If we haven't reached the correct amount of players, accept another one.
         AcceptClientsAsync();
@@ -30,14 +31,12 @@ void Server::AcceptClientAsyncCallbackHandler(infra::TcpClient tcpClient)
     {
         // Else we're done listening for new clients.
         tcpServer.StopListening();
-
-        gameController.StartGame();
     }
 
     ServerClient serverClient(std::move(tcpClient));
     auto serverClientId = serverClient.id;
 
-    ClientConnectedEvent evt;
+    domain::events::ClientConnectedEvent evt;
     evt.clientInfo.id = serverClientId;
     evt.clientInfo.source = serverClient.GetSource();
 

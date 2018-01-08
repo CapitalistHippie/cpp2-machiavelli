@@ -36,7 +36,7 @@ class EventBase : public Event
 
     void Visit(const EventVisitor& visitor) const override
     {
-        // visitor.Visit(static_cast<const TDerived&>(*this));
+        visitor.Visit(static_cast<const TDerived&>(*this));
     }
 }; // class EventBase
 
