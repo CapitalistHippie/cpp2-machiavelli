@@ -140,7 +140,7 @@ void TcpClient::Read(unsigned int dataLength, std::ostream& outputBuffer) const
         throw std::system_error(FunctionalError::TcpClientNotConnected);
     }
 
-    char dataBuffer[64];
+    char dataBuffer[65];
     unsigned int totalDataReceived = 0;
 
     while (true)

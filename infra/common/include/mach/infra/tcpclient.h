@@ -41,7 +41,7 @@ class TcpClient : public Noncopyable
                 return;
             }
 
-            char dataBuffer[64];
+            char dataBuffer[65];
             unsigned int totalDataReceived = dataReceived;
 
             int dataLeftToReceive = dataLength - totalDataReceived;
