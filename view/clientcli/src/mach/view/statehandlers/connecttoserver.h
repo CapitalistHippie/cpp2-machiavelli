@@ -28,7 +28,6 @@ class ConnectToServer : public StateHandlerBase<ConnectToServer, ClientCliState:
     using StateHandlerBase::StateHandlerBase;
 
     void EnterState() override;
-    void ExitStateFromBase() noexcept override;
 }; // class ConnectToServer
 } // namespace statehandlers
 } // namespace view

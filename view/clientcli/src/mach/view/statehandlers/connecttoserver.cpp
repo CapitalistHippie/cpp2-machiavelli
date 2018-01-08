@@ -80,7 +80,3 @@ void ConnectToServer::EnterState()
 
     RenderConsole();
 }
-
-void ConnectToServer::ExitStateFromBase() noexcept
-{
-}

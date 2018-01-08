@@ -18,7 +18,6 @@ class WaitForGameToStart : public StateHandlerBase<WaitForGameToStart, ClientCli
     using StateHandlerBase::StateHandlerBase;
 
     void EnterState() override;
-    void ExitStateFromBase() noexcept override;
 }; // class WaitForGameToStart
 } // namespace statehandlers
 } // namespace view
