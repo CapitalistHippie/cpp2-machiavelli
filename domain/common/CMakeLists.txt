@@ -20,6 +20,7 @@ add_library(${MACHIAVELLI_DOMAIN_COMMON_TARGET_NAME}
 	"${CMAKE_CURRENT_LIST_DIR}/include/mach/domain/events/gameendedevent.h"
 	"${CMAKE_CURRENT_LIST_DIR}/include/mach/domain/events/nextturnevent.h"
 	"${CMAKE_CURRENT_LIST_DIR}/include/mach/domain/events/nextroundevent.h"
+	"${CMAKE_CURRENT_LIST_DIR}/include/mach/domain/events/serverdisconnectedevent.h"
     "${CMAKE_CURRENT_LIST_DIR}/src/mach/domain/gamecontroller.cpp"
 	"${CMAKE_CURRENT_LIST_DIR}/src/mach/domain/models/game.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/src/mach/domain/models/player.cpp"

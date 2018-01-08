@@ -15,6 +15,7 @@ class NextRoundEvent;
 class NextTurnEvent;
 class GameStartedEvent;
 class GameEndedEvent;
+class ServerDisconnectedEvent;
 } // namespace events
 
 class EventVisitor
@@ -27,6 +28,7 @@ class EventVisitor
     MACHIAVELLI_MACH_DOMAIN_EVENTVISITOR_DEFINE_VISIT_METHOD(events::NextTurnEvent);
     MACHIAVELLI_MACH_DOMAIN_EVENTVISITOR_DEFINE_VISIT_METHOD(events::GameStartedEvent);
     MACHIAVELLI_MACH_DOMAIN_EVENTVISITOR_DEFINE_VISIT_METHOD(events::GameEndedEvent);
+    MACHIAVELLI_MACH_DOMAIN_EVENTVISITOR_DEFINE_VISIT_METHOD(events::ServerDisconnectedEvent);
 }; // class EventVisitor
 } // namespace domain
 } // namespace mach

@@ -12,7 +12,8 @@ enum class EventType
     NextTurn,
     GameStarted,
     GameEnded,
-}; // enum class Event
+    ServerDisconnected
+}; // enum class EventType
 } // namespace domain
 } // namespace mach
 
