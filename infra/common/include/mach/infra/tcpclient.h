@@ -131,7 +131,6 @@ class TcpClient : public Noncopyable
     TcpClient(ThreadPool& threadPool, Socket socket);
     TcpClient(TcpClient&& other);
     TcpClient& operator=(TcpClient&& other);
-    ~TcpClient();
 
     void Connect(const std::string& hostname, Port port);
     void Disconnect();

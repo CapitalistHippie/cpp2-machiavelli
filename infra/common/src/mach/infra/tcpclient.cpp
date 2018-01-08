@@ -46,11 +46,6 @@ TcpClient& mach::infra::TcpClient::operator=(TcpClient&& other)
     return *this;
 }
 
-mach::infra::TcpClient::~TcpClient()
-{
-    Disconnect();
-}
-
 void TcpClient::Connect(const std::string& hostname, Port port)
 {
     if (IsConnected())

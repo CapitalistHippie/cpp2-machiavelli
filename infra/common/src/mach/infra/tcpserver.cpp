@@ -32,11 +32,6 @@ TcpServer& mach::infra::TcpServer::operator=(TcpServer&& other)
     return *this;
 }
 
-mach::infra::TcpServer::~TcpServer()
-{
-    StopListening();
-}
-
 void TcpServer::StartListening(Port port)
 {
     if (IsListening())

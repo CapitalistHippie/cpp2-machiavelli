@@ -4,6 +4,8 @@ project("Machiavelli")
 
 add_subdirectory("infra/common")
 
+add_subdirectory("dal/common")
+
 add_subdirectory("domain/common")
 
 add_subdirectory("app/common")

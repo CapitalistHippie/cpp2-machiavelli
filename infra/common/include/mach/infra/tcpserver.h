@@ -67,7 +67,6 @@ class TcpServer : public Noncopyable
     TcpServer(ThreadPool& threadPool);
     TcpServer(TcpServer&& other);
     TcpServer& operator=(TcpServer&& other);
-    ~TcpServer();
 
     void StartListening(Port port);
     void StopListening();
