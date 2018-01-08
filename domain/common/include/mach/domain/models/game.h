@@ -6,6 +6,7 @@
 
 #include "mach/dal/models/buildingcard.h"
 #include "mach/dal/models/charactercard.h"
+#include "mach/domain/gamestate.h"
 #include "mach/domain/models/player.h"
 
 namespace mach
@@ -17,7 +18,8 @@ namespace models
 class Game
 {
   public:
-    bool isStarted, playerReceivedGoldOrCards, playerUsedCharacterPower, isFinalRound, playersChoosingCharacterCards;
+    GameState state;
+    bool playerReceivedGoldOrCards, playerUsedCharacterPower;
     std::string currentPlayerChoosing;
     int characterHasTurn;
     int buildingsStillAllowedToPlayThisTurn;
