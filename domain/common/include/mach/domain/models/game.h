@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+#include "mach/dal/models/buildingcard.h"
+#include "mach/dal/models/charactercard.h"
 #include "mach/domain/models/player.h"
 
 namespace mach
@@ -22,9 +24,9 @@ class Game
     int killedCharacter;
     Player king;
 
-    std::vector<CharacterCard> charactersToChooseFrom;
-    std::vector<CharacterCard> characters;
-    std::deque<BuildingCard> buildingCardStack;
+    std::vector<dal::models::CharacterCard> charactersToChooseFrom;
+    std::vector<dal::models::CharacterCard> characters;
+    std::deque<dal::models::BuildingCard> buildingCardStack;
     std::vector<Player> players;
     std::vector<std::string> playersWaiting;
 }; // class Game

@@ -1,4 +1,5 @@
 #include "mach/domain/characterpowerhelper.h"
+#include <algorithm>
 
 using namespace mach::domain;
 using namespace mach::domain::models;
@@ -83,17 +84,17 @@ void mach::domain::CharacterPowerHelper::DoMagician(models::Player currentPlayer
 
 void mach::domain::CharacterPowerHelper::DoKing(models::Player currentPlayer, GameController gameController)
 {
-    currentPlayer.gold += currentPlayer.GetAmountOfBuildingsByColor(BuildingColor::Yellow);
+    currentPlayer.gold += currentPlayer.GetAmountOfBuildingsByColor(dal::models::BuildingColor::Yellow);
 }
 
 void mach::domain::CharacterPowerHelper::DoBishop(models::Player currentPlayer, GameController gameController)
 {
-    currentPlayer.gold += currentPlayer.GetAmountOfBuildingsByColor(BuildingColor::Blue);
+    currentPlayer.gold += currentPlayer.GetAmountOfBuildingsByColor(dal::models::BuildingColor::Blue);
 }
 
 void mach::domain::CharacterPowerHelper::DoMerchant(models::Player currentPlayer, GameController gameController)
 {
-    currentPlayer.gold += 1 + currentPlayer.GetAmountOfBuildingsByColor(BuildingColor::Green);
+    currentPlayer.gold += 1 + currentPlayer.GetAmountOfBuildingsByColor(dal::models::BuildingColor::Green);
 }
 
 void mach::domain::CharacterPowerHelper::DoArchitect(models::Player currentPlayer, GameController gameController)
@@ -106,10 +107,10 @@ void mach::domain::CharacterPowerHelper::DoArchitect(models::Player currentPlaye
 void mach::domain::CharacterPowerHelper::DoWarlord(models::Player currentPlayer, GameController gameController)
 {
     auto tempVec = gameController.game.players;
-    tempVec.erase(
-      std::find_if(tempVec.begin(), tempVec.end(), [=](Player player) { return player.name == currentPlayer.name; }));
+    tempVec.erase(std::find_if(
+      tempVec.begin(), tempVec.end(), [&](const Player& player) { return player.name == currentPlayer.name; }));
     Player otherPlayer = tempVec[0];
-    BuildingCard chosenBuilding = otherPlayer.buildings[0];
+    dal::models::BuildingCard chosenBuilding = otherPlayer.buildings[0];
     if (chosenBuilding.cost > 1)
     {
         if (currentPlayer.gold < (chosenBuilding.cost - 1))
@@ -121,6 +122,9 @@ void mach::domain::CharacterPowerHelper::DoWarlord(models::Player currentPlayer,
             currentPlayer.gold -= (chosenBuilding.cost - 1);
         }
     }
-    otherPlayer.buildings.erase(std::find(otherPlayer.buildings.begin(), otherPlayer.buildings.end(), chosenBuilding));
-    currentPlayer.gold += 1 + currentPlayer.GetAmountOfBuildingsByColor(BuildingColor::Red);
+    otherPlayer.buildings.erase(std::find_if(
+      otherPlayer.buildings.begin(), otherPlayer.buildings.end(), [&](const dal::models::BuildingCard& card) {
+          return card.name == chosenBuilding.name;
+      }));
+    currentPlayer.gold += 1 + currentPlayer.GetAmountOfBuildingsByColor(dal::models::BuildingColor::Red);
 }

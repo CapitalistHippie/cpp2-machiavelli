@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <random>
 
+using namespace mach;
 using namespace mach::domain;
 using namespace mach::domain::events;
 using namespace mach::domain::models;
@@ -52,14 +53,7 @@ void GameController::StartGame()
 
     // TODO load stack and characters from file
     // TODO remove hardcoded loading
-    for (int i = 0; i < 100; i++)
-    {
-        game.buildingCardStack.push_back(BuildingCard(i, "Card nr:" + std::to_string(i), BuildingColor::Blue, ""));
-    }
-    for (int i = 0; i < 8; i++)
-    {
-        game.characters.push_back(CharacterCard(i, "Character nr: " + std::to_string(i)));
-    }
+
     for (auto& playerName : playersWaiting)
     {
         auto newPlayer = Player(playerName);
@@ -124,8 +118,9 @@ void GameController::NextRound()
     for (auto player : game.players)
     {
         // Find the new king
-        auto findResult = std::find_if(
-          player.characters.begin(), player.characters.end(), [](CharacterCard card) { return card.nr == 4; });
+        auto findResult = std::find_if(player.characters.begin(),
+                                       player.characters.end(),
+                                       [](dal::models::CharacterCard card) { return card.number == 4; });
         if (findResult != player.characters.end())
         {
             game.king = player;
@@ -224,14 +219,14 @@ void GameController::ChooseCharacterCard(int nr, std::string name)
     {
         auto findResult = std::find_if(game.charactersToChooseFrom.begin(),
                                        game.charactersToChooseFrom.end(),
-                                       [nr](CharacterCard card) { return card.nr == nr; });
+                                       [nr](dal::models::CharacterCard card) { return card.number == nr; });
         if (findResult == game.charactersToChooseFrom.end())
         {
             throw std::exception("You can not choose this card");
         }
         else
         {
-            CharacterCard character = *findResult;
+            dal::models::CharacterCard character = *findResult;
             if (choosingTurns[0].second)
             {
                 // Keep the card
@@ -243,7 +238,7 @@ void GameController::ChooseCharacterCard(int nr, std::string name)
             game.charactersToChooseFrom.erase(
               std::remove_if(game.charactersToChooseFrom.begin(),
                              game.charactersToChooseFrom.end(),
-                             [=](CharacterCard card) { return card.nr == character.nr; }),
+                             [=](dal::models::CharacterCard card) { return card.number == character.number; }),
               game.charactersToChooseFrom.end());
             choosingTurns.erase(choosingTurns.begin());
             if (choosingTurns.size() == 0)
@@ -302,25 +297,28 @@ void mach::domain::GameController::CurrentPlayerBuildsBuilding(unsigned int nr)
     }
     else
     {
-        BuildingCard chosenCard = currentPlayer.hand[nr];
+        dal::models::BuildingCard chosenCard = currentPlayer.hand[nr];
         if (chosenCard.cost > currentPlayer.gold)
         {
             throw std::exception("You cannot afford that");
         }
         else
         {
-            currentPlayer.hand.erase(std::find(currentPlayer.hand.begin(), currentPlayer.hand.end(), chosenCard));
+            currentPlayer.hand.erase(std::find_if(
+              currentPlayer.hand.begin(), currentPlayer.hand.end(), [&](const dal::models::BuildingCard& card) {
+                  return card.name == chosenCard.name;
+              }));
             currentPlayer.gold -= chosenCard.cost;
             currentPlayer.buildings.push_back(chosenCard);
         };
     }
 }
 
-BuildingCard GameController::DrawCardFromStack()
+dal::models::BuildingCard GameController::DrawCardFromStack()
 {
     if (!game.buildingCardStack.empty())
     {
-        BuildingCard card = *game.buildingCardStack.begin();
+        dal::models::BuildingCard card = *game.buildingCardStack.begin();
         game.buildingCardStack.pop_front();
         return card;
     }
@@ -333,9 +331,9 @@ BuildingCard GameController::DrawCardFromStack()
 models::Player mach::domain::GameController::GetCurrentPlayer()
 {
     auto findRes = std::find_if(game.players.begin(), game.players.end(), [=](Player player) {
-        auto res = std::find_if(player.characters.begin(), player.characters.end(), [=](CharacterCard card) {
-            return card.nr == game.characterHasTurn;
-        });
+        auto res = std::find_if(player.characters.begin(),
+                                player.characters.end(),
+                                [=](dal::models::CharacterCard card) { return card.number == game.characterHasTurn; });
         return res != player.characters.end();
     });
     return *findRes;
@@ -344,8 +342,9 @@ models::Player mach::domain::GameController::GetCurrentPlayer()
 bool mach::domain::GameController::CharacterHasPlayer(int nr)
 {
     auto findRes = std::find_if(game.players.begin(), game.players.end(), [nr](Player player) {
-        auto res = std::find_if(
-          player.characters.begin(), player.characters.end(), [nr](CharacterCard card) { return card.nr == nr; });
+        auto res = std::find_if(player.characters.begin(),
+                                player.characters.end(),
+                                [nr](dal::models::CharacterCard card) { return card.number == nr; });
         return res != player.characters.end();
     });
     return findRes != game.players.end();

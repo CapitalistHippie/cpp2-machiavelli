@@ -3,8 +3,8 @@
 #include <string>
 #include <vector>
 
-#include "mach\domain\models\buildingcard.h"
-#include "mach\domain\models\charactercard.h"
+#include "mach\dal\models\buildingcard.h"
+#include "mach\dal\models\charactercard.h"
 
 namespace mach
 {
@@ -21,13 +21,11 @@ class Player
     std::string name;
     bool firstToHaveEightBuildings = false;
     int gold;
-    std::vector<BuildingCard> hand;
-    std::vector<BuildingCard> buildings;
-    std::vector<CharacterCard> characters;
+    std::vector<dal::models::BuildingCard> hand;
+    std::vector<dal::models::BuildingCard> buildings;
+    std::vector<dal::models::CharacterCard> characters;
 
-    void PlayBuilding(int nr);
-
-    int GetAmountOfBuildingsByColor(BuildingColor color);
+    int GetAmountOfBuildingsByColor(dal::models::BuildingColor color);
     int GetPointsFromBuildings();
     int GetPoints();
 }; // class Player
