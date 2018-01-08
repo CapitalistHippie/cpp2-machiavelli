@@ -14,9 +14,6 @@ namespace statehandlers
 {
 class ServerRunning : public StateHandlerBase<ServerRunning, ServerCliState::ServerRunning>
 {
-  private:
-    int handle;
-
   public:
     using StateHandlerBase::StateHandlerBase;
 
