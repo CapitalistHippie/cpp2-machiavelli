@@ -7,6 +7,7 @@ namespace domain
 {
 enum class EventType
 {
+    ClientConnected,
     NextRound,
     NextTurn,
     GameStarted,

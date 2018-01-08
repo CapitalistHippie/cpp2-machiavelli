@@ -6,6 +6,8 @@ project("Machiavelli Domain Common library")
 
 add_library(${MACHIAVELLI_DOMAIN_COMMON_TARGET_NAME}
     STATIC
+	"${CMAKE_CURRENT_LIST_DIR}/include/mach/domain/events/clientconnectedevent.h"
+	"${CMAKE_CURRENT_LIST_DIR}/include/mach/domain/models/clientinfo.h"
 	"${CMAKE_CURRENT_LIST_DIR}/include/mach/domain/models/buildingcolor.h"
     "${CMAKE_CURRENT_LIST_DIR}/include/mach/domain/models/buildingcard.h"
     "${CMAKE_CURRENT_LIST_DIR}/src/mach/domain/models/buildingcard.cpp"
@@ -15,6 +17,7 @@ add_library(${MACHIAVELLI_DOMAIN_COMMON_TARGET_NAME}
 	"${CMAKE_CURRENT_LIST_DIR}/include/mach/domain/models/game.h"
 	"${CMAKE_CURRENT_LIST_DIR}/include/mach/domain/gamecontroller.h"
 	"${CMAKE_CURRENT_LIST_DIR}/include/mach/domain/eventtype.h"
+	"${CMAKE_CURRENT_LIST_DIR}/include/mach/domain/eventvisitor.h"
 	"${CMAKE_CURRENT_LIST_DIR}/include/mach/domain/events/event.h"
 	"${CMAKE_CURRENT_LIST_DIR}/include/mach/domain/events/eventbase.h"
 	"${CMAKE_CURRENT_LIST_DIR}/include/mach/domain/events/gamestartedevent.h"

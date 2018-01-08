@@ -35,7 +35,7 @@ class GameController
     void CurrentPlayerGetGold();
     void CurrentPlayerDrawsCard();
     void CurrentPlayerUsesCharacterPower();
-    void CurrentPlayerBuildsBuilding(int nr);
+    void CurrentPlayerBuildsBuilding(unsigned int nr);
 
     infra::Subject eventSubject;
 

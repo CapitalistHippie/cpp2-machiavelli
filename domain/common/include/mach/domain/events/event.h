@@ -7,12 +7,16 @@ namespace mach
 {
 namespace domain
 {
+class EventVisitor;
+
 namespace events
 {
 class Event : public infra::Serializable
 {
   public:
     virtual ~Event() noexcept = default;
+
+    virtual void Visit(const EventVisitor& visitor) const = 0;
 }; // class Event
 } // namespace events
 } // namespace domain

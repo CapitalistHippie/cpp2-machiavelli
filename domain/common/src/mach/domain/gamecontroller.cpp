@@ -293,7 +293,7 @@ void mach::domain::GameController::CurrentPlayerUsesCharacterPower()
     }
 }
 
-void mach::domain::GameController::CurrentPlayerBuildsBuilding(int nr)
+void mach::domain::GameController::CurrentPlayerBuildsBuilding(unsigned int nr)
 {
     Player currentPlayer = GetCurrentPlayer();
     if (currentPlayer.hand.size() > nr || nr < 0)

@@ -8,6 +8,7 @@
 
 #include "mach/domain/events/event.h"
 #include "mach/domain/eventtype.h"
+#include "mach/domain/eventvisitor.h"
 
 namespace mach
 {
@@ -31,6 +32,11 @@ class EventBase : public Event
         registrar2.Dummy();
 
         return std::to_string(static_cast<unsigned int>(identifier));
+    }
+
+    void Visit(const EventVisitor& visitor) const override
+    {
+        // visitor.Visit(static_cast<const TDerived&>(*this));
     }
 }; // class EventBase
 
