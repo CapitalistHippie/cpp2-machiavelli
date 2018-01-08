@@ -4,6 +4,7 @@
 #include <iterator>
 #include <set>
 
+using namespace mach;
 using namespace mach::domain::models;
 
 Player::Player()
@@ -15,10 +16,11 @@ Player::Player(std::string name)
 {
 }
 
-int Player::GetAmountOfBuildingsByColor(BuildingColor color)
+int Player::GetAmountOfBuildingsByColor(dal::models::BuildingColor color)
 {
-    return std::count_if(
-      buildings.begin(), buildings.end(), [&color](BuildingCard card) { return card.color == color; });
+    return std::count_if(buildings.begin(), buildings.end(), [&color](const dal::models::BuildingCard& card) {
+        return card.color == color;
+    });
 }
 
 int Player::GetPointsFromBuildings()
@@ -34,7 +36,7 @@ int Player::GetPointsFromBuildings()
 int Player::GetPoints()
 {
     int points = 0;
-    std::set<BuildingColor> colorSet;
+    std::set<dal::models::BuildingColor> colorSet;
     for (auto b : buildings)
     {
         points += b.cost;

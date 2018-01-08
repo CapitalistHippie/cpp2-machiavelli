@@ -10,6 +10,9 @@
 #include "mach/domain/models/game.h"
 #include "mach/domain/models/player.h"
 
+#include "mach/dal/models/buildingcard.h"
+#include "mach/dal/models/charactercard.h"
+
 namespace mach
 {
 namespace domain
@@ -39,7 +42,7 @@ class GameController
 
     infra::Subject eventSubject;
 
-    models::BuildingCard DrawCardFromStack();
+    mach::dal::models::BuildingCard DrawCardFromStack();
     models::Player GetCurrentPlayer();
     bool CharacterHasPlayer(int nr);
 
