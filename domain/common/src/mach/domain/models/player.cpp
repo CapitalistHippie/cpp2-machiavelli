@@ -15,31 +15,6 @@ Player::Player(std::string name)
 {
 }
 
-// void Player::AddCharacterCard(CharacterCard card)
-//{
-//    if (characters.size >= 2)
-//    {
-//        throw std::exception("You can't have more than 2 character cards");
-//    }
-//
-//    characters.push_back(std::move(card));
-//}
-//
-// void Player::AddBuildingCard(BuildingCard card)
-//{
-//    hand.push_back(std::move(card));
-//}
-//
-// void Player::PlayBuilding(int nr)
-//{
-//    if (hand.at(nr)->cost > gold)
-//    {
-//        throw std::exception("You don't have enough gold to buy that!");
-//    }
-//    buildings.push_back(hand.at(nr));
-//    hand.erase(hand.begin() + nr);
-//}
-
 int Player::GetAmountOfBuildingsByColor(BuildingColor color)
 {
     return std::count_if(
@@ -83,15 +58,13 @@ int Player::GetPoints()
 
 std::ostream& operator<<(std::ostream& os, const Player& player)
 {
-    return os << player.name << '|' << player.buildingsStillAllowedToPlay << '|' << player.gold << '|' << player.hand
-              << '|' << player.buildings << '|' << player.characters << '|';
+    return os << player.name << '|' << '|' << player.gold << '|' << player.hand << '|' << player.buildings << '|'
+              << player.characters << '|';
 }
 
 std::istream& operator>>(std::istream& is, Player& player)
 {
     std::getline(is, player.name, '|');
-    is >> player.buildingsStillAllowedToPlay;
-    is.ignore();
     is >> player.gold;
     is.ignore();
     is >> player.hand;

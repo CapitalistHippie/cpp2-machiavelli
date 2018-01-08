@@ -28,15 +28,27 @@ class GameController
     void StartGame();
     void EndGame();
 
+    void EndTurn();
+    void ChooseCharacterCard(int nr, std::string name);
+
+    // Actions
     void CurrentPlayerGetGold();
     void CurrentPlayerDrawsCard();
-
-    void EndTurn();
+    void CurrentPlayerUsesCharacterPower();
+    void CurrentPlayerBuildsBuilding(int nr);
 
     infra::Subject eventSubject;
 
-  private:
     models::BuildingCard DrawCardFromStack();
+    models::Player GetCurrentPlayer();
+    bool CharacterHasPlayer(int nr);
+
+  private:
+    void NextTurn();
+    void NextRound();
+    void StartRound();
+
+    std::vector<std::pair<std::string, bool>> choosingTurns;
 }; // class GameController
 } // namespace domain
 } // namespace mach

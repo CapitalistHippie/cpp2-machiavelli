@@ -19,7 +19,6 @@ class Player
     Player(std::string name);
 
     std::string name;
-    int buildingsStillAllowedToPlay;
     bool firstToHaveEightBuildings = false;
     int gold;
     std::vector<BuildingCard> hand;

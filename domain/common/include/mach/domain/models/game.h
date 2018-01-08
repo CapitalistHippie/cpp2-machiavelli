@@ -15,10 +15,14 @@ namespace models
 class Game
 {
   public:
-    bool isStarted;
+    bool isStarted, playerReceivedGoldOrCards, playerUsedCharacterPower, isFinalRound, playersChoosingCharacterCards;
+    std::string currentPlayerChoosing;
     int characterHasTurn;
+    int buildingsStillAllowedToPlayThisTurn;
+    int killedCharacter;
     Player king;
 
+    std::vector<CharacterCard> charactersToChooseFrom;
     std::vector<CharacterCard> characters;
     std::deque<BuildingCard> buildingCardStack;
     std::vector<Player> players;

@@ -17,6 +17,8 @@ class BuildingCard
     BuildingCard();
     BuildingCard(int cost, std::string name, BuildingColor color, std::string description);
 
+    bool operator==(const BuildingCard& card);
+
     int cost;
     std::string name;
     std::string description;

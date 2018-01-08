@@ -7,8 +7,10 @@ namespace domain
 {
 enum class EventType
 {
+    NextRound,
+    NextTurn,
     GameStarted,
-    GameEnded
+    GameEnded,
 }; // enum class Event
 } // namespace domain
 } // namespace mach
