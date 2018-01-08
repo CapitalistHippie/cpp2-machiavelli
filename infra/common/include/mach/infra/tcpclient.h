@@ -30,7 +30,17 @@ class TcpClient : public Noncopyable
                        std::ostream& outputBuffer,
                        TCallback callback) const
     {
+        if (!isConnected)
+        {
+            return;
+        }
+
         threadPool->QueueTask([=, &outputBuffer]() {
+            if (!isConnected)
+            {
+                return;
+            }
+
             char dataBuffer[64];
             unsigned int totalDataReceived = dataReceived;
 
@@ -86,7 +96,17 @@ class TcpClient : public Noncopyable
     template<typename TCallback>
     void ReadUntilIncludingAsyncImpl(char delimiter, std::ostream& outputBuffer, TCallback callback) const
     {
+        if (!isConnected)
+        {
+            return;
+        }
+
         threadPool->QueueTask([=, &outputBuffer]() {
+            if (!isConnected)
+            {
+                return;
+            }
+
             auto dataBuffer = std::make_shared<std::stringstream>();
 
             ReadAsyncImpl(1, 0, *dataBuffer, [=, &outputBuffer] {

@@ -67,6 +67,7 @@ class OnlineClient : public Client
 
     void Connect();
     void StartAsync() override;
+    void Stop() override;
 
     const OnlineClientConfiguration& GetConfiguration() const;
     void SetConfiguration(OnlineClientConfiguration configuration);

@@ -40,7 +40,7 @@ class CommandHandlerVisitor : public CommandVisitor
 
     void Visit(const commands::JoinGameCommand& command) const override
     {
-        gameController->AddPlayer(command.playerName);
+        // gameController->AddPlayer(command.playerName);
 
         // TODO: If playercount reached, start game.
     }
@@ -65,8 +65,10 @@ class Server
 
     bool isRunning;
 
-    void AcceptClientAsync();
+    void AcceptClientsAsync();
     void AcceptClientAsyncCallbackHandler(infra::TcpClient tcpClient);
+
+    void ReadCommandsAsync(ServerClient::Id clientId);
 
     template<typename T>
     void NotifyObservers(const T& evt)
@@ -115,6 +117,8 @@ class Server
 
     const ServerConfiguration& GetConfiguration() const;
     void SetConfiguration(ServerConfiguration configuration);
+
+    bool IsClientConnected(ServerClient::Id clientId) const;
 }; // class Server
 } // namespace app
 } // namespace mach

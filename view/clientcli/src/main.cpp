@@ -9,6 +9,9 @@
 
 #include <iostream>
 
+#include <mach/app/onlineclient.h>
+#include <mach/infra/threadpool.h>
+
 #include "mach/view/clientcli.h"
 
 using namespace mach;
@@ -27,8 +30,15 @@ int main()
     try
     {
 #endif
-        ClientCli serverCli(std::cin, std::cout);
-        serverCli.Start();
+        mach::infra::ThreadPool threadPool(2);
+
+        mach::app::OnlineClient client(threadPool);
+
+        ClientCli clientCli(client, std::cin, std::cout);
+        clientCli.Start();
+
+        client.Stop();
+        threadPool.StopThreads();
 #ifdef NDEBUG
     }
     catch (const std::system_error& e)

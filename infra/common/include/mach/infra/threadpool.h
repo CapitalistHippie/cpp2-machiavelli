@@ -49,7 +49,7 @@ class ThreadPool : public Noncopyable
     std::vector<std::thread> threads;
     ConcurrentQueue<std::shared_ptr<detail::Task>> taskQueue;
 
-    std::atomic<bool> shouldTerminate;
+    std::atomic<bool> shouldStop;
 
     void InitializeThreads(unsigned int threadCount);
 
@@ -59,15 +59,22 @@ class ThreadPool : public Noncopyable
     ThreadPool(unsigned int threadCount);
     ThreadPool(ThreadPool&&) = default;
     ThreadPool& operator=(ThreadPool&&) = default;
-    ~ThreadPool() noexcept;
 
     template<typename TTask>
     void QueueTask(TTask task)
     {
+        if (shouldStop)
+        {
+            return;
+        }
+
         taskQueue.Push(std::make_shared<detail::TaskImpl<TTask>>(task));
 
         waitForNewTaskCondition.notify_one();
     }
+
+    void ClearTasks();
+    void StopThreads();
 }; // class ThreadPool
 } // namespace infra
 } // namespace mach
