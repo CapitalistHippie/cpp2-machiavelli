@@ -178,37 +178,34 @@ void mach::domain::CharacterPowerHelper::DoMagician(models::Player& currentPlaye
 void mach::domain::CharacterPowerHelper::DoKing(models::Player& currentPlayer, GameController& gameController)
 {
     int amount = currentPlayer.GetAmountOfBuildingsByColor(dal::models::BuildingColor::Yellow);
+    currentPlayer.gold += amount;
 
     auto evt = events::GameUpdatedEvent();
     evt.game = gameController.game;
     evt.message = std::string("Player ") + currentPlayer.name + " got " + std::to_string(amount) + " gold!";
     gameController.eventSubject.NotifyObservers(evt);
-
-    currentPlayer.gold += amount;
 }
 
 void mach::domain::CharacterPowerHelper::DoBishop(models::Player& currentPlayer, GameController& gameController)
 {
     int amount = currentPlayer.GetAmountOfBuildingsByColor(dal::models::BuildingColor::Blue);
+    currentPlayer.gold += amount;
 
     auto evt = events::GameUpdatedEvent();
     evt.game = gameController.game;
     evt.message = std::string("Player ") + currentPlayer.name + " got " + std::to_string(amount) + " gold!";
     gameController.eventSubject.NotifyObservers(evt);
-
-    currentPlayer.gold += amount;
 }
 
 void mach::domain::CharacterPowerHelper::DoMerchant(models::Player& currentPlayer, GameController& gameController)
 {
     int amount = 1 + currentPlayer.GetAmountOfBuildingsByColor(dal::models::BuildingColor::Green);
+    currentPlayer.gold += amount;
 
     auto evt = events::GameUpdatedEvent();
     evt.game = gameController.game;
     evt.message = std::string("Player ") + currentPlayer.name + " got " + std::to_string(amount) + " gold!";
     gameController.eventSubject.NotifyObservers(evt);
-
-    currentPlayer.gold += amount;
 }
 
 void mach::domain::CharacterPowerHelper::DoArchitect(models::Player& currentPlayer, GameController& gameController)
