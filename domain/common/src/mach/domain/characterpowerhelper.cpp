@@ -62,9 +62,13 @@ void mach::domain::CharacterPowerHelper::DoAssassin(models::Player& currentPlaye
     gameController.eventSubject.NotifyObservers(evt);
 
     gameController.game.state = GameState::AwaitingPlayerChoice;
-    gameController.doWhenPlayerChooses = [&, currentPlayer](std::vector<int> numbers) {
-        int nr = numbers[0];
+    gameController.doWhenPlayerChooses = [&, currentPlayer, evt](std::vector<int> numbers) {
+        int nr = numbers[0] + 1;
         if (nr < 2 || nr > 8)
+        {
+            gameController.eventSubject.NotifyObservers(evt);
+        }
+        else
         {
             gameController.game.killedCharacter = nr;
             gameController.game.state = GameState::Running;
@@ -72,10 +76,6 @@ void mach::domain::CharacterPowerHelper::DoAssassin(models::Player& currentPlaye
             evt.game = gameController.game;
             evt.message = std::string("Player ") + currentPlayer.name + " selected character to kill!";
 
-            gameController.eventSubject.NotifyObservers(evt);
-        }
-        else
-        {
             gameController.eventSubject.NotifyObservers(evt);
         }
     };
