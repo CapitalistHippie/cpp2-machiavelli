@@ -347,6 +347,8 @@ void mach::domain::GameController::CurrentPlayerDrawsCard()
 
                 game.state = GameState::Running;
 
+                game.playerReceivedGoldOrCards = true;
+
                 auto evt = GameUpdatedEvent();
                 evt.game = game;
                 evt.message = "Player picked a card!";
