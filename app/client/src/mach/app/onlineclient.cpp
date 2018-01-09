@@ -22,28 +22,22 @@ void OnlineClient::JoinGame() const
 
 void OnlineClient::ReadEventsAsync()
 {
-    try
-    {
-        serializer.DeserializeAsync<domain::events::Event, domain::EventType>(
-          tcpClient, [&](std::shared_ptr<domain::events::Event> evt) {
-              if (!isRunning)
-              {
-                  return;
-              }
+    serializer.DeserializeAsync<domain::events::Event, domain::EventType>(
+      tcpClient, [&](std::error_code error, std::shared_ptr<domain::events::Event> evt) {
+          if (!isRunning)
+          {
+              return;
+          }
 
-              ReadEventsAsync();
-              NotifyObservers(evt);
-          });
-    }
-    catch (std::system_error& e)
-    {
-        if (e.code() == infra::SocketError::Connreset)
-        {
-            // Server disconnected.
-            domain::events::ServerDisconnectedEvent evt;
-            evt.Visit(eventObserverNotifierVisitor);
-        }
-    }
+          if (error == infra::SocketError::Connreset)
+          {
+              domain::events::ServerDisconnectedEvent evt;
+              evt.Visit(eventObserverNotifierVisitor);
+          }
+
+          ReadEventsAsync();
+          NotifyObservers(evt);
+      });
 }
 
 mach::app::OnlineClient::OnlineClient(infra::ThreadPool& threadPool)

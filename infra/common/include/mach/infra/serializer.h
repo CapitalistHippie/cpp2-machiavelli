@@ -7,6 +7,7 @@
 #include <ostream>
 #include <sstream>
 #include <string>
+#include <system_error>
 #include <type_traits>
 
 #include "mach/infra/abstractfactory.h"
@@ -150,8 +151,18 @@ class Serializer
     {
         auto dataStream = std::make_shared<std::stringstream>();
 
-        tcpClient.ReadUntilIncludingAsync(',', *dataStream, [=, &tcpClient] {
-            tcpClient.ReadUntilIncludingAsync(',', *dataStream, [=, &tcpClient] {
+        tcpClient.ReadUntilIncludingAsync(',', *dataStream, [=, &tcpClient](std::error_code error) {
+            if (error)
+            {
+                callback(std::move(error), std::shared_ptr<TSerializable>());
+            }
+
+            tcpClient.ReadUntilIncludingAsync(',', *dataStream, [=, &tcpClient](std::error_code error) {
+                if (error)
+                {
+                    callback(std::move(error), std::shared_ptr<TSerializable>());
+                }
+
                 TIdentifier identifier;
                 *dataStream >> identifier;
                 dataStream->ignore(1); // Ignore the ','.
@@ -159,8 +170,13 @@ class Serializer
                 *dataStream >> dataLength;
                 dataStream->ignore(1); // Ignore the ','.
 
-                tcpClient.ReadAsync(dataLength, *dataStream, [=, &tcpClient] {
-                    callback(DeserializeData<TSerializable>(*dataStream, identifier));
+                tcpClient.ReadAsync(dataLength, *dataStream, [=, &tcpClient](std::error_code error) {
+                    if (error)
+                    {
+                        callback(std::move(error), std::shared_ptr<TSerializable>());
+                    }
+
+                    callback(std::error_code(), DeserializeData<TSerializable>(*dataStream, identifier));
                 });
             });
         });

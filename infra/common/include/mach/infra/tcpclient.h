@@ -73,7 +73,7 @@ class TcpClient : public Noncopyable
                 }
                 else
                 {
-                    throw std::system_error(errorCode);
+                    callback(std::move(errorCode));
                 }
             }
 
@@ -84,7 +84,7 @@ class TcpClient : public Noncopyable
 
             if (totalDataReceived == dataLength)
             {
-                callback();
+                callback(std::error_code());
             }
             else
             {
@@ -109,14 +109,19 @@ class TcpClient : public Noncopyable
 
             auto dataBuffer = std::make_shared<std::stringstream>();
 
-            ReadAsyncImpl(1, 0, *dataBuffer, [=, &outputBuffer] {
+            ReadAsyncImpl(1, 0, *dataBuffer, [=, &outputBuffer](std::error_code error) {
+                if (error)
+                {
+                    callback(std::move(error));
+                }
+
                 auto data = dataBuffer->str();
 
                 outputBuffer << data[0];
 
                 if (data[0] == delimiter)
                 {
-                    callback();
+                    callback(std::error_code());
                 }
                 else
                 {

@@ -64,7 +64,7 @@ void mach::app::Server::ReadCommandsAsync(ServerClient::Id clientId)
     const auto& client = clients.at(clientId);
 
     serializer.DeserializeAsync<commands::Command, CommandType>(
-      client.tcpClient, [&, clientId](std::shared_ptr<commands::Command> command) {
+      client.tcpClient, [&, clientId](std::error_code error, std::shared_ptr<commands::Command> command) {
           if (!isRunning)
           {
               return;
