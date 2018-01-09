@@ -60,13 +60,14 @@ int Player::GetPoints()
 
 std::ostream& operator<<(std::ostream& os, const Player& player)
 {
-    return os << player.name << '|' << '|' << player.gold << '|' << player.hand << '|' << player.buildings << '|'
+    return os << player.name << '|' << player.gold << '|' << player.hand << '|' << player.buildings << '|'
               << player.characters << '|';
 }
 
 std::istream& operator>>(std::istream& is, Player& player)
 {
     std::getline(is, player.name, '|');
+    int i = is.peek();
     is >> player.gold;
     is.ignore();
     is >> player.hand;

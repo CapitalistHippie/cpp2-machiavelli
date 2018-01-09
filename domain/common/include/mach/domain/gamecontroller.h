@@ -56,8 +56,6 @@ class GameController
     void NextTurn();
     void NextRound();
     void StartRound();
-
-    std::vector<std::pair<std::string, bool>> choosingTurns;
 }; // class GameController
 } // namespace domain
 } // namespace mach

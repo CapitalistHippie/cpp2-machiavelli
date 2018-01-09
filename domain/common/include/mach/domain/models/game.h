@@ -20,7 +20,6 @@ class Game
   public:
     GameState state;
     bool playerReceivedGoldOrCards, playerUsedCharacterPower;
-    std::string currentPlayerChoosing;
     int characterHasTurn;
     int buildingsStillAllowedToPlayThisTurn;
     int killedCharacter;
@@ -31,6 +30,8 @@ class Game
     std::deque<dal::models::BuildingCard> buildingCardStack;
     std::vector<Player> players;
     std::vector<std::string> playersWaiting;
+    std::vector<std::pair<std::string, bool>> choosingTurns;
+
 }; // class Game
 } // namespace models
 } // namespace domain

@@ -13,6 +13,24 @@
 #include "mach/infra/serializable.h"
 #include "mach/infra/tcpclient.h"
 
+template<typename T, typename U>
+std::istream& operator>>(std::istream& stream, std::pair<T, U>& pair)
+{
+    std::string first;
+    U second;
+    std::getline(stream, first, '?');
+    stream >> second;
+    pair = std::make_pair(first, second);
+    return stream;
+}
+
+template<typename T, typename U>
+std::ostream& operator<<(std::ostream& stream, const std::pair<T, U>& pair)
+{
+    stream << pair.first << '?' << pair.second;
+    return stream;
+}
+
 template<typename T>
 std::ostream& operator<<(std::ostream& stream, const std::vector<T>& e)
 {
@@ -29,6 +47,7 @@ std::istream& operator>>(std::istream& stream, std::vector<T>& e)
 {
     e.clear();
     int size;
+    int i = stream.peek();
     stream >> size;
     stream.ignore();
     for (; size > 0; size--)
@@ -44,10 +63,10 @@ std::istream& operator>>(std::istream& stream, std::vector<T>& e)
 template<typename T>
 std::ostream& operator<<(std::ostream& stream, const std::deque<T>& e)
 {
-    stream << e.size() << ',';
+    stream << e.size() << '=';
     for (auto item : e)
     {
-        stream << item << ',';
+        stream << item << '=';
     }
     return stream;
 }

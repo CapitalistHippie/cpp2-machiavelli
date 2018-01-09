@@ -9,7 +9,7 @@ enum class ClientCliState
 {
     ConnectToServer,
     WaitForGameToStart,
-    ChooseCharacter
+    ChoosingCharacters
 }; // enum class ClientCliState
 } // namespace view
 } // namespace mach

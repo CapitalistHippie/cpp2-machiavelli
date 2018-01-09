@@ -1,5 +1,6 @@
 #include "mach/domain/gamecontroller.h"
 #include "mach/domain/characterpowerhelper.h"
+#include "mach/domain/events/characterchosenevent.h"
 #include "mach/domain/events/gameendedevent.h"
 #include "mach/domain/events/gamestartedevent.h"
 #include "mach/domain/events/nextroundevent.h"
@@ -82,10 +83,6 @@ void GameController::StartGame()
     game.king = game.players[0];
     game.state = GameState::Running;
     NextRound();
-
-    auto evt = GameStartedEvent();
-    evt.game = game;
-    eventSubject.NotifyObservers(evt);
 }
 
 void GameController::NextTurn()
@@ -165,30 +162,30 @@ void GameController::NextRound()
         game.charactersToChooseFrom.erase(game.charactersToChooseFrom.begin());
 
         // Initialize choosing turns for picking Character cards
-        choosingTurns.clear();
+        game.choosingTurns.clear();
         auto findResult = std::find_if(
           game.players.begin(), game.players.end(), [=](Player player) { return player.name != game.king.name; });
 
         auto otherPlayer = findResult->name;
 
         // King chooses one and keeps it
-        choosingTurns.push_back(std::pair<std::string, bool>(game.king.name, true));
+        game.choosingTurns.push_back(std::pair<std::string, bool>(game.king.name, true));
         // Other player chooses one and discards one
-        choosingTurns.push_back(std::pair<std::string, bool>(otherPlayer, true));
-        choosingTurns.push_back(std::pair<std::string, bool>(otherPlayer, false));
+        game.choosingTurns.push_back(std::pair<std::string, bool>(otherPlayer, true));
+        game.choosingTurns.push_back(std::pair<std::string, bool>(otherPlayer, false));
         // King chooses one and discards one
-        choosingTurns.push_back(std::pair<std::string, bool>(game.king.name, true));
-        choosingTurns.push_back(std::pair<std::string, bool>(game.king.name, false));
+        game.choosingTurns.push_back(std::pair<std::string, bool>(game.king.name, true));
+        game.choosingTurns.push_back(std::pair<std::string, bool>(game.king.name, false));
         // Other player chooses one and discards one
-        choosingTurns.push_back(std::pair<std::string, bool>(otherPlayer, true));
-        choosingTurns.push_back(std::pair<std::string, bool>(otherPlayer, false));
+        game.choosingTurns.push_back(std::pair<std::string, bool>(otherPlayer, true));
+        game.choosingTurns.push_back(std::pair<std::string, bool>(otherPlayer, false));
 
         game.state = GameState::ChoosingCharacters;
 
-        auto evt = NextRoundEvent();
-        evt.game = game;
+        auto evt2 = CharacterChosenEvent();
+        evt2.game = game;
 
-        eventSubject.NotifyObservers(evt);
+        eventSubject.NotifyObservers(evt2);
     }
 }
 
@@ -256,7 +253,7 @@ void GameController::ChooseCharacterCard(int nr, std::string name)
         else
         {
             dal::models::CharacterCard character = *findResult;
-            if (choosingTurns[0].second)
+            if (game.choosingTurns[0].second)
             {
                 // Keep the card
                 auto player = std::find_if(
@@ -269,8 +266,8 @@ void GameController::ChooseCharacterCard(int nr, std::string name)
                              game.charactersToChooseFrom.end(),
                              [=](dal::models::CharacterCard card) { return card.number == character.number; }),
               game.charactersToChooseFrom.end());
-            choosingTurns.erase(choosingTurns.begin());
-            if (choosingTurns.size() == 0)
+            game.choosingTurns.erase(game.choosingTurns.begin());
+            if (game.choosingTurns.size() == 0)
             {
                 StartRound();
             }

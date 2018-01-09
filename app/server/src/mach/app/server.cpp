@@ -1,9 +1,12 @@
 #include "mach/app/server.h"
 
 #include <mach/app/commandtype.h>
+#include <mach/domain/events/characterchosenevent.h>
 #include <mach/domain/events/clientconnectedevent.h>
 #include <mach/domain/events/gameendedevent.h>
 #include <mach/domain/events/gamestartedevent.h>
+#include <mach/domain/events/nextroundevent.h>
+#include <mach/domain/events/nextturnevent.h>
 
 using namespace mach;
 using namespace mach::app;
@@ -101,6 +104,10 @@ void Server::StartAsync()
 
     gameController.eventSubject.RegisterObserver<domain::events::GameEndedEvent>(evtHandler);
     gameController.eventSubject.RegisterObserver<domain::events::GameStartedEvent>(evtHandler);
+    gameController.eventSubject.RegisterObserver<domain::events::CharacterChosenEvent>(evtHandler);
+    gameController.eventSubject.RegisterObserver<domain::events::ClientConnectedEvent>(evtHandler);
+    gameController.eventSubject.RegisterObserver<domain::events::NextRoundEvent>(evtHandler);
+    gameController.eventSubject.RegisterObserver<domain::events::NextTurnEvent>(evtHandler);
 
     // We're in business now.
     isRunning = true;

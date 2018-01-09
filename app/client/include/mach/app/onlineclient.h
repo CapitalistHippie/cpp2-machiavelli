@@ -9,6 +9,7 @@
 #include <mach/infra/tcpclient.h>
 #include <mach/infra/threadpool.h>
 
+#include <mach/domain/events/characterchosenevent.h>
 #include <mach/domain/events/clientconnectedevent.h>
 #include <mach/domain/events/event.h>
 #include <mach/domain/events/gameendedevent.h>
@@ -45,6 +46,7 @@ class EventObserverNotifierVisitor : public domain::EventVisitor
     {
     }
 
+    MACHIAVELLI_MACH_APP_ONLINECLIENT_DEFINE_VISIT_METHOD(domain::events::CharacterChosenEvent);
     MACHIAVELLI_MACH_APP_ONLINECLIENT_DEFINE_VISIT_METHOD(domain::events::ClientConnectedEvent);
     MACHIAVELLI_MACH_APP_ONLINECLIENT_DEFINE_VISIT_METHOD(domain::events::NextRoundEvent);
     MACHIAVELLI_MACH_APP_ONLINECLIENT_DEFINE_VISIT_METHOD(domain::events::NextTurnEvent);

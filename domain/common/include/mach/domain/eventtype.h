@@ -7,6 +7,7 @@ namespace domain
 {
 enum class EventType
 {
+    CharacterChosen = 2000,
     ClientConnected,
     NextRound,
     NextTurn,

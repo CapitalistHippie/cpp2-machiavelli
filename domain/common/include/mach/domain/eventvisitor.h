@@ -10,6 +10,7 @@ namespace domain
 {
 namespace events
 {
+class CharacterChosenEvent;
 class ClientConnectedEvent;
 class NextRoundEvent;
 class NextTurnEvent;
@@ -23,6 +24,7 @@ class EventVisitor
   public:
     virtual ~EventVisitor() noexcept = default;
 
+    MACHIAVELLI_MACH_DOMAIN_EVENTVISITOR_DEFINE_VISIT_METHOD(events::CharacterChosenEvent);
     MACHIAVELLI_MACH_DOMAIN_EVENTVISITOR_DEFINE_VISIT_METHOD(events::ClientConnectedEvent);
     MACHIAVELLI_MACH_DOMAIN_EVENTVISITOR_DEFINE_VISIT_METHOD(events::NextRoundEvent);
     MACHIAVELLI_MACH_DOMAIN_EVENTVISITOR_DEFINE_VISIT_METHOD(events::NextTurnEvent);

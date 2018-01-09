@@ -18,6 +18,7 @@ add_library(${MACHIAVELLI_DOMAIN_COMMON_TARGET_NAME}
 	"${CMAKE_CURRENT_LIST_DIR}/include/mach/domain/events/event.h"
 	"${CMAKE_CURRENT_LIST_DIR}/include/mach/domain/events/eventbase.h"
 	"${CMAKE_CURRENT_LIST_DIR}/include/mach/domain/events/gamestartedevent.h"
+	"${CMAKE_CURRENT_LIST_DIR}/include/mach/domain/events/characterchosenevent.h"
 	"${CMAKE_CURRENT_LIST_DIR}/include/mach/domain/events/gameendedevent.h"
 	"${CMAKE_CURRENT_LIST_DIR}/include/mach/domain/events/nextturnevent.h"
 	"${CMAKE_CURRENT_LIST_DIR}/include/mach/domain/events/nextroundevent.h"
