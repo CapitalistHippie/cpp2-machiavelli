@@ -76,7 +76,7 @@ void PlayingRound::EnterState()
               outputStream << "Please choose: \n";
               for (int i = 0; i < evt.choices.size(); i++)
               {
-                  outputStream << evt.choices[i] << "\n";
+                  outputStream << evt.choices[i].second << ": " << evt.choices[i].first << "\n";
               }
               outputStream << "\nAvailable commands: \n";
               outputStream << "choose <nr>: choose an option \n\n";

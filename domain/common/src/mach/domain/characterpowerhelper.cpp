@@ -49,12 +49,11 @@ void mach::domain::CharacterPowerHelper::UseCharacterPower(int nr, GameControlle
 
 void mach::domain::CharacterPowerHelper::DoAssassin(models::Player& currentPlayer, GameController& gameController)
 {
-
     auto evt = domain::events::IntChoiceNecessaryEvent();
-    std::vector<int> vec;
-    for (int i = 2; i < 9; i++)
+    std::vector<std::pair<std::string, int>> vec;
+    for (auto it = gameController.game.characters.begin() + 1; it != gameController.game.characters.end(); it++)
     {
-        vec.push_back(i);
+        vec.push_back(std::make_pair(it->name, it->number));
     }
 
     evt.choices = vec;
@@ -98,29 +97,79 @@ void mach::domain::CharacterPowerHelper::DoThief(models::Player& currentPlayer, 
 
 void mach::domain::CharacterPowerHelper::DoMagician(models::Player& currentPlayer, GameController& gameController)
 {
-    // TODO choose:
-    if (true)
-    {
-        // 1. Swap hands with another player
-        auto tempVec = gameController.game.players;
-        tempVec.erase(std::find_if(
-          tempVec.begin(), tempVec.end(), [=](Player player) { return player.name == currentPlayer.name; }));
-        Player chosenPlayer = tempVec[0];
-        auto tempHand = currentPlayer.hand;
-        currentPlayer.hand = chosenPlayer.hand;
-        chosenPlayer.hand = tempHand;
+    auto evt = domain::events::IntChoiceNecessaryEvent();
+    std::vector<std::pair<std::string, int>> vec{ std::make_pair("Swap hands", 1), std::make_pair("Redraw cards", 2) };
 
-        auto evt = events::GameUpdatedEvent();
-        evt.game = gameController.game;
-        evt.message = std::string("Player ") + currentPlayer.name + " swapped hands with " + chosenPlayer.name + "!";
+    evt.choices = vec;
 
-        gameController.eventSubject.NotifyObservers(evt);
-    }
-    else
-    {
-        // 2. Swap any number of cards for others from the stack
-        // TODO
-    }
+    gameController.eventSubject.NotifyObservers(evt);
+
+    gameController.game.state = GameState::AwaitingPlayerChoice;
+    gameController.doWhenPlayerChooses = [&, evt](std::vector<int> numbers) {
+        int nr = numbers[0] + 1;
+        if (nr == 1)
+        {
+            // 1. Swap hands with another player
+            auto otherPlayer = std::find_if(gameController.game.players.begin(),
+                                            gameController.game.players.end(),
+                                            [&](Player player) { return player.name != currentPlayer.name; });
+            auto tempHand = std::move(currentPlayer.hand);
+            currentPlayer.hand = std::move(otherPlayer->hand);
+            otherPlayer->hand = std::move(tempHand);
+
+            gameController.game.state = GameState::Running;
+            auto evt = events::GameUpdatedEvent();
+            evt.game = gameController.game;
+            evt.message =
+              std::string("Player ") + currentPlayer.name + " swapped hands with " + otherPlayer->name + "!";
+
+            gameController.eventSubject.NotifyObservers(evt);
+        }
+        else if (nr == 2)
+        {
+            // 2. Swap any number of cards for others from the stack
+            gameController.game.state = GameState::AwaitingPlayerChoice;
+
+            auto evt = domain::events::CardChoiceNecessaryEvent();
+            evt.choices = currentPlayer.hand;
+            gameController.eventSubject.NotifyObservers(evt);
+
+            auto choices = currentPlayer.hand;
+
+            gameController.doWhenPlayerChooses = [&, choices, evt](std::vector<int> numbers) {
+                for (int& number : numbers)
+                {
+                    if (choices.size() <= number || number < 0)
+                    {
+                        gameController.eventSubject.NotifyObservers(evt);
+                        return;
+                    }
+                }
+                std::sort(numbers.begin(), numbers.end());
+                for (auto it = numbers.rbegin(); it != numbers.rend(); it++)
+                {
+                    currentPlayer.hand.erase(currentPlayer.hand.begin() + *it);
+                }
+                for (int number : numbers)
+                {
+                    currentPlayer.hand.push_back(gameController.DrawCardFromStack());
+                }
+
+                gameController.game.state = GameState::Running;
+                auto evt = events::GameUpdatedEvent();
+                evt.game = gameController.game;
+                evt.message = std::string("Player ") + currentPlayer.name + " discarded and drew " +
+                              std::to_string(numbers.size()) + " new cards !";
+
+                gameController.eventSubject.NotifyObservers(evt);
+            };
+        }
+        else
+        {
+            // Incorrect value: redo it
+            gameController.eventSubject.NotifyObservers(evt);
+        }
+    };
 }
 
 void mach::domain::CharacterPowerHelper::DoKing(models::Player& currentPlayer, GameController& gameController)

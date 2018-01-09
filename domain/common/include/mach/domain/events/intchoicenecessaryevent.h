@@ -16,7 +16,7 @@ namespace events
 class IntChoiceNecessaryEvent : public EventBase<IntChoiceNecessaryEvent, EventType::IntChoiceNecessary>
 {
   public:
-    std::vector<int> choices;
+    std::vector<std::pair<std::string, int>> choices;
 
     void Serialize(std::ostream& dataStream) const override
     {

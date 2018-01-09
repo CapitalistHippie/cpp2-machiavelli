@@ -14,11 +14,11 @@
 #include "mach/infra/serializable.h"
 #include "mach/infra/tcpclient.h"
 
-template<typename T, typename U>
-std::istream& operator>>(std::istream& stream, std::pair<T, U>& pair)
+template<typename T>
+std::istream& operator>>(std::istream& stream, std::pair<std::string, T>& pair)
 {
     std::string first;
-    U second;
+    T second;
     std::getline(stream, first, '?');
     stream >> second;
     pair = std::make_pair(first, second);
