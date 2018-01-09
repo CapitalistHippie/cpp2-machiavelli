@@ -1,7 +1,7 @@
 #include "mach/view/statehandlers/waitforgametostart.h"
 
 #include <mach/domain/events/clientconnectedevent.h>
-#include <mach/domain/events/gamestartedevent.h>
+#include <mach/domain/events/nextturnevent.h>
 #include <mach/view/console.h>
 
 using namespace mach;
@@ -16,10 +16,15 @@ void WaitForGameToStart::EnterState()
                      << "'.\n";
     });
 
-    RegisterClientObserver<domain::events::GameStartedEvent>([&](const domain::events::GameStartedEvent& evt) {
+    RegisterClientObserver<domain::events::CharacterChosenEvent>([&](const domain::events::CharacterChosenEvent& evt) {
         context.recentGameState = evt.game;
-        context.SetState(ClientCliState::ChooseCharacter);
+        context.SetState(ClientCliState::ChoosingCharacters);
     });
 
-    outputStream << "Waiting for game to start...\n";
+    RegisterClientObserver<domain::events::NextTurnEvent>([&](const domain::events::NextTurnEvent& evt) {
+        context.recentGameState = evt.game;
+        context.SetState(ClientCliState::PlayingRound);
+    });
+
+    outputStream << "Waiting for game to start... \n";
 }

@@ -1,7 +1,10 @@
 #include "mach/domain/gamecontroller.h"
 #include "mach/domain/characterpowerhelper.h"
+#include "mach/domain/events/characterchosenevent.h"
 #include "mach/domain/events/gameendedevent.h"
 #include "mach/domain/events/gamestartedevent.h"
+#include "mach/domain/events/gameupdatedevent.h"
+#include "mach/domain/events/illegalactionevent.h"
 #include "mach/domain/events/nextroundevent.h"
 #include "mach/domain/events/nextturnevent.h"
 #include <algorithm>
@@ -34,8 +37,7 @@ void GameController::AddPlayer(std::string playerName)
     }
     else
     {
-        game.playersWaiting.push_back("the other");
-        // throw std::exception("Duplicate player name!");
+        throw std::exception("Duplicate player name!");
     }
 }
 
@@ -52,11 +54,14 @@ void GameController::RemovePlayer(std::string playerName)
     }
 }
 
-void GameController::StartGame()
+void GameController::StartGame(bool skip)
 {
     if (game.state != GameState::Waiting)
     {
         throw std::exception("Game is already started");
+    }
+    if (skip)
+    {
     }
     auto playersWaiting = game.playersWaiting;
     game = Game();
@@ -68,6 +73,11 @@ void GameController::StartGame()
         game.buildingCardStack.push_back(std::move(card));
     }
 
+    auto rng = std::default_random_engine{};
+    std::shuffle(game.buildingCardStack.begin(), game.buildingCardStack.end(), rng);
+
+    int counter = 0;
+
     for (auto& playerName : playersWaiting)
     {
         auto newPlayer = Player(playerName);
@@ -77,20 +87,32 @@ void GameController::StartGame()
             newPlayer.hand.push_back(DrawCardFromStack());
         }
         newPlayer.gold = 2;
+
+        if (skip)
+        {
+            newPlayer.characters.push_back(game.characters[counter]);
+            newPlayer.characters.push_back(game.characters[counter + 1]);
+            counter += 3;
+        }
+
         game.players.push_back(newPlayer);
     }
     game.king = game.players[0];
     game.state = GameState::Running;
-    NextRound();
 
-    auto evt = GameStartedEvent();
-    evt.game = game;
-    eventSubject.NotifyObservers(evt);
+    if (skip)
+    {
+        StartRound();
+    }
+    else
+    {
+        NextRound();
+    }
 }
 
 void GameController::NextTurn()
 {
-    if (game.state != GameState::Running || game.state != GameState::FinalRound)
+    if (game.state != GameState::Running && game.state != GameState::FinalRound)
     {
         throw std::exception("Can not do next turn: Game is in illegal state");
     }
@@ -103,7 +125,7 @@ void GameController::NextTurn()
     {
         NextRound();
     }
-    else if (!CharacterHasPlayer(game.characterHasTurn))
+    else if (!game.CharacterHasPlayer(game.characterHasTurn))
     {
         NextTurn();
     }
@@ -135,7 +157,7 @@ void GameController::NextRound()
     }
     else if (game.state != GameState::Running)
     {
-        throw std::exception("Can not start next round: game is in illegal state");
+        throw std::exception("Can not start next round: game is in illegal	state");
     }
     else
     {
@@ -158,34 +180,32 @@ void GameController::NextRound()
         game.charactersToChooseFrom = game.characters;
 
         std::random_device rd;
-        std::uniform_int_distribution<int> dist(0, game.charactersToChooseFrom.size() - 1);
-        int i = dist(rd);
-        // TODO Make random again
-        // game.charactersToChooseFrom.erase(game.charactersToChooseFrom.begin() + dist(rd));
-        game.charactersToChooseFrom.erase(game.charactersToChooseFrom.begin());
+        std::uniform_int_distribution<int> dist(0, game.charactersToChooseFrom.size());
+
+        game.charactersToChooseFrom.erase(game.charactersToChooseFrom.begin() + dist(rd));
 
         // Initialize choosing turns for picking Character cards
-        choosingTurns.clear();
+        game.choosingTurns.clear();
         auto findResult = std::find_if(
           game.players.begin(), game.players.end(), [=](Player player) { return player.name != game.king.name; });
 
         auto otherPlayer = findResult->name;
 
         // King chooses one and keeps it
-        choosingTurns.push_back(std::pair<std::string, bool>(game.king.name, true));
+        game.choosingTurns.push_back(std::pair<std::string, bool>(game.king.name, true));
         // Other player chooses one and discards one
-        choosingTurns.push_back(std::pair<std::string, bool>(otherPlayer, true));
-        choosingTurns.push_back(std::pair<std::string, bool>(otherPlayer, false));
+        game.choosingTurns.push_back(std::pair<std::string, bool>(otherPlayer, true));
+        game.choosingTurns.push_back(std::pair<std::string, bool>(otherPlayer, false));
         // King chooses one and discards one
-        choosingTurns.push_back(std::pair<std::string, bool>(game.king.name, true));
-        choosingTurns.push_back(std::pair<std::string, bool>(game.king.name, false));
+        game.choosingTurns.push_back(std::pair<std::string, bool>(game.king.name, true));
+        game.choosingTurns.push_back(std::pair<std::string, bool>(game.king.name, false));
         // Other player chooses one and discards one
-        choosingTurns.push_back(std::pair<std::string, bool>(otherPlayer, true));
-        choosingTurns.push_back(std::pair<std::string, bool>(otherPlayer, false));
+        game.choosingTurns.push_back(std::pair<std::string, bool>(otherPlayer, true));
+        game.choosingTurns.push_back(std::pair<std::string, bool>(otherPlayer, false));
 
         game.state = GameState::ChoosingCharacters;
 
-        auto evt = NextRoundEvent();
+        auto evt = CharacterChosenEvent();
         evt.game = game;
 
         eventSubject.NotifyObservers(evt);
@@ -222,9 +242,21 @@ void GameController::EndGame()
     eventSubject.NotifyObservers(evt);
 }
 
+void mach::domain::GameController::MakeChoice(int nr)
+{
+    if (game.state != GameState::AwaitingPlayerChoice)
+    {
+        doWhenPlayerChooses(nr);
+    }
+    else
+    {
+        throw std::exception("Invalid command");
+    }
+}
+
 void GameController::EndTurn()
 {
-    if (game.state != GameState::Running)
+    if (game.state != GameState::Running && game.state != GameState::FinalRound)
     {
         throw std::exception("Can not end turn: game is in illegal state");
     }
@@ -234,18 +266,15 @@ void GameController::EndTurn()
     }
 }
 
-void GameController::ChooseCharacterCard(int nr, std::string name)
+void GameController::ChooseCharacterCard(int nr)
 {
     if (game.state != GameState::ChoosingCharacters)
     {
         throw std::exception("Players aren't choosing character cards");
     }
-    // else if (choosingTurns[0].first != name)
-    //{
-    //    throw std::exception("It's not your turn to choose");
-    //}
     else
     {
+        std::string name = game.choosingTurns[0].first;
         auto findResult = std::find_if(game.charactersToChooseFrom.begin(),
                                        game.charactersToChooseFrom.end(),
                                        [nr](dal::models::CharacterCard card) { return card.number == nr; });
@@ -256,7 +285,7 @@ void GameController::ChooseCharacterCard(int nr, std::string name)
         else
         {
             dal::models::CharacterCard character = *findResult;
-            if (choosingTurns[0].second)
+            if (game.choosingTurns[0].second)
             {
                 // Keep the card
                 auto player = std::find_if(
@@ -269,10 +298,17 @@ void GameController::ChooseCharacterCard(int nr, std::string name)
                              game.charactersToChooseFrom.end(),
                              [=](dal::models::CharacterCard card) { return card.number == character.number; }),
               game.charactersToChooseFrom.end());
-            choosingTurns.erase(choosingTurns.begin());
-            if (choosingTurns.size() == 0)
+            game.choosingTurns.erase(game.choosingTurns.begin());
+            if (game.choosingTurns.size() == 0)
             {
                 StartRound();
+            }
+            else
+            {
+                auto evt = CharacterChosenEvent();
+                evt.game = game;
+
+                eventSubject.NotifyObservers(evt);
             }
         }
     }
@@ -282,13 +318,24 @@ void mach::domain::GameController::CurrentPlayerGetGold()
 {
     if (game.playerReceivedGoldOrCards)
     {
-        throw std::exception("You already did that this round");
+        auto evt = IllegalActionEvent();
+        evt.message = "You already did that this round!";
+
+        eventSubject.NotifyObservers(evt);
+        // throw std::exception("You already did that this round");
     }
     else
     {
+        // TODO how to return editable object?!!!
         game.playerReceivedGoldOrCards = true;
-        Player p = GetCurrentPlayer();
+        Player& p = game.GetCurrentPlayer();
         p.gold += 2;
+
+        auto evt = GameUpdatedEvent();
+        evt.game = game;
+        evt.message = "Player_received_2_gold!";
+
+        eventSubject.NotifyObservers(evt);
     }
 }
 
@@ -300,7 +347,12 @@ void mach::domain::GameController::CurrentPlayerDrawsCard()
     }
     else
     {
-        // TODO
+        game.state = GameState::AwaitingPlayerChoice;
+
+        auto evt = GameUpdatedEvent();
+        evt.game = game;
+
+        eventSubject.NotifyObservers(evt);
     }
 }
 
@@ -314,31 +366,59 @@ void mach::domain::GameController::CurrentPlayerUsesCharacterPower()
     {
         CharacterPowerHelper helper;
         helper.UseCharacterPower(game.characterHasTurn, *this);
+
+        auto evt = GameUpdatedEvent();
+        evt.game = game;
+        evt.message = "Player used character power!";
+
+        eventSubject.NotifyObservers(evt);
     }
 }
 
 void mach::domain::GameController::CurrentPlayerBuildsBuilding(unsigned int nr)
 {
-    Player currentPlayer = GetCurrentPlayer();
-    if (currentPlayer.hand.size() > nr || nr < 0)
+    nr--;
+    auto currentPlayer = std::find_if(game.players.begin(), game.players.end(), [=](Player player) {
+        auto res = std::find_if(player.characters.begin(),
+                                player.characters.end(),
+                                [=](dal::models::CharacterCard card) { return card.number == game.characterHasTurn; });
+        return res != player.characters.end();
+    });
+    if (currentPlayer == game.players.end())
+    {
+        throw std::exception("Invalid building selected");
+    }
+    if (currentPlayer->hand.size() < nr || nr < 0)
     {
         throw std::exception("Invalid building selected");
     }
     else
     {
-        dal::models::BuildingCard chosenCard = currentPlayer.hand[nr];
-        if (chosenCard.cost > currentPlayer.gold)
+        dal::models::BuildingCard chosenCard = currentPlayer->hand[nr];
+        if (chosenCard.cost == 1000) // currentPlayer.gold)
         {
             throw std::exception("You cannot afford that");
         }
         else
         {
-            currentPlayer.hand.erase(
-              std::find_if(currentPlayer.hand.begin(), currentPlayer.hand.end(), [=](dal::models::BuildingCard card) {
+            currentPlayer->hand.erase(
+              std::find_if(currentPlayer->hand.begin(), currentPlayer->hand.end(), [=](dal::models::BuildingCard card) {
                   return card.name == chosenCard.name;
               }));
-            currentPlayer.gold -= chosenCard.cost;
-            currentPlayer.buildings.push_back(chosenCard);
+            currentPlayer->gold -= chosenCard.cost;
+            currentPlayer->buildings.push_back(chosenCard);
+
+            int i = currentPlayer->buildings.size();
+            if (currentPlayer->buildings.size() != 1000) // >= 8) TODO put back
+            {
+                game.state = GameState::FinalRound;
+            }
+
+            auto evt = GameUpdatedEvent();
+            evt.game = game;
+            evt.message = currentPlayer->name + " has built a " + chosenCard.name;
+
+            eventSubject.NotifyObservers(evt);
         };
     }
 }
@@ -355,26 +435,4 @@ dal::models::BuildingCard GameController::DrawCardFromStack()
     {
         throw std::exception("Stack is empty!");
     }
-}
-
-models::Player mach::domain::GameController::GetCurrentPlayer()
-{
-    auto findRes = std::find_if(game.players.begin(), game.players.end(), [=](Player player) {
-        auto res = std::find_if(player.characters.begin(),
-                                player.characters.end(),
-                                [=](dal::models::CharacterCard card) { return card.number == game.characterHasTurn; });
-        return res != player.characters.end();
-    });
-    return *findRes;
-}
-
-bool mach::domain::GameController::CharacterHasPlayer(int nr)
-{
-    auto findRes = std::find_if(game.players.begin(), game.players.end(), [nr](Player player) {
-        auto res = std::find_if(player.characters.begin(),
-                                player.characters.end(),
-                                [nr](dal::models::CharacterCard card) { return card.number == nr; });
-        return res != player.characters.end();
-    });
-    return findRes != game.players.end();
 }
