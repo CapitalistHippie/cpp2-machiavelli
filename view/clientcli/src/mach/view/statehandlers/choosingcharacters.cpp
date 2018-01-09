@@ -54,7 +54,7 @@ void mach::view::statehandlers::ChoosingCharacters::ChooseCharacterCommandHandle
     client.SendChooseCharacterCommand(number);
 }
 
-void mach::view::statehandlers::ChoosingCharacters::PrintOptions(domain::models::Game game)
+void mach::view::statehandlers::ChoosingCharacters::PrintOptions(const domain::models::Game& game)
 {
     outputStream << "It's your turn to choose! \n";
     outputStream << "Which card do you want to ";

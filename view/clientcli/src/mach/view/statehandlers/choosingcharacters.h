@@ -20,7 +20,7 @@ class ChoosingCharacters : public StateHandlerBase<ChoosingCharacters, ClientCli
     void EnterState() override;
 
   private:
-    void PrintOptions(domain::models::Game game);
+    void PrintOptions(const domain::models::Game& game);
     void ChooseCharacterCommandHandler(const infra::CliCommand& command);
 
 }; // class ChoosingCharacters

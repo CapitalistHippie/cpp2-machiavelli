@@ -26,7 +26,7 @@ class PlayingRound : public StateHandlerBase<PlayingRound, ClientCliState::Playi
     void BuildBuildingCommandHandler(const infra::CliCommand& command);
     void ChooseCardsCommandHandler(const infra::CliCommand& command);
     void EndTurnCommandHandler();
-    void PrintGameStatus(domain::models::Game game);
+    void PrintGameStatus(const domain::models::Game& game);
     bool myTurn;
 
 }; // class PlayingRound

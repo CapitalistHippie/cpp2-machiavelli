@@ -33,6 +33,7 @@ class Game
     std::vector<std::pair<std::string, bool>> choosingTurns;
 
     models::Player& GetCurrentPlayer();
+    const models::Player& GetCurrentPlayer() const;
     std::string GetCurrentPlayerName() const;
     bool CharacterHasPlayer(int nr);
     Player& GetWinner();

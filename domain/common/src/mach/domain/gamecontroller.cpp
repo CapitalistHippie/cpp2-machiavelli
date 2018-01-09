@@ -149,7 +149,7 @@ void GameController::NextRound()
             // Find the new king
             auto findResult = std::find_if(player.characters.begin(),
                                            player.characters.end(),
-                                           [](dal::models::CharacterCard card) { return card.number == 4; });
+                                           [](const dal::models::CharacterCard& card) { return card.number == 4; });
             if (findResult != player.characters.end())
             {
                 game.king = player;

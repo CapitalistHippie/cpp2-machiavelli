@@ -12,6 +12,16 @@ Player& Game::GetCurrentPlayer()
     });
 }
 
+const Player& Game::GetCurrentPlayer() const
+{
+    return *std::find_if(players.begin(), players.end(), [=](Player player) {
+        auto res = std::find_if(player.characters.begin(),
+                                player.characters.end(),
+                                [=](dal::models::CharacterCard card) { return card.number == characterHasTurn; });
+        return res != player.characters.end();
+    });
+}
+
 std::string Game::GetCurrentPlayerName() const
 {
     Player player;

@@ -57,7 +57,7 @@ void PlayingRound::EnterState()
           {
               ClearConsole();
               outputStream << "Please choose: \n";
-              for (int i = 0; i < evt.choices.size(); i++)
+              for (unsigned int i = 0; i < evt.choices.size(); i++)
               {
                   auto card = evt.choices[i];
                   outputStream << "[" << i + 1 << "]: " << card.name << ": " << card.cost << ": "
@@ -74,7 +74,7 @@ void PlayingRound::EnterState()
           {
               ClearConsole();
               outputStream << "Please choose: \n";
-              for (int i = 0; i < evt.choices.size(); i++)
+              for (unsigned int i = 0; i < evt.choices.size(); i++)
               {
                   outputStream << evt.choices[i].second << ": " << evt.choices[i].first << "\n";
               }
@@ -167,7 +167,7 @@ void mach::view::statehandlers::PlayingRound::EndTurnCommandHandler()
     }
 }
 
-void mach::view::statehandlers::PlayingRound::PrintGameStatus(domain::models::Game game)
+void mach::view::statehandlers::PlayingRound::PrintGameStatus(const domain::models::Game& game)
 {
     const auto currentCharacter =
       std::find_if(game.characters.begin(), game.characters.end(), [&](const dal::models::CharacterCard& card) {
@@ -178,12 +178,12 @@ void mach::view::statehandlers::PlayingRound::PrintGameStatus(domain::models::Ga
     outputStream << "Current player: " << game.GetCurrentPlayerName() << "\n";
     outputStream << "Got cards/gold this turn? " << BooleanToString(game.playerReceivedGoldOrCards) << " | ";
     outputStream << "Character power used? " << BooleanToString(game.playerUsedCharacterPower) << "\n";
-    for (auto player : game.players)
+    for (const auto& player : game.players)
     {
         outputStream << "----" << player.name << "----\n";
         outputStream << "- Gold: " << player.gold << "\n";
         outputStream << "- Buildings: \n";
-        for (auto b : player.buildings)
+        for (const auto& b : player.buildings)
         {
             outputStream << "-- " << b.name << ". Cost: " << b.cost << ". Color: " << BuildingColorEnumToString(b.color)
                          << ". Description: " << b.description << "\n";
@@ -199,9 +199,9 @@ void mach::view::statehandlers::PlayingRound::PrintGameStatus(domain::models::Ga
     {
         outputStream << "\nIt is your turn! \n";
         outputStream << "Your hand: \n";
-        for (int i = 0; i < game.GetCurrentPlayer().hand.size(); i++)
+        for (unsigned int i = 0; i < game.GetCurrentPlayer().hand.size(); i++)
         {
-            auto card = game.GetCurrentPlayer().hand[i];
+            const auto& card = game.GetCurrentPlayer().hand[i];
             outputStream << "[" << i + 1 << "] " << card.name << ". Cost: " << card.cost
                          << ". Color: " << BuildingColorEnumToString(card.color) << "\n";
         }
@@ -210,6 +210,7 @@ void mach::view::statehandlers::PlayingRound::PrintGameStatus(domain::models::Ga
         outputStream << "- card: draw a card \n";
         outputStream << "- build <nr>: Builds a building from your hand \n";
         outputStream << "- power: use your character power \n";
+        outputStream << "- hulp: show help \n";
         outputStream << "- end: end your turn \n\n";
     }
 }
