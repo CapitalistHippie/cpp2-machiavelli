@@ -85,7 +85,7 @@ class CommandHandlerVisitor : public CommandVisitor
     }
     void Visit(const commands::ChooseCommand& command) const override
     {
-        gameController->MakeChoice(command.chosenNumber);
+        gameController->MakeChoice(std::move(command.chosenNumbers));
     }
 }; // class CommandHandlerVisitor
 } // namespace detail

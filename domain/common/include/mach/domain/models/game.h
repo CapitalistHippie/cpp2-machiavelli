@@ -35,6 +35,7 @@ class Game
     models::Player& GetCurrentPlayer();
     std::string GetCurrentPlayerName() const;
     bool CharacterHasPlayer(int nr);
+    Player& GetWinner();
 
 }; // class Game
 } // namespace models
