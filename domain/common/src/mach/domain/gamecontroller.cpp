@@ -56,12 +56,10 @@ void GameController::RemovePlayer(std::string playerName)
 
 void GameController::StartGame(bool skip)
 {
+    skip = true;
     if (game.state != GameState::Waiting)
     {
         throw std::exception("Game is already started.");
-    }
-    if (skip)
-    {
     }
     auto playersWaiting = game.playersWaiting;
     game = Game();
@@ -76,7 +74,7 @@ void GameController::StartGame(bool skip)
     auto rng = std::default_random_engine{};
     std::shuffle(game.buildingCardStack.begin(), game.buildingCardStack.end(), rng);
 
-    int counter = 2;
+    int counter = 3;
 
     for (auto& playerName : playersWaiting)
     {
@@ -91,8 +89,8 @@ void GameController::StartGame(bool skip)
         if (skip)
         {
             newPlayer.characters.push_back(game.characters[counter]);
-            newPlayer.characters.push_back(game.characters[counter + 1]);
-            counter += 3;
+            newPlayer.characters.push_back(game.characters[counter - 1]);
+            counter += 4;
         }
 
         game.players.push_back(newPlayer);
@@ -161,7 +159,7 @@ void GameController::NextRound()
     }
     else
     {
-        for (auto player : game.players)
+        for (auto& player : game.players)
         {
             // Find the new king
             auto findResult = std::find_if(player.characters.begin(),
@@ -180,7 +178,7 @@ void GameController::NextRound()
         game.charactersToChooseFrom = game.characters;
 
         std::random_device rd;
-        std::uniform_int_distribution<int> dist(0, game.charactersToChooseFrom.size());
+        std::uniform_int_distribution<int> dist(0, game.charactersToChooseFrom.size() - 1);
 
         game.charactersToChooseFrom.erase(game.charactersToChooseFrom.begin() + dist(rd));
 
