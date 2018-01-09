@@ -35,7 +35,7 @@ class GameController
     void StartGame(bool skip);
     void EndGame();
 
-    void MakeChoice(int nr);
+    void MakeChoice(std::vector<int> numbers);
 
     void EndTurn();
     void ChooseCharacterCard(int nr);
@@ -54,7 +54,7 @@ class GameController
     mach::dal::BuildingCardRepository buildingCardRepository;
     mach::dal::CharacterCardRepository characterCardRepository;
 
-    std::function<void(int)> doWhenPlayerChooses;
+    std::function<void(std::vector<int>)> doWhenPlayerChooses;
     std::vector<dal::models::BuildingCard> choices;
 
     void NextTurn();

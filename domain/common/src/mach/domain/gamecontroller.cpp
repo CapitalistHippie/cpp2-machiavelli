@@ -234,11 +234,11 @@ void GameController::EndGame()
     eventSubject.NotifyObservers(evt);
 }
 
-void mach::domain::GameController::MakeChoice(int nr)
+void mach::domain::GameController::MakeChoice(std::vector<int> numbers)
 {
     if (game.state == GameState::AwaitingPlayerChoice)
     {
-        doWhenPlayerChooses(nr);
+        doWhenPlayerChooses(std::move(numbers));
     }
     else
     {
@@ -345,7 +345,9 @@ void mach::domain::GameController::CurrentPlayerDrawsCard()
 
         eventSubject.NotifyObservers(evt);
 
-        doWhenPlayerChooses = [&](int nr) {
+        doWhenPlayerChooses = [&](std::vector<int> numbers) {
+            int nr = numbers[0];
+
             if (nr >= choices.size() || nr < 0)
             {
                 // Incorrect value

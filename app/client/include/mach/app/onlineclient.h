@@ -96,7 +96,7 @@ class OnlineClient : public Client
     void SendBuildBuildingCommand(int number);
     void SendUseCharacterPowerCommand();
     void SendEndTurnCommand();
-    void SendChooseCommand(int value);
+    void SendChooseCommand(std::vector<int> value);
     void SendChooseCharacterCommand(int value);
 
     const OnlineClientConfiguration& GetConfiguration() const;

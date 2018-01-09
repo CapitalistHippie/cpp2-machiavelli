@@ -24,7 +24,7 @@ class PlayingRound : public StateHandlerBase<PlayingRound, ClientCliState::Playi
     void GetCardCommandHandler();
     void UseCharacterPowerCommandHandler();
     void BuildBuildingCommandHandler(const infra::CliCommand& command);
-    void ChooseCardCommandHandler(const infra::CliCommand& command);
+    void ChooseCardsCommandHandler(const infra::CliCommand& command);
     void EndTurnCommandHandler();
     void PrintGameStatus(domain::models::Game game);
     bool myTurn;

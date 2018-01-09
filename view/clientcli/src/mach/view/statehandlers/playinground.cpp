@@ -20,7 +20,7 @@ void PlayingRound::EnterState()
     commandParser.RegisterCommand<int>("build");
     commandParser.RegisterCommand("power");
     commandParser.RegisterCommand("end");
-    commandParser.RegisterCommand<int>("choose");
+    commandParser.RegisterCommand<std::string>("choose");
 
     commandSubject.RegisterObserver<infra::CliCommand>(
       [](const infra::CliCommand& command) { return command.name == "gold"; },
@@ -44,7 +44,7 @@ void PlayingRound::EnterState()
 
     commandSubject.RegisterObserver<infra::CliCommand>(
       [](const infra::CliCommand& command) { return command.name == "choose"; },
-      std::bind(&PlayingRound::ChooseCardCommandHandler, this, std::placeholders::_1));
+      std::bind(&PlayingRound::ChooseCardsCommandHandler, this, std::placeholders::_1));
 
     outputStream << context.recentGameState.GetCurrentPlayerName() << "\n\n";
     outputStream << client.GetConfiguration().playerName << "\n\n";
@@ -124,13 +124,25 @@ void mach::view::statehandlers::PlayingRound::BuildBuildingCommandHandler(const 
     }
 }
 
-void mach::view::statehandlers::PlayingRound::ChooseCardCommandHandler(const infra::CliCommand& command)
+void mach::view::statehandlers::PlayingRound::ChooseCardsCommandHandler(const infra::CliCommand& command)
 {
     if (myTurn)
     {
-        auto number = *std::static_pointer_cast<int>(command.parameters[0]);
+        auto choicesString = *std::static_pointer_cast<std::string>(command.parameters[0]);
+        std::vector<int> choices;
 
-        client.SendChooseCommand(number - 1);
+        std::stringstream choicesStringstream(choicesString);
+
+        while (!choicesStringstream.eof())
+        {
+            int choice;
+            choicesStringstream >> choice;
+            choice--;
+
+            choices.push_back(choice);
+        }
+
+        client.SendChooseCommand(std::move(choices));
     }
 }
 

@@ -16,21 +16,24 @@ namespace commands
 class ChooseCommand : public CommandBase<ChooseCommand, CommandType::Choose>
 {
   public:
-    int chosenNumber;
+    std::vector<int> chosenNumbers;
 
     void Serialize(std::ostream& dataStream) const override
     {
-        dataStream << chosenNumber;
+        dataStream << chosenNumbers;
     }
 
     void Deserialize(std::istream& dataStream) override
     {
-        dataStream >> chosenNumber;
+        dataStream >> chosenNumbers;
     }
 
     unsigned int GetDataLength() const override
     {
-        return 1;
+        std::stringstream data;
+        Serialize(data);
+
+        return data.str().length();
     }
 }; // class ChooseCommand
 } // namespace commands

@@ -146,10 +146,10 @@ void mach::app::OnlineClient::SendEndTurnCommand()
     tcpClient.Write(data);
 }
 
-void mach::app::OnlineClient::SendChooseCommand(int value)
+void mach::app::OnlineClient::SendChooseCommand(std::vector<int> value)
 {
     commands::ChooseCommand command;
-    command.chosenNumber = value;
+    command.chosenNumbers = std::move(value);
 
     auto data = serializer.Serialize(command);
 
