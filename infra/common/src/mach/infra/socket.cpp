@@ -124,7 +124,7 @@ SocketError mach::infra::ConvertSystemSocketErrorCode(int errorCode)
         default:
             return SocketError::Other;
     }
-#else // TODO: Assuming POSIX.
+#else // Assuming POSIX.
     switch (errno)
     {
         case 0:

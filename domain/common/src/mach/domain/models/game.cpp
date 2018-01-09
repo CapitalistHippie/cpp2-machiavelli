@@ -61,10 +61,10 @@ Player& mach::domain::models::Game::GetWinner()
 std::ostream& operator<<(std::ostream& os, const Game& game)
 {
     return os << game.state << '|' << game.characterHasTurn << '|' << game.playerReceivedGoldOrCards << '|'
-              << game.playerUsedCharacterPower << '|' << game.buildingsStillAllowedToPlayThisTurn << '|'
-              << game.killedCharacter << '|' << game.king << '|' << game.characters << '|' << game.buildingCardStack
-              << '|' << game.players << '|' << game.playersWaiting << '|' << game.charactersToChooseFrom << '|'
-              << game.choosingTurns;
+              << game.playerUsedCharacterPower << '|' << game.isFinalRound << '|'
+              << game.buildingsStillAllowedToPlayThisTurn << '|' << game.killedCharacter << '|' << game.king << '|'
+              << game.characters << '|' << game.buildingCardStack << '|' << game.players << '|' << game.playersWaiting
+              << '|' << game.charactersToChooseFrom << '|' << game.choosingTurns;
 }
 
 std::istream& operator>>(std::istream& is, Game& game)
@@ -76,6 +76,8 @@ std::istream& operator>>(std::istream& is, Game& game)
     is >> game.playerReceivedGoldOrCards;
     is.ignore();
     is >> game.playerUsedCharacterPower;
+    is.ignore();
+    is >> game.isFinalRound;
     is.ignore();
     is >> game.buildingsStillAllowedToPlayThisTurn;
     is.ignore();

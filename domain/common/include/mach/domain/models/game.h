@@ -19,7 +19,7 @@ class Game
 {
   public:
     GameState state;
-    bool playerReceivedGoldOrCards, playerUsedCharacterPower;
+    bool playerReceivedGoldOrCards, playerUsedCharacterPower, isFinalRound;
     int characterHasTurn;
     int buildingsStillAllowedToPlayThisTurn;
     int killedCharacter;

@@ -63,11 +63,6 @@ mach::app::OnlineClient::OnlineClient(infra::ThreadPool& threadPool)
 
 void OnlineClient::Connect()
 {
-    if (isConnected)
-    {
-        // TODO: Throw.
-    }
-
     tcpClient.Connect(configuration.hostname, configuration.port);
 
     isConnected = true;
@@ -78,11 +73,6 @@ void OnlineClient::StartAsync()
     if (isRunning)
     {
         return;
-    }
-
-    if (!isConnected)
-    {
-        // TODO: Throw.
     }
 
     isRunning = true;

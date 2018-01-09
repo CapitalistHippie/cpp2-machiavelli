@@ -32,7 +32,7 @@ class GameController
     void AddPlayer(std::string player);
     void RemovePlayer(std::string playerName);
 
-    void StartGame(bool skip);
+    void StartGame();
     void EndGame();
 
     void MakeChoice(std::vector<int> numbers);
