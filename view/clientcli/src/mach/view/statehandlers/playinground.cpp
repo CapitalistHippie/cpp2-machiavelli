@@ -3,6 +3,7 @@
 #include <mach/domain/events/gameupdatedevent.h>
 #include <mach/domain/events/nextturnevent.h>
 #include <mach/view/console.h>
+#include <mach/view/helpers.h>
 
 #include <string>
 
@@ -67,7 +68,7 @@ void PlayingRound::EnterState()
             {
                 auto card = evt.choices[i];
                 outputStream << "[" << i + 1 << "]: " << card.name << ": " << card.cost << ": "
-                             << ColorToString(card.color) << ": " << card.description << "\n";
+                             << BuildingColorEnumToString(card.color) << ": " << card.description << "\n";
             }
             outputStream << "\nAvailable commands: \n";
             outputStream << "choose <nr>: choose a card \n\n";
@@ -81,6 +82,11 @@ void PlayingRound::EnterState()
         myTurn = evt.game.GetCurrentPlayerName() == client.GetConfiguration().playerName;
         ClearConsole();
         PrintGameStatus(evt.game);
+    });
+
+    RegisterClientObserver<domain::events::GameEndedEvent>([&](const domain::events::GameEndedEvent& evt) {
+        context.recentGameState = evt.game;
+        context.SetState(ClientCliState::Ended);
     });
 }
 
@@ -138,10 +144,15 @@ void mach::view::statehandlers::PlayingRound::EndTurnCommandHandler()
 
 void mach::view::statehandlers::PlayingRound::PrintGameStatus(domain::models::Game game)
 {
-    outputStream << "Current character: " << game.characterHasTurn << "\n";
+    const auto currentCharacter =
+      std::find_if(game.characters.begin(), game.characters.end(), [&](const dal::models::CharacterCard& card) {
+          return card.number == game.characterHasTurn;
+      });
+
+    outputStream << "Current character: " << currentCharacter->name << "\n";
     outputStream << "Current player: " << game.GetCurrentPlayerName() << "\n";
-    outputStream << "Got cards/gold this turn? " << game.playerReceivedGoldOrCards << " | ";
-    outputStream << "Character power used? " << game.playerUsedCharacterPower << "\n";
+    outputStream << "Got cards/gold this turn? " << BooleanToString(game.playerReceivedGoldOrCards) << " | ";
+    outputStream << "Character power used? " << BooleanToString(game.playerUsedCharacterPower) << "\n";
     for (auto player : game.players)
     {
         outputStream << "----" << player.name << "----\n";
@@ -150,8 +161,8 @@ void mach::view::statehandlers::PlayingRound::PrintGameStatus(domain::models::Ga
         outputStream << "- Buildings: \n";
         for (auto b : player.buildings)
         {
-            outputStream << "-- " << b.name << ": " << b.cost << ": " << ColorToString(b.color) << ": " << b.description
-                         << "\n";
+            outputStream << "-- " << b.name << ": " << b.cost << ": " << BuildingColorEnumToString(b.color) << ": "
+                         << b.description << "\n";
         }
         outputStream << "\n";
     }
@@ -168,7 +179,7 @@ void mach::view::statehandlers::PlayingRound::PrintGameStatus(domain::models::Ga
         {
             auto card = game.GetCurrentPlayer().hand[i];
             outputStream << "[" << i + 1 << "] " << card.name << ". Cost: " << card.cost
-                         << ". Color: " << ColorToString(card.color) << "\n";
+                         << ". Color: " << BuildingColorEnumToString(card.color) << "\n";
         }
         outputStream << "\nAvailable commands: \n";
         outputStream << "- gold: get 2 gold \n";
@@ -176,29 +187,5 @@ void mach::view::statehandlers::PlayingRound::PrintGameStatus(domain::models::Ga
         outputStream << "- build <nr>: Builds a building from your hand \n";
         outputStream << "- power: use your character power \n";
         outputStream << "- end: end your turn \n\n";
-    }
-}
-
-std::string mach::view::statehandlers::PlayingRound::ColorToString(dal::models::BuildingColor color)
-{
-    std::string s;
-
-    switch (color)
-    {
-        case dal::models::BuildingColor::Yellow:
-            return "geel";
-            break;
-        case dal::models::BuildingColor::Green:
-            return "groen";
-            break;
-        case dal::models::BuildingColor::Blue:
-            return "blauw";
-            break;
-        case dal::models::BuildingColor::Red:
-            return "rood";
-            break;
-        case dal::models::BuildingColor::Lilac:
-            return "lila";
-            break;
     }
 }

@@ -229,15 +229,7 @@ void GameController::EndGame()
     auto evt = GameEndedEvent();
     evt.game = game;
 
-    Player winner;
-    for (auto p : game.players)
-    {
-        if (p.GetPoints() > winner.GetPoints() ||
-            p.GetPoints() == winner.GetPoints() && p.GetPointsFromBuildings() > winner.GetPointsFromBuildings())
-        {
-            winner = p;
-        }
-    }
+    const auto& winner = game.GetWinner();
     evt.winner = winner.name;
     eventSubject.NotifyObservers(evt);
 }

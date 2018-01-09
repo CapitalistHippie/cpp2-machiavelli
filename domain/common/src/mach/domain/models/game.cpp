@@ -39,6 +39,25 @@ bool Game::CharacterHasPlayer(int nr)
     return findRes != players.end();
 }
 
+Player& mach::domain::models::Game::GetWinner()
+{
+    Player* winner = &players[0];
+
+    for (unsigned int i = 1; i < players.size(); ++i)
+    {
+        auto& player = players[i];
+
+        if (player.GetPoints() > winner->GetPoints() ||
+            player.GetPoints() == winner->GetPoints() &&
+              player.GetPointsFromBuildings() > winner->GetPointsFromBuildings())
+        {
+            winner = &player;
+        }
+    }
+
+    return *winner;
+}
+
 std::ostream& operator<<(std::ostream& os, const Game& game)
 {
     return os << game.state << '|' << game.characterHasTurn << '|' << game.playerReceivedGoldOrCards << '|'
