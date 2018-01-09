@@ -70,7 +70,7 @@ void mach::app::Server::ReadCommandsAsync(ServerClient::Id clientId)
     const auto& client = clients.at(clientId);
 
     serializer.DeserializeAsync<commands::Command, CommandType>(
-      client.tcpClient, [&, clientId](std::shared_ptr<commands::Command> command) {
+      client.tcpClient, [&, clientId](std::error_code error, std::shared_ptr<commands::Command> command) {
           if (!isRunning)
           {
               return;
@@ -78,7 +78,18 @@ void mach::app::Server::ReadCommandsAsync(ServerClient::Id clientId)
 
           ReadCommandsAsync(clientId);
 
-          command->Visit(commandHandlerVisitor);
+          // Catch any commands that cause an exception and pass the error back to the client as an event.
+          try
+          {
+              command->Visit(commandHandlerVisitor);
+          }
+          catch (std::exception& e)
+          {
+              domain::events::IllegalActionEvent evt;
+              evt.message = e.what();
+
+              NotifyClient(clientId, evt);
+          }
       });
 }
 

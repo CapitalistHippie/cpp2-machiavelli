@@ -124,7 +124,7 @@ class Server
 
         for (auto& clientPair : clients)
         {
-            auto& client = clientPair.second;
+            const auto& client = clientPair.second;
 
             try
             {
@@ -146,6 +146,31 @@ class Server
             clients.erase(clientId);
 
             // TODO: Throw clientdisconnected event.
+        }
+    }
+
+    template<typename T>
+    void NotifyClient(ServerClient::Id clientId, const T& evt)
+    {
+        const auto& client = clients.at(clientId);
+
+        auto data = serializer.Serialize(evt);
+
+        try
+        {
+            client.tcpClient.Write(data);
+        }
+        catch (std::system_error& e)
+        {
+            if (e.code() == infra::SocketError::Connreset)
+            {
+                // If the connection was forcibly closed on the other side we close the socket, remove the client and go
+                // on.
+                clients.at(clientId).tcpClient.Disconnect();
+                clients.erase(clientId);
+
+                // TODO: Throw clientdisconnected event.
+            }
         }
     }
 

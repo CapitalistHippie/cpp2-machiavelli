@@ -5,7 +5,6 @@
 #include "mach/domain/events/gameendedevent.h"
 #include "mach/domain/events/gamestartedevent.h"
 #include "mach/domain/events/gameupdatedevent.h"
-#include "mach/domain/events/illegalactionevent.h"
 #include "mach/domain/events/nextroundevent.h"
 #include "mach/domain/events/nextturnevent.h"
 #include <algorithm>
@@ -46,7 +45,7 @@ void GameController::RemovePlayer(std::string playerName)
 {
     if (game.state != GameState::Waiting)
     {
-        throw std::exception("Can not remove player: game has already started");
+        throw std::exception("Can not remove player. Game has already started.");
     }
     auto it = std::find(game.playersWaiting.begin(), game.playersWaiting.end(), playerName);
     if (it != game.playersWaiting.end())
@@ -59,7 +58,7 @@ void GameController::StartGame(bool skip)
 {
     if (game.state != GameState::Waiting)
     {
-        throw std::exception("Game is already started");
+        throw std::exception("Game is already started.");
     }
     if (skip)
     {
@@ -115,7 +114,7 @@ void GameController::NextTurn()
 {
     if (game.state != GameState::Running && game.state != GameState::FinalRound)
     {
-        throw std::exception("Can not do next turn: Game is in illegal state");
+        throw std::exception("Can not do next turn. Game is in illegal state.");
     }
     game.characterHasTurn++;
     if (game.killedCharacter == game.characterHasTurn)
@@ -158,7 +157,7 @@ void GameController::NextRound()
     }
     else if (game.state != GameState::Running)
     {
-        throw std::exception("Can not start next round: game is in illegal	state");
+        throw std::exception("Can not start next round. Game is in illegal state.");
     }
     else
     {
@@ -224,7 +223,7 @@ void GameController::EndGame()
 {
     if (game.state != GameState::FinalRound)
     {
-        throw std::exception("Can not end game: game is in illegal state");
+        throw std::exception("Can not end game: game is in illegal state.");
     }
     game.state = GameState::Ended;
     auto evt = GameEndedEvent();
@@ -251,7 +250,7 @@ void mach::domain::GameController::MakeChoice(int nr)
     }
     else
     {
-        throw std::exception("Invalid command");
+        throw std::exception("Invalid command.");
     }
 }
 
@@ -259,7 +258,7 @@ void GameController::EndTurn()
 {
     if (game.state != GameState::Running && game.state != GameState::FinalRound)
     {
-        throw std::exception("Can not end turn: game is in illegal state");
+        throw std::exception("Can not end turn: game is in illegal state.");
     }
     else
     {
@@ -271,7 +270,7 @@ void GameController::ChooseCharacterCard(int nr)
 {
     if (game.state != GameState::ChoosingCharacters)
     {
-        throw std::exception("Players aren't choosing character cards");
+        throw std::exception("Players aren't choosing character cards.");
     }
     else
     {
@@ -281,7 +280,7 @@ void GameController::ChooseCharacterCard(int nr)
                                        [nr](dal::models::CharacterCard card) { return card.number == nr; });
         if (findResult == game.charactersToChooseFrom.end())
         {
-            throw std::exception("You can not choose this card");
+            throw std::exception("You can not choose this card.");
         }
         else
         {
@@ -319,7 +318,7 @@ void mach::domain::GameController::CurrentPlayerGetGold()
 {
     if (game.playerReceivedGoldOrCards)
     {
-        throw std::exception("You already picked a card or received gold this round");
+        throw std::exception("You already picked a card or received gold this round.");
     }
     else
     {
@@ -339,7 +338,7 @@ void mach::domain::GameController::CurrentPlayerDrawsCard()
 {
     if (game.playerReceivedGoldOrCards)
     {
-        throw std::exception("You already picked a card or received gold this round");
+        throw std::exception("You already picked a card or received gold this round.");
     }
     else
     {
@@ -385,7 +384,7 @@ void mach::domain::GameController::CurrentPlayerUsesCharacterPower()
 {
     if (game.playerUsedCharacterPower)
     {
-        throw std::exception("You already used your character power");
+        throw std::exception("You already used your character power.");
     }
     else
     {
@@ -410,18 +409,18 @@ void mach::domain::GameController::CurrentPlayerBuildsBuilding(unsigned int nr)
     });
     if (currentPlayer == game.players.end())
     {
-        throw std::exception("Invalid building selected");
+        throw std::exception("Invalid building selected.");
     }
     if (currentPlayer->hand.size() < nr || nr < 0)
     {
-        throw std::exception("Invalid building selected");
+        throw std::exception("Invalid building selected.");
     }
     else
     {
         dal::models::BuildingCard chosenCard = currentPlayer->hand[nr];
         if (chosenCard.cost == 1000) // currentPlayer.gold)
         {
-            throw std::exception("You cannot afford that");
+            throw std::exception("You cannot afford that.");
         }
         else
         {

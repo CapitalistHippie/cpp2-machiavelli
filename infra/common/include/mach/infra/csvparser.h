@@ -69,6 +69,14 @@ class CsvRow
 
         return *this;
     }
+
+    template<>
+    CsvRow& operator>>(std::string& val)
+    {
+        ParseNextColumn(val);
+
+        return *this;
+    }
 }; // class CsvRow
 
 class CsvParser
