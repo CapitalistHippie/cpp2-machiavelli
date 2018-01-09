@@ -51,7 +51,6 @@ void mach::domain::CharacterPowerHelper::UseCharacterPower(int nr, GameControlle
 
 void mach::domain::CharacterPowerHelper::DoAssassin(models::Player& currentPlayer, GameController& gameController)
 {
-
     auto evt = domain::events::IntChoiceNecessaryEvent();
     std::vector<int> vec;
     for (int i = 2; i < 9; i++)
@@ -87,7 +86,8 @@ void mach::domain::CharacterPowerHelper::DoThief(models::Player& currentPlayer, 
 {
     auto otherPlayer = std::find_if(gameController.game.players.begin(),
                                     gameController.game.players.end(),
-                                    [&](Player player) { return player.name != currentPlayer.name; });
+                                    [&](const Player& player) { return player.name != currentPlayer.name; });
+
     currentPlayer.gold += otherPlayer->gold;
     otherPlayer->gold = 0;
 
@@ -177,7 +177,7 @@ void mach::domain::CharacterPowerHelper::DoWarlord(models::Player& currentPlayer
 {
     auto otherPlayer = std::find_if(gameController.game.players.begin(),
                                     gameController.game.players.end(),
-                                    [&](Player player) { return player.name != currentPlayer.name; });
+                                    [&](const Player& player) { return player.name != currentPlayer.name; });
 
     // Warlord gets amount of red buildings of gold.
     int amount = currentPlayer.GetAmountOfBuildingsByColor(dal::models::BuildingColor::Red);
