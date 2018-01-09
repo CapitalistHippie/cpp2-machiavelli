@@ -384,6 +384,8 @@ void mach::domain::GameController::CurrentPlayerUsesCharacterPower()
     {
         CharacterPowerHelper helper;
         helper.UseCharacterPower(game.characterHasTurn, *this);
+
+        game.playerUsedCharacterPower = true;
     }
 }
 

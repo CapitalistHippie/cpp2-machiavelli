@@ -17,7 +17,7 @@ void mach::domain::CharacterPowerHelper::UseCharacterPower(int nr, GameControlle
     {
         return;
     }
-    Player currentPlayer = gameController.game.GetCurrentPlayer();
+    Player& currentPlayer = gameController.game.GetCurrentPlayer();
     switch (nr)
     {
         case 1:
@@ -47,7 +47,7 @@ void mach::domain::CharacterPowerHelper::UseCharacterPower(int nr, GameControlle
     }
 }
 
-void mach::domain::CharacterPowerHelper::DoAssassin(models::Player currentPlayer, GameController& gameController)
+void mach::domain::CharacterPowerHelper::DoAssassin(models::Player& currentPlayer, GameController& gameController)
 {
 
     auto evt = domain::events::IntChoiceNecessaryEvent();
@@ -81,23 +81,22 @@ void mach::domain::CharacterPowerHelper::DoAssassin(models::Player currentPlayer
     };
 }
 
-void mach::domain::CharacterPowerHelper::DoThief(Player currentPlayer, GameController& gameController)
+void mach::domain::CharacterPowerHelper::DoThief(models::Player& currentPlayer, GameController& gameController)
 {
-    auto tempVec = gameController.game.players;
-    tempVec.erase(
-      std::find_if(tempVec.begin(), tempVec.end(), [=](Player player) { return player.name == currentPlayer.name; }));
-    Player chosenPlayer = tempVec[0];
-    currentPlayer.gold += chosenPlayer.gold;
-    chosenPlayer.gold = 0;
+    auto otherPlayer = std::find_if(gameController.game.players.begin(),
+                                    gameController.game.players.end(),
+                                    [&](Player player) { return player.name != currentPlayer.name; });
+    currentPlayer.gold += otherPlayer->gold;
+    otherPlayer->gold = 0;
 
     auto evt = events::GameUpdatedEvent();
     evt.game = gameController.game;
-    evt.message = std::string("Player ") + currentPlayer.name + " stole gold from " + chosenPlayer.name + "!";
+    evt.message = std::string("Player ") + currentPlayer.name + " stole gold from " + otherPlayer->name + "!";
 
     gameController.eventSubject.NotifyObservers(evt);
 }
 
-void mach::domain::CharacterPowerHelper::DoMagician(models::Player currentPlayer, GameController& gameController)
+void mach::domain::CharacterPowerHelper::DoMagician(models::Player& currentPlayer, GameController& gameController)
 {
     // TODO choose:
     if (true)
@@ -124,7 +123,7 @@ void mach::domain::CharacterPowerHelper::DoMagician(models::Player currentPlayer
     }
 }
 
-void mach::domain::CharacterPowerHelper::DoKing(models::Player currentPlayer, GameController& gameController)
+void mach::domain::CharacterPowerHelper::DoKing(models::Player& currentPlayer, GameController& gameController)
 {
     int amount = currentPlayer.GetAmountOfBuildingsByColor(dal::models::BuildingColor::Yellow);
 
@@ -135,7 +134,7 @@ void mach::domain::CharacterPowerHelper::DoKing(models::Player currentPlayer, Ga
     currentPlayer.gold += amount;
 }
 
-void mach::domain::CharacterPowerHelper::DoBishop(models::Player currentPlayer, GameController& gameController)
+void mach::domain::CharacterPowerHelper::DoBishop(models::Player& currentPlayer, GameController& gameController)
 {
     int amount = currentPlayer.GetAmountOfBuildingsByColor(dal::models::BuildingColor::Blue);
 
@@ -146,7 +145,7 @@ void mach::domain::CharacterPowerHelper::DoBishop(models::Player currentPlayer, 
     currentPlayer.gold += amount;
 }
 
-void mach::domain::CharacterPowerHelper::DoMerchant(models::Player currentPlayer, GameController& gameController)
+void mach::domain::CharacterPowerHelper::DoMerchant(models::Player& currentPlayer, GameController& gameController)
 {
     int amount = 1 + currentPlayer.GetAmountOfBuildingsByColor(dal::models::BuildingColor::Green);
 
@@ -157,7 +156,7 @@ void mach::domain::CharacterPowerHelper::DoMerchant(models::Player currentPlayer
     currentPlayer.gold += amount;
 }
 
-void mach::domain::CharacterPowerHelper::DoArchitect(models::Player currentPlayer, GameController& gameController)
+void mach::domain::CharacterPowerHelper::DoArchitect(models::Player& currentPlayer, GameController& gameController)
 {
     // Draw 2 cards
     currentPlayer.hand.push_back(gameController.DrawCardFromStack());
@@ -168,7 +167,7 @@ void mach::domain::CharacterPowerHelper::DoArchitect(models::Player currentPlaye
     evt.message = std::string("Player ") + currentPlayer.name + " drew 2 cards!";
 }
 
-void mach::domain::CharacterPowerHelper::DoWarlord(models::Player currentPlayer, GameController& gameController)
+void mach::domain::CharacterPowerHelper::DoWarlord(models::Player& currentPlayer, GameController& gameController)
 {
     auto tempVec = gameController.game.players;
     tempVec.erase(std::find_if(
