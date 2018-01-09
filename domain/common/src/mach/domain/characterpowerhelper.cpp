@@ -245,8 +245,13 @@ void mach::domain::CharacterPowerHelper::DoWarlord(models::Player& currentPlayer
           return false;
       });
 
-    // Hij mag geen gebouwen verwijderen uit steden die al uit 8 of meer gebouwen bestaan.
-    if (otherPlayerBuildingCount == 0 || otherPlayerBuildingCount >= 8 || !canAfford)
+    bool otherPlayerHasBishop =
+      std::any_of(otherPlayer->characters.begin(),
+                  otherPlayer->characters.end(),
+                  [](const dal::models::CharacterCard& character) { return character.number == 5; });
+
+    // Hij mag geen gebouwen verwijderen uit steden die al uit 8 of meer gebouwen bestaan of van de bishop/prediker.
+    if (otherPlayerBuildingCount == 0 || otherPlayerBuildingCount >= 8 || !canAfford || otherPlayerHasBishop)
     {
         auto evt = events::GameUpdatedEvent();
         evt.game = gameController.game;
