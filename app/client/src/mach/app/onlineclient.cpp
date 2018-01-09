@@ -39,6 +39,11 @@ void OnlineClient::ReadEventsAsync()
           {
               domain::events::ServerDisconnectedEvent evt;
               evt.Visit(eventObserverNotifierVisitor);
+
+              // If the server disconnected, we stop the client.
+              Stop();
+
+              return;
           }
 
           ReadEventsAsync();

@@ -174,12 +174,14 @@ class Serializer
             if (error)
             {
                 callback(std::move(error), std::shared_ptr<TSerializable>());
+                return;
             }
 
             tcpClient.ReadUntilIncludingAsync(',', *dataStream, [=, &tcpClient](std::error_code error) {
                 if (error)
                 {
                     callback(std::move(error), std::shared_ptr<TSerializable>());
+                    return;
                 }
 
                 TIdentifier identifier;
@@ -193,6 +195,7 @@ class Serializer
                     if (error)
                     {
                         callback(std::move(error), std::shared_ptr<TSerializable>());
+                        return;
                     }
 
                     callback(std::error_code(), DeserializeData<TSerializable>(*dataStream, identifier));

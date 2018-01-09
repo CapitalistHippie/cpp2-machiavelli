@@ -74,6 +74,7 @@ class TcpClient : public Noncopyable
                 else
                 {
                     callback(std::move(errorCode));
+                    return;
                 }
             }
 
@@ -113,6 +114,7 @@ class TcpClient : public Noncopyable
                 if (error)
                 {
                     callback(std::move(error));
+                    return;
                 }
 
                 auto data = dataBuffer->str();

@@ -45,6 +45,9 @@ void ClientCli::Start()
     commandSubject.RegisterObserver<infra::CliCommand>(
       [](const infra::CliCommand& command) { return command.name == "stop"; }, stopCommandHandler);
 
+    client->eventSubject.RegisterObserver<domain::events::ServerDisconnectedEvent>(
+      [&](const domain::events::ServerDisconnectedEvent& evt) { outputStream << "Server disconnected.\n"; });
+
     SetState(ClientCliState::ConnectToServer);
 
     do
