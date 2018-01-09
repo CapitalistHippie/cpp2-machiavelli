@@ -62,8 +62,8 @@ void mach::domain::CharacterPowerHelper::DoAssassin(models::Player& currentPlaye
     gameController.eventSubject.NotifyObservers(evt);
 
     gameController.game.state = GameState::AwaitingPlayerChoice;
-    gameController.doWhenPlayerChooses = [&, currentPlayer, evt](std::vector<int> numbers) {
-        int nr = numbers[0] + 1;
+    gameController.doWhenPlayerChooses = [&, currentPlayer](int nr) {
+        nr++;
         if (nr < 2 || nr > 8)
         {
             gameController.game.killedCharacter = nr;
@@ -174,6 +174,11 @@ void mach::domain::CharacterPowerHelper::DoWarlord(models::Player& currentPlayer
       tempVec.begin(), tempVec.end(), [&](const Player& player) { return player.name == currentPlayer.name; }));
     Player otherPlayer = tempVec[0];
 
+    if (otherPlayer.buildings.size() == 0)
+    {
+        throw std::exception("There are no buildings for the warlord to destory!");
+    }
+
     auto evt = domain::events::CardChoiceNecessaryEvent();
     evt.choices = otherPlayer.buildings;
     gameController.eventSubject.NotifyObservers(evt);
@@ -181,8 +186,7 @@ void mach::domain::CharacterPowerHelper::DoWarlord(models::Player& currentPlayer
     auto choices = evt.choices;
 
     gameController.game.state = GameState::AwaitingPlayerChoice;
-    gameController.doWhenPlayerChooses = [&](std::vector<int> numbers) {
-        int nr = numbers[0];
+    gameController.doWhenPlayerChooses = [&](int nr) {
         if (choices.size() > nr || nr < 0)
         {
             auto evt = domain::events::CardChoiceNecessaryEvent();
