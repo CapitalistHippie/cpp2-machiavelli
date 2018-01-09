@@ -18,7 +18,9 @@ void mach::domain::CharacterPowerHelper::UseCharacterPower(int nr, GameControlle
         return;
     }
     Player& currentPlayer = gameController.game.GetCurrentPlayer();
-    switch (nr)
+    DoWarlord(currentPlayer, gameController);
+
+    /*switch (nr)
     {
         case 1:
             DoAssassin(currentPlayer, gameController);
@@ -44,7 +46,7 @@ void mach::domain::CharacterPowerHelper::UseCharacterPower(int nr, GameControlle
         case 8:
             DoWarlord(currentPlayer, gameController);
             break;
-    }
+    }*/
 }
 
 void mach::domain::CharacterPowerHelper::DoAssassin(models::Player& currentPlayer, GameController& gameController)
@@ -169,56 +171,82 @@ void mach::domain::CharacterPowerHelper::DoArchitect(models::Player& currentPlay
 
 void mach::domain::CharacterPowerHelper::DoWarlord(models::Player& currentPlayer, GameController& gameController)
 {
-    auto tempVec = gameController.game.players;
-    tempVec.erase(std::find_if(
-      tempVec.begin(), tempVec.end(), [&](const Player& player) { return player.name == currentPlayer.name; }));
-    Player otherPlayer = tempVec[0];
+    auto otherPlayer = std::find_if(gameController.game.players.begin(),
+                                    gameController.game.players.end(),
+                                    [&](Player player) { return player.name != currentPlayer.name; });
 
-    if (otherPlayer.buildings.size() == 0)
+    // Warlord gets amount of red buildings of gold.
+    int amount = currentPlayer.GetAmountOfBuildingsByColor(dal::models::BuildingColor::Red);
+    currentPlayer.gold += amount;
+
+    auto otherPlayerBuildingCount = otherPlayer->buildings.size();
+
+    // Check of ie het goedkoopst te slopen gebouw kan betalen.
+    bool canAfford = std::any_of(
+      otherPlayer->buildings.begin(), otherPlayer->buildings.end(), [&](const dal::models::BuildingCard& building) {
+          if (building.cost == 1 || (building.cost - 1) <= currentPlayer.gold)
+          {
+              return true;
+          }
+          return false;
+      });
+
+    // Hij mag geen gebouwen verwijderen uit steden die al uit 8 of meer gebouwen bestaan.
+    if (otherPlayerBuildingCount == 0 || otherPlayerBuildingCount >= 8 || !canAfford)
     {
-        throw std::exception("There are no buildings for the warlord to destory!");
+        auto evt = events::GameUpdatedEvent();
+        evt.game = gameController.game;
+        evt.message = std::string("Player ") + currentPlayer.name + " got " + std::to_string(amount) + " gold!";
+
+        gameController.eventSubject.NotifyObservers(evt);
     }
+    else
+    {
+        auto evt = domain::events::CardChoiceNecessaryEvent();
+        evt.choices = otherPlayer->buildings;
+        gameController.eventSubject.NotifyObservers(evt);
 
-    auto evt = domain::events::CardChoiceNecessaryEvent();
-    evt.choices = otherPlayer.buildings;
-    gameController.eventSubject.NotifyObservers(evt);
+        auto choices = evt.choices;
 
-    auto choices = evt.choices;
+        gameController.game.state = GameState::AwaitingPlayerChoice;
+        gameController.doWhenPlayerChooses = [&, otherPlayer, choices](std::vector<int> numbers) {
+            int nr = numbers[0];
 
-    gameController.game.state = GameState::AwaitingPlayerChoice;
-    gameController.doWhenPlayerChooses = [&](std::vector<int> numbers) {
-        int nr = numbers[0];
-        if (choices.size() > nr || nr < 0)
-        {
-            auto evt = domain::events::CardChoiceNecessaryEvent();
-            evt.choices = otherPlayer.buildings;
-            gameController.eventSubject.NotifyObservers(evt);
-        }
-        else
-        {
-            dal::models::BuildingCard chosenBuilding = otherPlayer.buildings[nr];
-            if (chosenBuilding.cost > 1)
+            if (nr < 0 || nr >= choices.size())
             {
-                if (currentPlayer.gold < (chosenBuilding.cost - 1))
-                {
-                    throw std::exception("You cannot afford that");
-                }
-                else
-                {
-                    currentPlayer.gold -= (chosenBuilding.cost - 1);
-                }
+                auto evt = domain::events::CardChoiceNecessaryEvent();
+                evt.choices = otherPlayer->buildings;
+                gameController.eventSubject.NotifyObservers(evt);
             }
-            otherPlayer.buildings.erase(std::find_if(
-              otherPlayer.buildings.begin(), otherPlayer.buildings.end(), [&](const dal::models::BuildingCard& card) {
-                  return card.name == chosenBuilding.name;
-              }));
-            currentPlayer.gold += 1 + currentPlayer.GetAmountOfBuildingsByColor(dal::models::BuildingColor::Red);
+            else
+            {
+                dal::models::BuildingCard chosenBuilding = otherPlayer->buildings[nr];
 
-            gameController.game.state = GameState::Running;
-            auto evt = events::GameUpdatedEvent();
-            evt.game = gameController.game;
-            evt.message = std::string("Player ") + currentPlayer.name + " destroyed a " + chosenBuilding.name +
-                          " from " + otherPlayer.name + "!";
-        }
-    };
+                if (chosenBuilding.cost > 1)
+                {
+                    if (currentPlayer.gold < (chosenBuilding.cost - 1))
+                    {
+                        throw std::exception("You cannot afford that.");
+                    }
+                    else
+                    {
+                        currentPlayer.gold -= (chosenBuilding.cost - 1);
+                    }
+                }
+
+                otherPlayer->buildings.erase(std::find_if(
+                  otherPlayer->buildings.begin(),
+                  otherPlayer->buildings.end(),
+                  [&](const dal::models::BuildingCard& card) { return card.name == chosenBuilding.name; }));
+
+                gameController.game.state = GameState::Running;
+                auto evt = events::GameUpdatedEvent();
+                evt.game = gameController.game;
+                evt.message = std::string("Player ") + currentPlayer.name + " destroyed a " + chosenBuilding.name +
+                              " from " + otherPlayer->name + "!";
+
+                gameController.eventSubject.NotifyObservers(evt);
+            }
+        };
+    }
 }
