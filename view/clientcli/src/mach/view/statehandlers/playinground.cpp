@@ -40,8 +40,6 @@ void PlayingRound::EnterState()
     RegisterCommandObserver([](const infra::CliCommand& command) { return command.name == "choose"; },
                             std::bind(&PlayingRound::ChooseCardsCommandHandler, this, std::placeholders::_1));
 
-    outputStream << context.recentGameState.GetCurrentPlayerName() << "\n\n";
-    outputStream << client.GetConfiguration().playerName << "\n\n";
     outputStream << (context.recentGameState.GetCurrentPlayerName() == client.GetConfiguration().playerName) << "\n\n";
 
     myTurn = context.recentGameState.GetCurrentPlayerName() == client.GetConfiguration().playerName;
@@ -78,8 +76,7 @@ void PlayingRound::EnterState()
               outputStream << "Please choose: \n";
               for (int i = 0; i < evt.choices.size(); i++)
               {
-                  auto card = evt.choices[i];
-                  outputStream << i << "\n";
+                  outputStream << evt.choices[i] << "\n";
               }
               outputStream << "\nAvailable commands: \n";
               outputStream << "choose <nr>: choose an option \n\n";
@@ -93,6 +90,11 @@ void PlayingRound::EnterState()
         myTurn = evt.game.GetCurrentPlayerName() == client.GetConfiguration().playerName;
         ClearConsole();
         PrintGameStatus(evt.game);
+    });
+
+    RegisterClientObserver<domain::events::CharacterChosenEvent>([&](const domain::events::CharacterChosenEvent& evt) {
+        context.recentGameState = evt.game;
+        context.SetState(ClientCliState::ChoosingCharacters);
     });
 
     RegisterClientObserver<domain::events::GameEndedEvent>([&](const domain::events::GameEndedEvent& evt) {
@@ -179,13 +181,12 @@ void mach::view::statehandlers::PlayingRound::PrintGameStatus(domain::models::Ga
     for (auto player : game.players)
     {
         outputStream << "----" << player.name << "----\n";
-        outputStream << player.name << "\n";
         outputStream << "- Gold: " << player.gold << "\n";
         outputStream << "- Buildings: \n";
         for (auto b : player.buildings)
         {
-            outputStream << "-- " << b.name << ": " << b.cost << ": " << BuildingColorEnumToString(b.color) << ": "
-                         << b.description << "\n";
+            outputStream << "-- " << b.name << ". Cost: " << b.cost << ". Color: " << BuildingColorEnumToString(b.color)
+                         << ". Description: " << b.description << "\n";
         }
         outputStream << "\n";
     }

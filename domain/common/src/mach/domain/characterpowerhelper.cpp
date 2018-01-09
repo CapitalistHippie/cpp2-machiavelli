@@ -52,7 +52,7 @@ void mach::domain::CharacterPowerHelper::DoAssassin(models::Player& currentPlaye
 
     auto evt = domain::events::IntChoiceNecessaryEvent();
     std::vector<int> vec;
-    for (int i = 1; i < 9; i++)
+    for (int i = 2; i < 9; i++)
     {
         vec.push_back(i);
     }
@@ -130,6 +130,7 @@ void mach::domain::CharacterPowerHelper::DoKing(models::Player& currentPlayer, G
     auto evt = events::GameUpdatedEvent();
     evt.game = gameController.game;
     evt.message = std::string("Player ") + currentPlayer.name + " got " + std::to_string(amount) + " gold!";
+    gameController.eventSubject.NotifyObservers(evt);
 
     currentPlayer.gold += amount;
 }
@@ -141,6 +142,7 @@ void mach::domain::CharacterPowerHelper::DoBishop(models::Player& currentPlayer,
     auto evt = events::GameUpdatedEvent();
     evt.game = gameController.game;
     evt.message = std::string("Player ") + currentPlayer.name + " got " + std::to_string(amount) + " gold!";
+    gameController.eventSubject.NotifyObservers(evt);
 
     currentPlayer.gold += amount;
 }
@@ -152,6 +154,7 @@ void mach::domain::CharacterPowerHelper::DoMerchant(models::Player& currentPlaye
     auto evt = events::GameUpdatedEvent();
     evt.game = gameController.game;
     evt.message = std::string("Player ") + currentPlayer.name + " got " + std::to_string(amount) + " gold!";
+    gameController.eventSubject.NotifyObservers(evt);
 
     currentPlayer.gold += amount;
 }
@@ -165,6 +168,7 @@ void mach::domain::CharacterPowerHelper::DoArchitect(models::Player& currentPlay
     auto evt = events::GameUpdatedEvent();
     evt.game = gameController.game;
     evt.message = std::string("Player ") + currentPlayer.name + " drew 2 cards!";
+    gameController.eventSubject.NotifyObservers(evt);
 }
 
 void mach::domain::CharacterPowerHelper::DoWarlord(models::Player& currentPlayer, GameController& gameController)
