@@ -29,8 +29,6 @@ class PlayingRound : public StateHandlerBase<PlayingRound, ClientCliState::Playi
     void PrintGameStatus(domain::models::Game game);
     bool myTurn;
 
-    std::string ColorToString(dal::models::BuildingColor color);
-
 }; // class PlayingRound
 } // namespace statehandlers
 } // namespace view

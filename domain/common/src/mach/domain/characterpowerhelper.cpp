@@ -62,8 +62,8 @@ void mach::domain::CharacterPowerHelper::DoAssassin(models::Player currentPlayer
     gameController.eventSubject.NotifyObservers(evt);
 
     gameController.game.state = GameState::AwaitingPlayerChoice;
-    gameController.doWhenPlayerChooses = [&, currentPlayer](int nr) {
-        nr++;
+    gameController.doWhenPlayerChooses = [&, currentPlayer, evt](std::vector<int> numbers) {
+        int nr = numbers[0] + 1;
         if (nr < 2 || nr > 8)
         {
             gameController.game.killedCharacter = nr;
@@ -182,7 +182,8 @@ void mach::domain::CharacterPowerHelper::DoWarlord(models::Player currentPlayer,
     auto choices = evt.choices;
 
     gameController.game.state = GameState::AwaitingPlayerChoice;
-    gameController.doWhenPlayerChooses = [&](int nr) {
+    gameController.doWhenPlayerChooses = [&](std::vector<int> numbers) {
+        int nr = numbers[0];
         if (choices.size() > nr || nr < 0)
         {
             auto evt = domain::events::CardChoiceNecessaryEvent();

@@ -63,7 +63,7 @@ void PlayingRound::EnterState()
               {
                   auto card = evt.choices[i];
                   outputStream << "[" << i + 1 << "]: " << card.name << ": " << card.cost << ": "
-                               << ColorToString(card.color) << ": " << card.description << "\n";
+                               << BuildingColorEnumToString(card.color) << ": " << card.description << "\n";
               }
               outputStream << "\nAvailable commands: \n";
               outputStream << "choose <nr>: choose a card \n\n";
