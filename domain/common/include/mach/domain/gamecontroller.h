@@ -55,6 +55,7 @@ class GameController
     mach::dal::CharacterCardRepository characterCardRepository;
 
     std::function<void(int)> doWhenPlayerChooses;
+    std::vector<dal::models::BuildingCard> choices;
 
     void NextTurn();
     void NextRound();

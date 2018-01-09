@@ -1,6 +1,7 @@
 #include "mach/domain/gamecontroller.h"
 #include "mach/domain/characterpowerhelper.h"
 #include "mach/domain/events/characterchosenevent.h"
+#include "mach/domain/events/choicenecessaryevent.h"
 #include "mach/domain/events/gameendedevent.h"
 #include "mach/domain/events/gamestartedevent.h"
 #include "mach/domain/events/gameupdatedevent.h"
@@ -244,7 +245,7 @@ void GameController::EndGame()
 
 void mach::domain::GameController::MakeChoice(int nr)
 {
-    if (game.state != GameState::AwaitingPlayerChoice)
+    if (game.state == GameState::AwaitingPlayerChoice)
     {
         doWhenPlayerChooses(nr);
     }
@@ -318,22 +319,17 @@ void mach::domain::GameController::CurrentPlayerGetGold()
 {
     if (game.playerReceivedGoldOrCards)
     {
-        auto evt = IllegalActionEvent();
-        evt.message = "You already did that this round!";
-
-        eventSubject.NotifyObservers(evt);
-        // throw std::exception("You already did that this round");
+        throw std::exception("You already picked a card or received gold this round");
     }
     else
     {
-        // TODO how to return editable object?!!!
         game.playerReceivedGoldOrCards = true;
         Player& p = game.GetCurrentPlayer();
         p.gold += 2;
 
         auto evt = GameUpdatedEvent();
         evt.game = game;
-        evt.message = "Player_received_2_gold!";
+        evt.message = "Player received 2 gold!";
 
         eventSubject.NotifyObservers(evt);
     }
@@ -343,16 +339,45 @@ void mach::domain::GameController::CurrentPlayerDrawsCard()
 {
     if (game.playerReceivedGoldOrCards)
     {
-        throw std::exception("You already did that this round");
+        throw std::exception("You already picked a card or received gold this round");
     }
     else
     {
         game.state = GameState::AwaitingPlayerChoice;
 
-        auto evt = GameUpdatedEvent();
-        evt.game = game;
+        choices.clear();
+        choices.push_back(DrawCardFromStack());
+        choices.push_back(DrawCardFromStack());
+
+        auto evt = ChoiceNecessaryEvent();
+        evt.choices = choices;
 
         eventSubject.NotifyObservers(evt);
+
+        doWhenPlayerChooses = [&](int nr) {
+            if (nr >= choices.size() || nr < 0)
+            {
+                // Incorrect value
+                auto evt = ChoiceNecessaryEvent();
+                evt.choices = choices;
+
+                eventSubject.NotifyObservers(evt);
+            }
+            else
+            {
+                // Correct value
+                auto cardChosen = choices.at(nr);
+                game.GetCurrentPlayer().hand.push_back(std::move(cardChosen));
+
+                game.state = GameState::Running;
+
+                auto evt = GameUpdatedEvent();
+                evt.game = game;
+                evt.message = "Player picked a card!";
+
+                eventSubject.NotifyObservers(evt);
+            }
+        };
     }
 }
 
@@ -377,7 +402,6 @@ void mach::domain::GameController::CurrentPlayerUsesCharacterPower()
 
 void mach::domain::GameController::CurrentPlayerBuildsBuilding(unsigned int nr)
 {
-    nr--;
     auto currentPlayer = std::find_if(game.players.begin(), game.players.end(), [=](Player player) {
         auto res = std::find_if(player.characters.begin(),
                                 player.characters.end(),

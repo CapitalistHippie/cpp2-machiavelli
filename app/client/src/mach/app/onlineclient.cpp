@@ -2,6 +2,7 @@
 
 #include <mach/app/commands/buildbuildingcommand.h>
 #include <mach/app/commands/chooseCharacterCommand.h>
+#include <mach/app/commands/choosecommand.h>
 #include <mach/app/commands/endturncommand.h>
 #include <mach/app/commands/getcardcommand.h>
 #include <mach/app/commands/getgoldcommand.h>
@@ -148,7 +149,12 @@ void mach::app::OnlineClient::SendEndTurnCommand()
 
 void mach::app::OnlineClient::SendChooseCommand(int value)
 {
-    // TODO
+    commands::ChooseCommand command;
+    command.chosenNumber = value;
+
+    auto data = serializer.Serialize(command);
+
+    tcpClient.Write(data);
 }
 
 void mach::app::OnlineClient::SendChooseCharacterCommand(int value)

@@ -16,7 +16,7 @@ class CharacterPowerHelper
 
   public:
     CharacterPowerHelper();
-    void UseCharacterPower(int nr, GameController gameController);
+    void UseCharacterPower(int nr, GameController& gameController);
 
     void DoAssassin(models::Player currentPlayer, GameController gameController);
     void DoThief(models::Player currentPlayer, GameController gameController);

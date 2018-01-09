@@ -19,6 +19,7 @@ void PlayingRound::EnterState()
     commandParser.RegisterCommand<int>("build");
     commandParser.RegisterCommand("power");
     commandParser.RegisterCommand("end");
+    commandParser.RegisterCommand<int>("choose");
 
     commandSubject.RegisterObserver<infra::CliCommand>(
       [](const infra::CliCommand& command) { return command.name == "gold"; },
@@ -40,6 +41,10 @@ void PlayingRound::EnterState()
       [](const infra::CliCommand& command) { return command.name == "end"; },
       std::bind(&PlayingRound::EndTurnCommandHandler, this));
 
+    commandSubject.RegisterObserver<infra::CliCommand>(
+      [](const infra::CliCommand& command) { return command.name == "choose"; },
+      std::bind(&PlayingRound::ChooseCardCommandHandler, this, std::placeholders::_1));
+
     outputStream << context.recentGameState.GetCurrentPlayerName() << "\n\n";
     outputStream << client.GetConfiguration().playerName << "\n\n";
     outputStream << (context.recentGameState.GetCurrentPlayerName() == client.GetConfiguration().playerName) << "\n\n";
@@ -57,6 +62,15 @@ void PlayingRound::EnterState()
         if (myTurn)
         {
             ClearConsole();
+            outputStream << "Please choose: \n";
+            for (int i = 0; i < evt.choices.size(); i++)
+            {
+                auto card = evt.choices[i];
+                outputStream << "[" << i + 1 << "]: " << card.name << ": " << card.cost << ": "
+                             << ColorToString(card.color) << ": " << card.description << "\n";
+            }
+            outputStream << "\nAvailable commands: \n";
+            outputStream << "choose <nr>: choose a card \n\n";
         }
     });
 
@@ -72,29 +86,54 @@ void PlayingRound::EnterState()
 
 void mach::view::statehandlers::PlayingRound::GetGoldCommandHandler()
 {
-    client.SendGetGoldCommand();
+    if (myTurn)
+    {
+        client.SendGetGoldCommand();
+    }
 }
 
 void mach::view::statehandlers::PlayingRound::GetCardCommandHandler()
 {
-    client.SendGetCardCommand();
+    if (myTurn)
+    {
+        client.SendGetCardCommand();
+    }
 }
 
 void mach::view::statehandlers::PlayingRound::UseCharacterPowerCommandHandler()
 {
-    client.SendUseCharacterPowerCommand();
+    if (myTurn)
+    {
+        client.SendUseCharacterPowerCommand();
+    }
 }
 
 void mach::view::statehandlers::PlayingRound::BuildBuildingCommandHandler(const infra::CliCommand& command)
 {
-    auto number = *std::static_pointer_cast<int>(command.parameters[0]);
+    if (myTurn)
+    {
+        auto number = *std::static_pointer_cast<int>(command.parameters[0]);
 
-    client.SendBuildBuildingCommand(number);
+        client.SendBuildBuildingCommand(number - 1);
+    }
+}
+
+void mach::view::statehandlers::PlayingRound::ChooseCardCommandHandler(const infra::CliCommand& command)
+{
+    if (myTurn)
+    {
+        auto number = *std::static_pointer_cast<int>(command.parameters[0]);
+
+        client.SendChooseCommand(number - 1);
+    }
 }
 
 void mach::view::statehandlers::PlayingRound::EndTurnCommandHandler()
 {
-    client.SendEndTurnCommand();
+    if (myTurn)
+    {
+        client.SendEndTurnCommand();
+    }
 }
 
 void mach::view::statehandlers::PlayingRound::PrintGameStatus(domain::models::Game game)
@@ -111,7 +150,8 @@ void mach::view::statehandlers::PlayingRound::PrintGameStatus(domain::models::Ga
         outputStream << "- Buildings: \n";
         for (auto b : player.buildings)
         {
-            outputStream << "-- " << b.name << ": " << b.cost << ": " << b.color << ": " << b.description << "\n";
+            outputStream << "-- " << b.name << ": " << b.cost << ": " << ColorToString(b.color) << ": " << b.description
+                         << "\n";
         }
         outputStream << "\n";
     }
@@ -127,8 +167,8 @@ void mach::view::statehandlers::PlayingRound::PrintGameStatus(domain::models::Ga
         for (int i = 0; i < game.GetCurrentPlayer().hand.size(); i++)
         {
             auto card = game.GetCurrentPlayer().hand[i];
-            outputStream << "[" << i + 1 << "] " << card.name << ". Cost: " << card.cost << ". Color: " << card.color
-                         << "\n";
+            outputStream << "[" << i + 1 << "] " << card.name << ". Cost: " << card.cost
+                         << ". Color: " << ColorToString(card.color) << "\n";
         }
         outputStream << "\nAvailable commands: \n";
         outputStream << "- gold: get 2 gold \n";
@@ -136,5 +176,29 @@ void mach::view::statehandlers::PlayingRound::PrintGameStatus(domain::models::Ga
         outputStream << "- build <nr>: Builds a building from your hand \n";
         outputStream << "- power: use your character power \n";
         outputStream << "- end: end your turn \n\n";
+    }
+}
+
+std::string mach::view::statehandlers::PlayingRound::ColorToString(dal::models::BuildingColor color)
+{
+    std::string s;
+
+    switch (color)
+    {
+        case dal::models::BuildingColor::Yellow:
+            return "geel";
+            break;
+        case dal::models::BuildingColor::Green:
+            return "groen";
+            break;
+        case dal::models::BuildingColor::Blue:
+            return "blauw";
+            break;
+        case dal::models::BuildingColor::Red:
+            return "rood";
+            break;
+        case dal::models::BuildingColor::Lilac:
+            return "lila";
+            break;
     }
 }

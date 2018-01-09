@@ -2,7 +2,7 @@
 
 using namespace mach::domain::models;
 
-Player Game::GetCurrentPlayer()
+Player& Game::GetCurrentPlayer()
 {
     return *std::find_if(players.begin(), players.end(), [=](Player player) {
         auto res = std::find_if(player.characters.begin(),

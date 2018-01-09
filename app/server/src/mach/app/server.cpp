@@ -2,6 +2,7 @@
 
 #include <mach/app/commandtype.h>
 #include <mach/domain/events/characterchosenevent.h>
+#include <mach/domain/events/choicenecessaryevent.h>
 #include <mach/domain/events/clientconnectedevent.h>
 #include <mach/domain/events/gameendedevent.h>
 #include <mach/domain/events/gamestartedevent.h>
@@ -104,6 +105,7 @@ void Server::StartAsync()
     // Hook into all the domain events thrown from the game controller and pass them on to the observers.
     auto evtHandler = [&](const auto& evt) { NotifyObservers(evt); };
 
+    gameController.eventSubject.RegisterObserver<domain::events::ChoiceNecessaryEvent>(evtHandler);
     gameController.eventSubject.RegisterObserver<domain::events::GameEndedEvent>(evtHandler);
     gameController.eventSubject.RegisterObserver<domain::events::GameStartedEvent>(evtHandler);
     gameController.eventSubject.RegisterObserver<domain::events::GameUpdatedEvent>(evtHandler);

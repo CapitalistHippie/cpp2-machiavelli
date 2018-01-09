@@ -15,6 +15,7 @@
 #include <mach/infra/threadpool.h>
 
 #include <mach/app/commands/buildbuildingcommand.h>
+#include <mach/app/commands/choosecommand.h>
 #include <mach/app/commands/endturncommand.h>
 #include <mach/app/commands/getcardcommand.h>
 #include <mach/app/commands/getgoldcommand.h>
@@ -81,6 +82,10 @@ class CommandHandlerVisitor : public CommandVisitor
     void Visit(const commands::EndTurnCommand& command) const override
     {
         gameController->EndTurn();
+    }
+    void Visit(const commands::ChooseCommand& command) const override
+    {
+        gameController->MakeChoice(command.chosenNumber);
     }
 }; // class CommandHandlerVisitor
 } // namespace detail

@@ -8,7 +8,7 @@ mach::domain::CharacterPowerHelper::CharacterPowerHelper()
 {
 }
 
-void mach::domain::CharacterPowerHelper::UseCharacterPower(int nr, GameController gameController)
+void mach::domain::CharacterPowerHelper::UseCharacterPower(int nr, GameController& gameController)
 {
     if (!gameController.game.CharacterHasPlayer(gameController.game.characterHasTurn))
     {
