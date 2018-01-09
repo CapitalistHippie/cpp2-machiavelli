@@ -33,6 +33,7 @@ void ClientCli::Start()
     commandParser.RegisterCommand("quit");
     commandParser.RegisterCommand("exit");
     commandParser.RegisterCommand("stop");
+    commandParser.RegisterCommand("hulp");
 
     commandParser.RegisterCommand<std::string, int>("test");
 
@@ -44,6 +45,24 @@ void ClientCli::Start()
       [](const infra::CliCommand& command) { return command.name == "exit"; }, stopCommandHandler);
     commandSubject.RegisterObserver<infra::CliCommand>(
       [](const infra::CliCommand& command) { return command.name == "stop"; }, stopCommandHandler);
+
+    commandSubject.RegisterObserver<infra::CliCommand>(
+      [](const infra::CliCommand& command) { return command.name == "hulp"; },
+      [&](const infra::CliCommand& command) {
+          outputStream << "-----Verloop van een speelbeurt-----\n"
+                       << "Gold of Card: Neem 2 goudstukken of neem 2 kaarten en leg er 1 af.\n"
+                       << "Build: Leg 1 bouwkaart neer en betaal de waarde.\n"
+                       << "Power: Op elk moment te gebruiken.\n\n"
+                       << "-----Powers-----\n"
+                       << "1: Moordenaar: Vermoord een ander karakter.\n"
+                       << "2: Dief: Steelt van een andere speler.\n"
+                       << "3: Magiër: Ruilt bouwkaarten om.\n"
+                       << "4: Koning: Begint de volgende beurt. Ontvangt van monumenten.\n"
+                       << "5: Prediker: Is beschermd tegen de Condottiere. Ontvangt van kerkelijke gebouwen.\n"
+                       << "6: Koopman: Ontvangt een extra goudstuk. Ontvangt van commerciële gebouwen.\n"
+                       << "7: Bouwmeester: Trekt twee extra kaarten. Mag drie gebouwen bouwen.\n"
+                       << "8: Condottiere: Vernietigt een gebouw. Ontvangt van alle militaire gebouwen.\n";
+      });
 
     client->eventSubject.RegisterObserver<domain::events::ServerDisconnectedEvent>(
       [&](const domain::events::ServerDisconnectedEvent& evt) { outputStream << "Server disconnected.\n"; });
