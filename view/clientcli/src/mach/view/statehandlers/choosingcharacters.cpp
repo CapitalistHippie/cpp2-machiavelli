@@ -12,11 +12,10 @@ void ChoosingCharacters::EnterState()
     ClearConsole();
 
     // Commands
-    commandParser.RegisterCommand<int>("choose");
+    RegisterCommand<int>("choose");
 
-    commandSubject.RegisterObserver<infra::CliCommand>(
-      [](const infra::CliCommand& command) { return command.name == "choose"; },
-      std::bind(&ChoosingCharacters::ChooseCharacterCommandHandler, this, std::placeholders::_1));
+    RegisterCommandObserver([](const infra::CliCommand& command) { return command.name == "choose"; },
+                            std::bind(&ChoosingCharacters::ChooseCharacterCommandHandler, this, std::placeholders::_1));
 
     if (context.recentGameState.choosingTurns.size() > 0 &&
         context.recentGameState.choosingTurns[0].first == client.GetConfiguration().playerName)

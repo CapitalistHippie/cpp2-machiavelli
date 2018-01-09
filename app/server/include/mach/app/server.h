@@ -54,7 +54,7 @@ class CommandHandlerVisitor : public CommandVisitor
         if (gameController->game.playersWaiting.size() == 2)
         {
             // TODO remove cheat
-            gameController->StartGame(true);
+            gameController->StartGame(false);
         }
     }
 
