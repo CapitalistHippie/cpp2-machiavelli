@@ -14,36 +14,30 @@ void PlayingRound::EnterState()
     ClearConsole();
 
     // Commands
-    commandParser.RegisterCommand("gold");
-    commandParser.RegisterCommand("card");
-    commandParser.RegisterCommand<int>("build");
-    commandParser.RegisterCommand("power");
-    commandParser.RegisterCommand("end");
-    commandParser.RegisterCommand<int>("choose");
+    RegisterCommand("gold");
+    RegisterCommand("card");
+    RegisterCommand<int>("build");
+    RegisterCommand("power");
+    RegisterCommand("end");
+    RegisterCommand<int>("choose");
 
-    commandSubject.RegisterObserver<infra::CliCommand>(
-      [](const infra::CliCommand& command) { return command.name == "gold"; },
-      std::bind(&PlayingRound::GetGoldCommandHandler, this));
+    RegisterCommandObserver([](const infra::CliCommand& command) { return command.name == "gold"; },
+                            std::bind(&PlayingRound::GetGoldCommandHandler, this));
 
-    commandSubject.RegisterObserver<infra::CliCommand>(
-      [](const infra::CliCommand& command) { return command.name == "card"; },
-      std::bind(&PlayingRound::GetCardCommandHandler, this));
+    RegisterCommandObserver([](const infra::CliCommand& command) { return command.name == "card"; },
+                            std::bind(&PlayingRound::GetCardCommandHandler, this));
 
-    commandSubject.RegisterObserver<infra::CliCommand>(
-      [](const infra::CliCommand& command) { return command.name == "build"; },
-      std::bind(&PlayingRound::BuildBuildingCommandHandler, this, std::placeholders::_1));
+    RegisterCommandObserver([](const infra::CliCommand& command) { return command.name == "build"; },
+                            std::bind(&PlayingRound::BuildBuildingCommandHandler, this, std::placeholders::_1));
 
-    commandSubject.RegisterObserver<infra::CliCommand>(
-      [](const infra::CliCommand& command) { return command.name == "power"; },
-      std::bind(&PlayingRound::UseCharacterPowerCommandHandler, this));
+    RegisterCommandObserver([](const infra::CliCommand& command) { return command.name == "power"; },
+                            std::bind(&PlayingRound::UseCharacterPowerCommandHandler, this));
 
-    commandSubject.RegisterObserver<infra::CliCommand>(
-      [](const infra::CliCommand& command) { return command.name == "end"; },
-      std::bind(&PlayingRound::EndTurnCommandHandler, this));
+    RegisterCommandObserver([](const infra::CliCommand& command) { return command.name == "end"; },
+                            std::bind(&PlayingRound::EndTurnCommandHandler, this));
 
-    commandSubject.RegisterObserver<infra::CliCommand>(
-      [](const infra::CliCommand& command) { return command.name == "choose"; },
-      std::bind(&PlayingRound::ChooseCardCommandHandler, this, std::placeholders::_1));
+    RegisterCommandObserver([](const infra::CliCommand& command) { return command.name == "choose"; },
+                            std::bind(&PlayingRound::ChooseCardCommandHandler, this, std::placeholders::_1));
 
     outputStream << context.recentGameState.GetCurrentPlayerName() << "\n\n";
     outputStream << client.GetConfiguration().playerName << "\n\n";
@@ -58,21 +52,38 @@ void PlayingRound::EnterState()
         PrintGameStatus(evt.game);
     });
 
-    RegisterClientObserver<domain::events::ChoiceNecessaryEvent>([&](const domain::events::ChoiceNecessaryEvent& evt) {
-        if (myTurn)
-        {
-            ClearConsole();
-            outputStream << "Please choose: \n";
-            for (int i = 0; i < evt.choices.size(); i++)
-            {
-                auto card = evt.choices[i];
-                outputStream << "[" << i + 1 << "]: " << card.name << ": " << card.cost << ": "
-                             << ColorToString(card.color) << ": " << card.description << "\n";
-            }
-            outputStream << "\nAvailable commands: \n";
-            outputStream << "choose <nr>: choose a card \n\n";
-        }
-    });
+    RegisterClientObserver<domain::events::CardChoiceNecessaryEvent>(
+      [&](const domain::events::CardChoiceNecessaryEvent& evt) {
+          if (myTurn)
+          {
+              ClearConsole();
+              outputStream << "Please choose: \n";
+              for (int i = 0; i < evt.choices.size(); i++)
+              {
+                  auto card = evt.choices[i];
+                  outputStream << "[" << i + 1 << "]: " << card.name << ": " << card.cost << ": "
+                               << ColorToString(card.color) << ": " << card.description << "\n";
+              }
+              outputStream << "\nAvailable commands: \n";
+              outputStream << "choose <nr>: choose a card \n\n";
+          }
+      });
+
+    RegisterClientObserver<domain::events::IntChoiceNecessaryEvent>(
+      [&](const domain::events::IntChoiceNecessaryEvent& evt) {
+          if (myTurn)
+          {
+              ClearConsole();
+              outputStream << "Please choose: \n";
+              for (int i = 0; i < evt.choices.size(); i++)
+              {
+                  auto card = evt.choices[i];
+                  outputStream << i << "\n";
+              }
+              outputStream << "\nAvailable commands: \n";
+              outputStream << "choose <nr>: choose an option \n\n";
+          }
+      });
 
     RegisterClientObserver<domain::events::IllegalActionEvent>(
       [&](const domain::events::IllegalActionEvent& evt) { outputStream << evt.message << "\n\n"; });

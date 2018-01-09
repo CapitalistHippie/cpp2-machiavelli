@@ -9,14 +9,15 @@
 #include <mach/infra/tcpclient.h>
 #include <mach/infra/threadpool.h>
 
+#include <mach/domain/events/cardchoicenecessaryevent.h>
 #include <mach/domain/events/characterchosenevent.h>
-#include <mach/domain/events/choicenecessaryevent.h>
 #include <mach/domain/events/clientconnectedevent.h>
 #include <mach/domain/events/event.h>
 #include <mach/domain/events/gameendedevent.h>
 #include <mach/domain/events/gamestartedevent.h>
 #include <mach/domain/events/gameupdatedevent.h>
 #include <mach/domain/events/illegalactionevent.h>
+#include <mach/domain/events/intchoicenecessaryevent.h>
 #include <mach/domain/events/nextroundevent.h>
 #include <mach/domain/events/nextturnevent.h>
 #include <mach/domain/events/serverdisconnectedevent.h>
@@ -58,7 +59,8 @@ class EventObserverNotifierVisitor : public domain::EventVisitor
     MACHIAVELLI_MACH_APP_ONLINECLIENT_DEFINE_VISIT_METHOD(domain::events::GameEndedEvent);
     MACHIAVELLI_MACH_APP_ONLINECLIENT_DEFINE_VISIT_METHOD(domain::events::GameUpdatedEvent);
     MACHIAVELLI_MACH_APP_ONLINECLIENT_DEFINE_VISIT_METHOD(domain::events::ServerDisconnectedEvent);
-    MACHIAVELLI_MACH_APP_ONLINECLIENT_DEFINE_VISIT_METHOD(domain::events::ChoiceNecessaryEvent);
+    MACHIAVELLI_MACH_APP_ONLINECLIENT_DEFINE_VISIT_METHOD(domain::events::CardChoiceNecessaryEvent);
+    MACHIAVELLI_MACH_APP_ONLINECLIENT_DEFINE_VISIT_METHOD(domain::events::IntChoiceNecessaryEvent);
 
 }; // class EventObserverNotifierVisitor
 } // namespace detail

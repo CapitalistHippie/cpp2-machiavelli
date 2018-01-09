@@ -1,5 +1,5 @@
-#ifndef MACHIAVELLI_MACH_DOMAIN_EVENTS_CHOICENECESSARY_H_INCLUDED
-#define MACHIAVELLI_MACH_DOMAIN_EVENTS_CHOICENECESSARY_H_INCLUDED
+#ifndef MACHIAVELLI_MACH_DOMAIN_EVENTS_INTCHOICENECESSARY_H_INCLUDED
+#define MACHIAVELLI_MACH_DOMAIN_EVENTS_INTCHOICENECESSARY_H_INCLUDED
 
 #include <sstream>
 
@@ -13,10 +13,10 @@ namespace domain
 {
 namespace events
 {
-class ChoiceNecessaryEvent : public EventBase<ChoiceNecessaryEvent, EventType::ChoiceNecessary>
+class IntChoiceNecessaryEvent : public EventBase<IntChoiceNecessaryEvent, EventType::IntChoiceNecessary>
 {
   public:
-    std::vector<dal::models::BuildingCard> choices;
+    std::vector<int> choices;
 
     void Serialize(std::ostream& dataStream) const override
     {
@@ -35,7 +35,7 @@ class ChoiceNecessaryEvent : public EventBase<ChoiceNecessaryEvent, EventType::C
 
         return data.str().length();
     }
-}; // class ChoiceNecessaryEvent
+}; // class IntChoiceNecessaryEvent
 } // namespace events
 } // namespace domain
 } // namespace mach

@@ -1,7 +1,7 @@
 #include "mach/domain/gamecontroller.h"
 #include "mach/domain/characterpowerhelper.h"
+#include "mach/domain/events/cardchoicenecessaryEvent.h"
 #include "mach/domain/events/characterchosenevent.h"
-#include "mach/domain/events/choicenecessaryevent.h"
 #include "mach/domain/events/gameendedevent.h"
 #include "mach/domain/events/gamestartedevent.h"
 #include "mach/domain/events/gameupdatedevent.h"
@@ -348,7 +348,7 @@ void mach::domain::GameController::CurrentPlayerDrawsCard()
         choices.push_back(DrawCardFromStack());
         choices.push_back(DrawCardFromStack());
 
-        auto evt = ChoiceNecessaryEvent();
+        auto evt = CardChoiceNecessaryEvent();
         evt.choices = choices;
 
         eventSubject.NotifyObservers(evt);
@@ -357,7 +357,7 @@ void mach::domain::GameController::CurrentPlayerDrawsCard()
             if (nr >= choices.size() || nr < 0)
             {
                 // Incorrect value
-                auto evt = ChoiceNecessaryEvent();
+                auto evt = CardChoiceNecessaryEvent();
                 evt.choices = choices;
 
                 eventSubject.NotifyObservers(evt);
@@ -390,12 +390,6 @@ void mach::domain::GameController::CurrentPlayerUsesCharacterPower()
     {
         CharacterPowerHelper helper;
         helper.UseCharacterPower(game.characterHasTurn, *this);
-
-        auto evt = GameUpdatedEvent();
-        evt.game = game;
-        evt.message = "Player used character power!";
-
-        eventSubject.NotifyObservers(evt);
     }
 }
 

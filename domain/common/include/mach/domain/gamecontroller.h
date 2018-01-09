@@ -50,12 +50,12 @@ class GameController
 
     mach::dal::models::BuildingCard DrawCardFromStack();
 
+    std::function<void(int)> doWhenPlayerChooses;
+    std::vector<dal::models::BuildingCard> choices;
+
   private:
     mach::dal::BuildingCardRepository buildingCardRepository;
     mach::dal::CharacterCardRepository characterCardRepository;
-
-    std::function<void(int)> doWhenPlayerChooses;
-    std::vector<dal::models::BuildingCard> choices;
 
     void NextTurn();
     void NextRound();

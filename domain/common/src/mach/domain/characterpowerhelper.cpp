@@ -1,4 +1,7 @@
 #include "mach/domain/characterpowerhelper.h"
+#include "mach/domain/events/cardchoicenecessaryevent.h"
+#include "mach/domain/events/gameupdatedevent.h"
+#include "mach/domain/events/intchoicenecessaryevent.h"
 #include <algorithm>
 
 using namespace mach::domain;
@@ -44,14 +47,41 @@ void mach::domain::CharacterPowerHelper::UseCharacterPower(int nr, GameControlle
     }
 }
 
-void mach::domain::CharacterPowerHelper::DoAssassin(models::Player currentPlayer, GameController gameController)
+void mach::domain::CharacterPowerHelper::DoAssassin(models::Player currentPlayer, GameController& gameController)
 {
-    // TODO Choose
-    int nr = 0;
-    gameController.game.killedCharacter = nr;
+
+    auto evt = domain::events::IntChoiceNecessaryEvent();
+    std::vector<int> vec;
+    for (int i = 1; i < 9; i++)
+    {
+        vec.push_back(i);
+    }
+
+    evt.choices = vec;
+
+    gameController.eventSubject.NotifyObservers(evt);
+
+    gameController.game.state = GameState::AwaitingPlayerChoice;
+    gameController.doWhenPlayerChooses = [&, currentPlayer](int nr) {
+        nr++;
+        if (nr < 2 || nr > 8)
+        {
+            gameController.game.killedCharacter = nr;
+            gameController.game.state = GameState::Running;
+            auto evt = events::GameUpdatedEvent();
+            evt.game = gameController.game;
+            evt.message = std::string("Player ") + currentPlayer.name + " selected character to kill!";
+
+            gameController.eventSubject.NotifyObservers(evt);
+        }
+        else
+        {
+            gameController.eventSubject.NotifyObservers(evt);
+        }
+    };
 }
 
-void mach::domain::CharacterPowerHelper::DoThief(Player currentPlayer, GameController gameController)
+void mach::domain::CharacterPowerHelper::DoThief(Player currentPlayer, GameController& gameController)
 {
     auto tempVec = gameController.game.players;
     tempVec.erase(
@@ -59,9 +89,15 @@ void mach::domain::CharacterPowerHelper::DoThief(Player currentPlayer, GameContr
     Player chosenPlayer = tempVec[0];
     currentPlayer.gold += chosenPlayer.gold;
     chosenPlayer.gold = 0;
+
+    auto evt = events::GameUpdatedEvent();
+    evt.game = gameController.game;
+    evt.message = std::string("Player ") + currentPlayer.name + " stole gold from " + chosenPlayer.name + "!";
+
+    gameController.eventSubject.NotifyObservers(evt);
 }
 
-void mach::domain::CharacterPowerHelper::DoMagician(models::Player currentPlayer, GameController gameController)
+void mach::domain::CharacterPowerHelper::DoMagician(models::Player currentPlayer, GameController& gameController)
 {
     // TODO choose:
     if (true)
@@ -74,6 +110,12 @@ void mach::domain::CharacterPowerHelper::DoMagician(models::Player currentPlayer
         auto tempHand = currentPlayer.hand;
         currentPlayer.hand = chosenPlayer.hand;
         chosenPlayer.hand = tempHand;
+
+        auto evt = events::GameUpdatedEvent();
+        evt.game = gameController.game;
+        evt.message = std::string("Player ") + currentPlayer.name + " swapped hands with " + chosenPlayer.name + "!";
+
+        gameController.eventSubject.NotifyObservers(evt);
     }
     else
     {
@@ -82,49 +124,96 @@ void mach::domain::CharacterPowerHelper::DoMagician(models::Player currentPlayer
     }
 }
 
-void mach::domain::CharacterPowerHelper::DoKing(models::Player currentPlayer, GameController gameController)
+void mach::domain::CharacterPowerHelper::DoKing(models::Player currentPlayer, GameController& gameController)
 {
-    currentPlayer.gold += currentPlayer.GetAmountOfBuildingsByColor(dal::models::BuildingColor::Yellow);
+    int amount = currentPlayer.GetAmountOfBuildingsByColor(dal::models::BuildingColor::Yellow);
+
+    auto evt = events::GameUpdatedEvent();
+    evt.game = gameController.game;
+    evt.message = std::string("Player ") + currentPlayer.name + " got " + std::to_string(amount) + " gold!";
+
+    currentPlayer.gold += amount;
 }
 
-void mach::domain::CharacterPowerHelper::DoBishop(models::Player currentPlayer, GameController gameController)
+void mach::domain::CharacterPowerHelper::DoBishop(models::Player currentPlayer, GameController& gameController)
 {
-    currentPlayer.gold += currentPlayer.GetAmountOfBuildingsByColor(dal::models::BuildingColor::Blue);
+    int amount = currentPlayer.GetAmountOfBuildingsByColor(dal::models::BuildingColor::Blue);
+
+    auto evt = events::GameUpdatedEvent();
+    evt.game = gameController.game;
+    evt.message = std::string("Player ") + currentPlayer.name + " got " + std::to_string(amount) + " gold!";
+
+    currentPlayer.gold += amount;
 }
 
-void mach::domain::CharacterPowerHelper::DoMerchant(models::Player currentPlayer, GameController gameController)
+void mach::domain::CharacterPowerHelper::DoMerchant(models::Player currentPlayer, GameController& gameController)
 {
-    currentPlayer.gold += 1 + currentPlayer.GetAmountOfBuildingsByColor(dal::models::BuildingColor::Green);
+    int amount = 1 + currentPlayer.GetAmountOfBuildingsByColor(dal::models::BuildingColor::Green);
+
+    auto evt = events::GameUpdatedEvent();
+    evt.game = gameController.game;
+    evt.message = std::string("Player ") + currentPlayer.name + " got " + std::to_string(amount) + " gold!";
+
+    currentPlayer.gold += amount;
 }
 
-void mach::domain::CharacterPowerHelper::DoArchitect(models::Player currentPlayer, GameController gameController)
+void mach::domain::CharacterPowerHelper::DoArchitect(models::Player currentPlayer, GameController& gameController)
 {
     // Draw 2 cards
     currentPlayer.hand.push_back(gameController.DrawCardFromStack());
     currentPlayer.hand.push_back(gameController.DrawCardFromStack());
+
+    auto evt = events::GameUpdatedEvent();
+    evt.game = gameController.game;
+    evt.message = std::string("Player ") + currentPlayer.name + " drew 2 cards!";
 }
 
-void mach::domain::CharacterPowerHelper::DoWarlord(models::Player currentPlayer, GameController gameController)
+void mach::domain::CharacterPowerHelper::DoWarlord(models::Player currentPlayer, GameController& gameController)
 {
     auto tempVec = gameController.game.players;
     tempVec.erase(std::find_if(
       tempVec.begin(), tempVec.end(), [&](const Player& player) { return player.name == currentPlayer.name; }));
     Player otherPlayer = tempVec[0];
-    dal::models::BuildingCard chosenBuilding = otherPlayer.buildings[0];
-    if (chosenBuilding.cost > 1)
-    {
-        if (currentPlayer.gold < (chosenBuilding.cost - 1))
+
+    auto evt = domain::events::CardChoiceNecessaryEvent();
+    evt.choices = otherPlayer.buildings;
+    gameController.eventSubject.NotifyObservers(evt);
+
+    auto choices = evt.choices;
+
+    gameController.game.state = GameState::AwaitingPlayerChoice;
+    gameController.doWhenPlayerChooses = [&](int nr) {
+        if (choices.size() > nr || nr < 0)
         {
-            throw std::exception("You cannot afford that");
+            auto evt = domain::events::CardChoiceNecessaryEvent();
+            evt.choices = otherPlayer.buildings;
+            gameController.eventSubject.NotifyObservers(evt);
         }
         else
         {
-            currentPlayer.gold -= (chosenBuilding.cost - 1);
+            dal::models::BuildingCard chosenBuilding = otherPlayer.buildings[nr];
+            if (chosenBuilding.cost > 1)
+            {
+                if (currentPlayer.gold < (chosenBuilding.cost - 1))
+                {
+                    throw std::exception("You cannot afford that");
+                }
+                else
+                {
+                    currentPlayer.gold -= (chosenBuilding.cost - 1);
+                }
+            }
+            otherPlayer.buildings.erase(std::find_if(
+              otherPlayer.buildings.begin(), otherPlayer.buildings.end(), [&](const dal::models::BuildingCard& card) {
+                  return card.name == chosenBuilding.name;
+              }));
+            currentPlayer.gold += 1 + currentPlayer.GetAmountOfBuildingsByColor(dal::models::BuildingColor::Red);
+
+            gameController.game.state = GameState::Running;
+            auto evt = events::GameUpdatedEvent();
+            evt.game = gameController.game;
+            evt.message = std::string("Player ") + currentPlayer.name + " destroyed a " + chosenBuilding.name +
+                          " from " + otherPlayer.name + "!";
         }
-    }
-    otherPlayer.buildings.erase(std::find_if(
-      otherPlayer.buildings.begin(), otherPlayer.buildings.end(), [&](const dal::models::BuildingCard& card) {
-          return card.name == chosenBuilding.name;
-      }));
-    currentPlayer.gold += 1 + currentPlayer.GetAmountOfBuildingsByColor(dal::models::BuildingColor::Red);
+    };
 }
