@@ -2,6 +2,43 @@
 
 using namespace mach::domain::models;
 
+Player Game::GetCurrentPlayer()
+{
+    return *std::find_if(players.begin(), players.end(), [=](Player player) {
+        auto res = std::find_if(player.characters.begin(),
+                                player.characters.end(),
+                                [=](dal::models::CharacterCard card) { return card.number == characterHasTurn; });
+        return res != player.characters.end();
+    });
+}
+
+std::string Game::GetCurrentPlayerName() const
+{
+    Player player;
+    for (Player p : players)
+    {
+        for (dal::models::CharacterCard card : p.characters)
+        {
+            if (card.number == characterHasTurn)
+            {
+                player = p;
+            }
+        }
+    }
+    return player.name;
+}
+
+bool Game::CharacterHasPlayer(int nr)
+{
+    auto findRes = std::find_if(players.begin(), players.end(), [nr](Player player) {
+        auto res = std::find_if(player.characters.begin(),
+                                player.characters.end(),
+                                [nr](dal::models::CharacterCard card) { return card.number == nr; });
+        return res != player.characters.end();
+    });
+    return findRes != players.end();
+}
+
 std::ostream& operator<<(std::ostream& os, const Game& game)
 {
     return os << game.state << '|' << game.characterHasTurn << '|' << game.playerReceivedGoldOrCards << '|'

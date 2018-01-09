@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include <memory>
 #include <stack>
 #include <string>
@@ -31,11 +32,13 @@ class GameController
     void AddPlayer(std::string player);
     void RemovePlayer(std::string playerName);
 
-    void StartGame();
+    void StartGame(bool skip);
     void EndGame();
 
+    void MakeChoice(int nr);
+
     void EndTurn();
-    void ChooseCharacterCard(int nr, std::string name);
+    void ChooseCharacterCard(int nr);
 
     // Actions
     void CurrentPlayerGetGold();
@@ -46,12 +49,12 @@ class GameController
     infra::Subject eventSubject;
 
     mach::dal::models::BuildingCard DrawCardFromStack();
-    models::Player GetCurrentPlayer();
-    bool CharacterHasPlayer(int nr);
 
   private:
     mach::dal::BuildingCardRepository buildingCardRepository;
     mach::dal::CharacterCardRepository characterCardRepository;
+
+    std::function<void(int)> doWhenPlayerChooses;
 
     void NextTurn();
     void NextRound();

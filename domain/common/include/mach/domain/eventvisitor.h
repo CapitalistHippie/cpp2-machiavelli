@@ -17,6 +17,9 @@ class NextTurnEvent;
 class GameStartedEvent;
 class GameEndedEvent;
 class ServerDisconnectedEvent;
+class GameUpdatedEvent;
+class IllegalActionEvent;
+class ChoiceNecessaryEvent;
 } // namespace events
 
 class EventVisitor
@@ -28,9 +31,12 @@ class EventVisitor
     MACHIAVELLI_MACH_DOMAIN_EVENTVISITOR_DEFINE_VISIT_METHOD(events::ClientConnectedEvent);
     MACHIAVELLI_MACH_DOMAIN_EVENTVISITOR_DEFINE_VISIT_METHOD(events::NextRoundEvent);
     MACHIAVELLI_MACH_DOMAIN_EVENTVISITOR_DEFINE_VISIT_METHOD(events::NextTurnEvent);
+    MACHIAVELLI_MACH_DOMAIN_EVENTVISITOR_DEFINE_VISIT_METHOD(events::GameUpdatedEvent);
     MACHIAVELLI_MACH_DOMAIN_EVENTVISITOR_DEFINE_VISIT_METHOD(events::GameStartedEvent);
     MACHIAVELLI_MACH_DOMAIN_EVENTVISITOR_DEFINE_VISIT_METHOD(events::GameEndedEvent);
     MACHIAVELLI_MACH_DOMAIN_EVENTVISITOR_DEFINE_VISIT_METHOD(events::ServerDisconnectedEvent);
+    MACHIAVELLI_MACH_DOMAIN_EVENTVISITOR_DEFINE_VISIT_METHOD(events::IllegalActionEvent);
+    MACHIAVELLI_MACH_DOMAIN_EVENTVISITOR_DEFINE_VISIT_METHOD(events::ChoiceNecessaryEvent);
 }; // class EventVisitor
 } // namespace domain
 } // namespace mach

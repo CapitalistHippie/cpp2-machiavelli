@@ -9,8 +9,11 @@ enum class EventType
 {
     CharacterChosen = 2000,
     ClientConnected,
+    IllegalAction,
     NextRound,
     NextTurn,
+    ChoiceNecessary,
+    GameUpdated,
     GameStarted,
     GameEnded,
     ServerDisconnected

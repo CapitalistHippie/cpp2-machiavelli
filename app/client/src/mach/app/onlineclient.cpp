@@ -1,6 +1,12 @@
 #include "mach/app/onlineclient.h"
 
+#include <mach/app/commands/buildbuildingcommand.h>
+#include <mach/app/commands/chooseCharacterCommand.h>
+#include <mach/app/commands/endturncommand.h>
+#include <mach/app/commands/getcardcommand.h>
+#include <mach/app/commands/getgoldcommand.h>
 #include <mach/app/commands/joingamecommand.h>
+#include <mach/app/commands/usecharacterpowercommand.h>
 
 using namespace mach;
 using namespace mach::app;
@@ -92,6 +98,67 @@ void OnlineClient::Stop()
     isConnected = false;
 
     tcpClient.Disconnect();
+}
+
+void mach::app::OnlineClient::SendGetGoldCommand()
+{
+    commands::GetGoldCommand command;
+
+    auto data = serializer.Serialize(command);
+
+    tcpClient.Write(data);
+}
+
+void mach::app::OnlineClient::SendGetCardCommand()
+{
+    commands::GetCardCommand command;
+
+    auto data = serializer.Serialize(command);
+
+    tcpClient.Write(data);
+}
+
+void mach::app::OnlineClient::SendBuildBuildingCommand(int value)
+{
+    commands::BuildBuildingCommand command;
+    command.chosenNumber = value;
+
+    auto data = serializer.Serialize(command);
+
+    tcpClient.Write(data);
+}
+
+void mach::app::OnlineClient::SendUseCharacterPowerCommand()
+{
+    commands::UseCharacterPowerCommand command;
+
+    auto data = serializer.Serialize(command);
+
+    tcpClient.Write(data);
+}
+
+void mach::app::OnlineClient::SendEndTurnCommand()
+{
+    commands::EndTurnCommand command;
+
+    auto data = serializer.Serialize(command);
+
+    tcpClient.Write(data);
+}
+
+void mach::app::OnlineClient::SendChooseCommand(int value)
+{
+    // TODO
+}
+
+void mach::app::OnlineClient::SendChooseCharacterCommand(int value)
+{
+    commands::ChooseCharacterCommand command;
+    command.chosenNumber = value;
+
+    auto data = serializer.Serialize(command);
+
+    tcpClient.Write(data);
 }
 
 const OnlineClientConfiguration& OnlineClient::GetConfiguration() const

@@ -5,6 +5,10 @@ set(MACHIAVELLI_VIEW_CLIENT_CLI_TARGET_NAME "machiavelli-view-clientcli")
 project("Machiavelli View Client CLI")
 
 add_executable(${MACHIAVELLI_VIEW_CLIENT_CLI_TARGET_NAME}
+    "${CMAKE_CURRENT_LIST_DIR}/src/mach/view/statehandlers/playinground.h"
+	"${CMAKE_CURRENT_LIST_DIR}/src/mach/view/statehandlers/playinground.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/src/mach/view/statehandlers/ended.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/src/mach/view/statehandlers/ended.h"
     "${CMAKE_CURRENT_LIST_DIR}/src/mach/view/statehandlers/choosingcharacters.h"
 	"${CMAKE_CURRENT_LIST_DIR}/src/mach/view/statehandlers/choosingcharacters.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/src/mach/view/statehandlers/connecttoserver.cpp"

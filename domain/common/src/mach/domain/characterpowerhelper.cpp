@@ -10,11 +10,11 @@ mach::domain::CharacterPowerHelper::CharacterPowerHelper()
 
 void mach::domain::CharacterPowerHelper::UseCharacterPower(int nr, GameController gameController)
 {
-    if (!gameController.CharacterHasPlayer(gameController.game.characterHasTurn))
+    if (!gameController.game.CharacterHasPlayer(gameController.game.characterHasTurn))
     {
         return;
     }
-    Player currentPlayer = gameController.GetCurrentPlayer();
+    Player currentPlayer = gameController.game.GetCurrentPlayer();
     switch (nr)
     {
         case 1:

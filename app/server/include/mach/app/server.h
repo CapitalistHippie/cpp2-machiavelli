@@ -14,6 +14,13 @@
 #include <mach/infra/tcpserver.h>
 #include <mach/infra/threadpool.h>
 
+#include <mach/app/commands/buildbuildingcommand.h>
+#include <mach/app/commands/endturncommand.h>
+#include <mach/app/commands/getcardcommand.h>
+#include <mach/app/commands/getgoldcommand.h>
+#include <mach/app/commands/usecharacterpowercommand.h>
+
+#include <mach/app/commands/chooseCharacterCommand.h>
 #include <mach/app/commands/joingamecommand.h>
 #include <mach/app/commandvisitor.h>
 #include <mach/app/events/clientconnectedevent.h>
@@ -45,8 +52,35 @@ class CommandHandlerVisitor : public CommandVisitor
         // TODO: Remove magic 2.
         if (gameController->game.playersWaiting.size() == 2)
         {
-            gameController->StartGame();
+            // TODO remove cheat
+            gameController->StartGame(true);
         }
+    }
+
+    void Visit(const commands::ChooseCharacterCommand& command) const override
+    {
+        gameController->ChooseCharacterCard(command.chosenNumber);
+    }
+
+    void Visit(const commands::GetGoldCommand& command) const override
+    {
+        gameController->CurrentPlayerGetGold();
+    }
+    void Visit(const commands::GetCardCommand& command) const override
+    {
+        gameController->CurrentPlayerDrawsCard();
+    }
+    void Visit(const commands::BuildBuildingCommand& command) const override
+    {
+        gameController->CurrentPlayerBuildsBuilding(command.chosenNumber);
+    }
+    void Visit(const commands::UseCharacterPowerCommand& command) const override
+    {
+        gameController->CurrentPlayerUsesCharacterPower();
+    }
+    void Visit(const commands::EndTurnCommand& command) const override
+    {
+        gameController->EndTurn();
     }
 }; // class CommandHandlerVisitor
 } // namespace detail

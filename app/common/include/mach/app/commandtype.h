@@ -7,7 +7,14 @@ namespace app
 {
 enum class CommandType
 {
-    JoinGame
+    JoinGame,
+    Choose,
+    ChooseCharacter,
+    BuildBuilding,
+    GetGold,
+    GetCard,
+    UseCharacterPower,
+    EndTurn
 }; // enum class CommandType
 } // namespace app
 } // namespace mach

@@ -8,6 +8,7 @@ namespace domain
 enum class GameState
 {
     Waiting,
+    AwaitingPlayerChoice,
     ChoosingCharacters,
     Running,
     FinalRound,

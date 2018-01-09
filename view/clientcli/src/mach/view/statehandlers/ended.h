@@ -12,7 +12,7 @@ namespace view
 {
 namespace statehandlers
 {
-class ChoosingCharacters : public StateHandlerBase<ChoosingCharacters, ClientCliState::ChoosingCharacters>
+class Ended : public StateHandlerBase<Ended, ClientCliState::Ended>
 {
   public:
     using StateHandlerBase::StateHandlerBase;
@@ -20,10 +20,9 @@ class ChoosingCharacters : public StateHandlerBase<ChoosingCharacters, ClientCli
     void EnterState() override;
 
   private:
-    void PrintOptions(domain::models::Game game);
-    void ChooseCharacterCommandHandler(const infra::CliCommand& command);
+    void PrintGameStatus(domain::models::Game game);
 
-}; // class ChoosingCharacters
+}; // class Ended
 } // namespace statehandlers
 } // namespace view
 } // namespace mach

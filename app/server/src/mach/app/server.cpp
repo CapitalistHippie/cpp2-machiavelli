@@ -5,6 +5,8 @@
 #include <mach/domain/events/clientconnectedevent.h>
 #include <mach/domain/events/gameendedevent.h>
 #include <mach/domain/events/gamestartedevent.h>
+#include <mach/domain/events/gameupdatedevent.h>
+#include <mach/domain/events/illegalactionevent.h>
 #include <mach/domain/events/nextroundevent.h>
 #include <mach/domain/events/nextturnevent.h>
 
@@ -104,6 +106,8 @@ void Server::StartAsync()
 
     gameController.eventSubject.RegisterObserver<domain::events::GameEndedEvent>(evtHandler);
     gameController.eventSubject.RegisterObserver<domain::events::GameStartedEvent>(evtHandler);
+    gameController.eventSubject.RegisterObserver<domain::events::GameUpdatedEvent>(evtHandler);
+    gameController.eventSubject.RegisterObserver<domain::events::IllegalActionEvent>(evtHandler);
     gameController.eventSubject.RegisterObserver<domain::events::CharacterChosenEvent>(evtHandler);
     gameController.eventSubject.RegisterObserver<domain::events::ClientConnectedEvent>(evtHandler);
     gameController.eventSubject.RegisterObserver<domain::events::NextRoundEvent>(evtHandler);
