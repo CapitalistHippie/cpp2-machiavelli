@@ -18,10 +18,14 @@ class UseCharacterPowerCommand : public CommandBase<UseCharacterPowerCommand, Co
   public:
     void Serialize(std::ostream& dataStream) const override
     {
+        dataStream << "***";
     }
 
     void Deserialize(std::istream& dataStream) override
     {
+        dataStream.ignore();
+        dataStream.ignore();
+        dataStream.ignore();
     }
 
     unsigned int GetDataLength() const override
