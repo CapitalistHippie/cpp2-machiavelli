@@ -28,7 +28,7 @@ class GameUpdatedEvent : public EventBase<GameUpdatedEvent, EventType::GameUpdat
     {
         dataStream >> game;
         dataStream.ignore();
-        dataStream >> message;
+        std::getline(dataStream, message);
     }
 
     unsigned int GetDataLength() const override

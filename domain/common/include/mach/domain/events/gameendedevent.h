@@ -27,8 +27,7 @@ class GameEndedEvent : public EventBase<GameEndedEvent, EventType::GameEnded>
 
     void Deserialize(std::istream& dataStream) override
     {
-        dataStream >> winner;
-        dataStream.ignore();
+        std::getline(dataStream, winner, '|');
         dataStream >> game;
     }
 

@@ -25,7 +25,7 @@ class IllegalActionEvent : public EventBase<IllegalActionEvent, EventType::Illeg
 
     void Deserialize(std::istream& dataStream) override
     {
-        dataStream >> message;
+        std::getline(dataStream, message);
     }
 
     unsigned int GetDataLength() const override
