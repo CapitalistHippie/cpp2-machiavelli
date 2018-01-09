@@ -11,7 +11,6 @@ enum class GameState
     AwaitingPlayerChoice,
     ChoosingCharacters,
     Running,
-    FinalRound,
     Ended
 }; // enum class GameState
 } // namespace domain

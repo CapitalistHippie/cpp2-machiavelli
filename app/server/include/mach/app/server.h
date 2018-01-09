@@ -50,11 +50,9 @@ class CommandHandlerVisitor : public CommandVisitor
     {
         gameController->AddPlayer(command.playerName);
 
-        // TODO: Remove magic 2.
         if (gameController->game.playersWaiting.size() == 2)
         {
-            // TODO remove cheat
-            gameController->StartGame(false);
+            gameController->StartGame();
         }
     }
 
@@ -144,8 +142,6 @@ class Server
             // If the connection was forcibly closed on the other side we close the socket, remove the client and go on.
             clients.at(clientId).tcpClient.Disconnect();
             clients.erase(clientId);
-
-            // TODO: Throw clientdisconnected event.
         }
     }
 
@@ -168,8 +164,6 @@ class Server
                 // on.
                 clients.at(clientId).tcpClient.Disconnect();
                 clients.erase(clientId);
-
-                // TODO: Throw clientdisconnected event.
             }
         }
     }

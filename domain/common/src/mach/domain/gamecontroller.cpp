@@ -54,9 +54,8 @@ void GameController::RemovePlayer(std::string playerName)
     }
 }
 
-void GameController::StartGame(bool skip)
+void GameController::StartGame()
 {
-    skip = true;
     if (game.state != GameState::Waiting)
     {
         throw std::exception("Game is already started.");
@@ -64,6 +63,7 @@ void GameController::StartGame(bool skip)
     auto playersWaiting = game.playersWaiting;
     game = Game();
 
+    game.isFinalRound = false;
     game.characters = characterCardRepository.GetCards();
     game.buildingCardStack.clear();
     for (auto& card : buildingCardRepository.GetCards())
@@ -86,31 +86,16 @@ void GameController::StartGame(bool skip)
         }
         newPlayer.gold = 2;
 
-        if (skip)
-        {
-            newPlayer.characters.push_back(game.characters[counter]);
-            newPlayer.characters.push_back(game.characters[counter - 1]);
-            counter += 4;
-        }
-
         game.players.push_back(newPlayer);
     }
     game.king = game.players[0];
     game.state = GameState::Running;
-
-    if (skip)
-    {
-        StartRound();
-    }
-    else
-    {
-        NextRound();
-    }
+    NextRound();
 }
 
 void GameController::NextTurn()
 {
-    if (game.state != GameState::Running && game.state != GameState::FinalRound)
+    if (game.state != GameState::Running)
     {
         throw std::exception("Can not do next turn. Game is in illegal state.");
     }
@@ -148,7 +133,7 @@ void GameController::NextTurn()
 
 void GameController::NextRound()
 {
-    if (game.state == GameState::FinalRound)
+    if (game.isFinalRound)
     {
         EndGame();
         return;
@@ -219,7 +204,7 @@ void mach::domain::GameController::StartRound()
 
 void GameController::EndGame()
 {
-    if (game.state != GameState::FinalRound)
+    if (!game.isFinalRound)
     {
         throw std::exception("Can not end game: game is in illegal state.");
     }
@@ -246,7 +231,7 @@ void mach::domain::GameController::MakeChoice(std::vector<int> numbers)
 
 void GameController::EndTurn()
 {
-    if (game.state != GameState::Running && game.state != GameState::FinalRound)
+    if (game.state != GameState::Running)
     {
         throw std::exception("Can not end turn: game is in illegal state.");
     }
@@ -410,9 +395,9 @@ void mach::domain::GameController::CurrentPlayerBuildsBuilding(unsigned int nr)
     else
     {
         dal::models::BuildingCard chosenCard = currentPlayer->hand[nr];
-        if (chosenCard.cost == 1000) // currentPlayer.gold)
+        if (chosenCard.cost > currentPlayer->gold)
         {
-            throw std::exception("You cannot afford that.");
+            throw std::exception("You cannot afford building that building.");
         }
         else
         {
@@ -424,9 +409,9 @@ void mach::domain::GameController::CurrentPlayerBuildsBuilding(unsigned int nr)
             currentPlayer->buildings.push_back(chosenCard);
 
             int i = currentPlayer->buildings.size();
-            if (currentPlayer->buildings.size() != 1000) // >= 8) TODO put back
+            if (currentPlayer->buildings.size() >= 8)
             {
-                game.state = GameState::FinalRound;
+                game.isFinalRound = true;
             }
 
             game.buildingsStillAllowedToPlayThisTurn--;
