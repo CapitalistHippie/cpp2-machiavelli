@@ -54,7 +54,7 @@ void mach::domain::CharacterPowerHelper::DoAssassin(models::Player& currentPlaye
 
     auto evt = domain::events::IntChoiceNecessaryEvent();
     std::vector<int> vec;
-    for (int i = 1; i < 9; i++)
+    for (int i = 2; i < 9; i++)
     {
         vec.push_back(i);
     }
@@ -64,9 +64,13 @@ void mach::domain::CharacterPowerHelper::DoAssassin(models::Player& currentPlaye
     gameController.eventSubject.NotifyObservers(evt);
 
     gameController.game.state = GameState::AwaitingPlayerChoice;
-    gameController.doWhenPlayerChooses = [&, currentPlayer](std::vector<int> numbers) {
-        int nr = numbers[0];
+    gameController.doWhenPlayerChooses = [&, currentPlayer, evt](std::vector<int> numbers) {
+        int nr = numbers[0] + 1;
         if (nr < 2 || nr > 8)
+        {
+            gameController.eventSubject.NotifyObservers(evt);
+        }
+        else
         {
             gameController.game.killedCharacter = nr;
             gameController.game.state = GameState::Running;
@@ -74,10 +78,6 @@ void mach::domain::CharacterPowerHelper::DoAssassin(models::Player& currentPlaye
             evt.game = gameController.game;
             evt.message = std::string("Player ") + currentPlayer.name + " selected character to kill!";
 
-            gameController.eventSubject.NotifyObservers(evt);
-        }
-        else
-        {
             gameController.eventSubject.NotifyObservers(evt);
         }
     };
@@ -132,6 +132,7 @@ void mach::domain::CharacterPowerHelper::DoKing(models::Player& currentPlayer, G
     auto evt = events::GameUpdatedEvent();
     evt.game = gameController.game;
     evt.message = std::string("Player ") + currentPlayer.name + " got " + std::to_string(amount) + " gold!";
+    gameController.eventSubject.NotifyObservers(evt);
 
     currentPlayer.gold += amount;
 }
@@ -143,6 +144,7 @@ void mach::domain::CharacterPowerHelper::DoBishop(models::Player& currentPlayer,
     auto evt = events::GameUpdatedEvent();
     evt.game = gameController.game;
     evt.message = std::string("Player ") + currentPlayer.name + " got " + std::to_string(amount) + " gold!";
+    gameController.eventSubject.NotifyObservers(evt);
 
     currentPlayer.gold += amount;
 }
@@ -154,6 +156,7 @@ void mach::domain::CharacterPowerHelper::DoMerchant(models::Player& currentPlaye
     auto evt = events::GameUpdatedEvent();
     evt.game = gameController.game;
     evt.message = std::string("Player ") + currentPlayer.name + " got " + std::to_string(amount) + " gold!";
+    gameController.eventSubject.NotifyObservers(evt);
 
     currentPlayer.gold += amount;
 }
@@ -167,6 +170,7 @@ void mach::domain::CharacterPowerHelper::DoArchitect(models::Player& currentPlay
     auto evt = events::GameUpdatedEvent();
     evt.game = gameController.game;
     evt.message = std::string("Player ") + currentPlayer.name + " drew 2 cards!";
+    gameController.eventSubject.NotifyObservers(evt);
 }
 
 void mach::domain::CharacterPowerHelper::DoWarlord(models::Player& currentPlayer, GameController& gameController)

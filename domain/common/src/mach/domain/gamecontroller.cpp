@@ -76,7 +76,7 @@ void GameController::StartGame(bool skip)
     auto rng = std::default_random_engine{};
     std::shuffle(game.buildingCardStack.begin(), game.buildingCardStack.end(), rng);
 
-    int counter = 0;
+    int counter = 2;
 
     for (auto& playerName : playersWaiting)
     {
@@ -391,6 +391,10 @@ void mach::domain::GameController::CurrentPlayerUsesCharacterPower()
 
 void mach::domain::GameController::CurrentPlayerBuildsBuilding(unsigned int nr)
 {
+    if (game.buildingsStillAllowedToPlayThisTurn <= 0)
+    {
+        throw std::exception("You cannot build any more buildings this turn.");
+    }
     auto currentPlayer = std::find_if(game.players.begin(), game.players.end(), [=](Player player) {
         auto res = std::find_if(player.characters.begin(),
                                 player.characters.end(),
@@ -426,6 +430,8 @@ void mach::domain::GameController::CurrentPlayerBuildsBuilding(unsigned int nr)
             {
                 game.state = GameState::FinalRound;
             }
+
+            game.buildingsStillAllowedToPlayThisTurn--;
 
             auto evt = GameUpdatedEvent();
             evt.game = game;
