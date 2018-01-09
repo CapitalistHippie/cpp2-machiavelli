@@ -40,8 +40,6 @@ void PlayingRound::EnterState()
     RegisterCommandObserver([](const infra::CliCommand& command) { return command.name == "choose"; },
                             std::bind(&PlayingRound::ChooseCardsCommandHandler, this, std::placeholders::_1));
 
-    outputStream << (context.recentGameState.GetCurrentPlayerName() == client.GetConfiguration().playerName) << "\n\n";
-
     myTurn = context.recentGameState.GetCurrentPlayerName() == client.GetConfiguration().playerName;
     PrintGameStatus(context.recentGameState);
 
@@ -203,7 +201,8 @@ void mach::view::statehandlers::PlayingRound::PrintGameStatus(const domain::mode
         {
             const auto& card = game.GetCurrentPlayer().hand[i];
             outputStream << "[" << i + 1 << "] " << card.name << ". Cost: " << card.cost
-                         << ". Color: " << BuildingColorEnumToString(card.color) << "\n";
+                         << ". Color: " << BuildingColorEnumToString(card.color)
+                         << ". Description: " << card.description << "\n";
         }
         outputStream << "\nAvailable commands: \n";
         outputStream << "- gold: get 2 gold \n";

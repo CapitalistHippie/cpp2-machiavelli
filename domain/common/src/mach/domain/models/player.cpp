@@ -16,14 +16,14 @@ Player::Player(std::string name)
 {
 }
 
-int Player::GetAmountOfBuildingsByColor(dal::models::BuildingColor color)
+int Player::GetAmountOfBuildingsByColor(dal::models::BuildingColor color) const
 {
     return std::count_if(buildings.begin(), buildings.end(), [&color](const dal::models::BuildingCard& card) {
         return card.color == color;
     });
 }
 
-int Player::GetPointsFromBuildings()
+int Player::GetPointsFromBuildings() const
 {
     int points = 0;
     for (auto b : buildings)
@@ -33,7 +33,7 @@ int Player::GetPointsFromBuildings()
     return points;
 }
 
-int Player::GetPoints()
+int Player::GetPoints() const
 {
     int points = 0;
     std::set<dal::models::BuildingColor> colorSet;

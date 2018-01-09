@@ -20,7 +20,7 @@ class Ended : public StateHandlerBase<Ended, ClientCliState::Ended>
     void EnterState() override;
 
   private:
-    void PrintGameStatus(domain::models::Game game);
+    void PrintGameStatus(const domain::models::Game& game) const;
 
 }; // class Ended
 } // namespace statehandlers

@@ -25,14 +25,13 @@ void Ended::EnterState()
     outputStream << "\n";
 }
 
-void mach::view::statehandlers::Ended::PrintGameStatus(domain::models::Game game)
+void mach::view::statehandlers::Ended::PrintGameStatus(const domain::models::Game& game) const
 {
-    for (auto player : game.players)
+    for (const auto& player : game.players)
     {
         outputStream << "----" << player.name << "----\n";
-        outputStream << player.name << "\n";
-        outputStream << "Points : " + player.GetPoints() << "\n";
-        outputStream << "- Buildings: \n";
+        outputStream << "- Points: " + player.GetPoints() << ".\n";
+        outputStream << "- Buildings:\n";
         for (auto b : player.buildings)
         {
             outputStream << "-- " << b.name << ": " << b.cost << ": " << BuildingColorEnumToString(b.color) << ": "

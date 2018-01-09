@@ -25,9 +25,9 @@ class Player
     std::vector<dal::models::BuildingCard> buildings;
     std::vector<dal::models::CharacterCard> characters;
 
-    int GetAmountOfBuildingsByColor(dal::models::BuildingColor color);
-    int GetPointsFromBuildings();
-    int GetPoints();
+    int GetAmountOfBuildingsByColor(dal::models::BuildingColor color) const;
+    int GetPointsFromBuildings() const;
+    int GetPoints() const;
 }; // class Player
 } // namespace models
 } // namespace domain
