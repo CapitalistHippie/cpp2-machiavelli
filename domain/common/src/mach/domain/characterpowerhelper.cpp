@@ -17,10 +17,10 @@ void mach::domain::CharacterPowerHelper::UseCharacterPower(int nr, GameControlle
     {
         return;
     }
-    Player& currentPlayer = gameController.game.GetCurrentPlayer();
-    DoWarlord(currentPlayer, gameController);
 
-    /*switch (nr)
+    Player& currentPlayer = gameController.game.GetCurrentPlayer();
+
+    switch (nr)
     {
         case 1:
             DoAssassin(currentPlayer, gameController);
@@ -46,7 +46,7 @@ void mach::domain::CharacterPowerHelper::UseCharacterPower(int nr, GameControlle
         case 8:
             DoWarlord(currentPlayer, gameController);
             break;
-    }*/
+    }
 }
 
 void mach::domain::CharacterPowerHelper::DoAssassin(models::Player& currentPlayer, GameController& gameController)
