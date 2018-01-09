@@ -30,7 +30,7 @@ void mach::view::statehandlers::Ended::PrintGameStatus(const domain::models::Gam
     for (const auto& player : game.players)
     {
         outputStream << "----" << player.name << "----\n";
-        outputStream << "- Points: " + player.GetPoints() << ".\n";
+        outputStream << "- Points: " << player.GetPoints() << ".\n";
         outputStream << "- Buildings:\n";
         for (auto b : player.buildings)
         {

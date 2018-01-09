@@ -84,7 +84,7 @@ void mach::app::Server::ReadCommandsAsync(ServerClient::Id clientId)
           {
               command->Visit(commandHandlerVisitor);
           }
-          catch (std::exception& e)
+          catch (const std::exception& e)
           {
               domain::events::IllegalActionEvent evt;
               evt.message = e.what();
