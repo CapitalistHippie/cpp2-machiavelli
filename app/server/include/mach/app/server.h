@@ -128,7 +128,7 @@ class Server
             {
                 client.tcpClient.Write(data);
             }
-            catch (std::system_error& e)
+            catch (const std::system_error& e)
             {
                 if (e.code() == infra::SocketError::Connreset)
                 {
@@ -156,7 +156,7 @@ class Server
         {
             client.tcpClient.Write(data);
         }
-        catch (std::system_error& e)
+        catch (const std::system_error& e)
         {
             if (e.code() == infra::SocketError::Connreset)
             {

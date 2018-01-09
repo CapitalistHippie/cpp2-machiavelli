@@ -1,5 +1,7 @@
 #include "mach/infra/threadpool.h"
 
+#include <iostream>
+
 using namespace mach::infra;
 
 void mach::infra::ThreadPool::InitializeThreads(unsigned int threadCount)
@@ -14,24 +16,31 @@ void mach::infra::ThreadPool::InitializeThreads(unsigned int threadCount)
 
 void ThreadPool::ThreadEntryPoint()
 {
-    while (true)
+    try
     {
-        if (shouldStop)
+        while (true)
         {
-            break;
-        }
+            if (shouldStop)
+            {
+                break;
+            }
 
-        std::shared_ptr<detail::Task> taskBuffer;
+            std::shared_ptr<detail::Task> taskBuffer;
 
-        if (taskQueue.Pop(taskBuffer))
-        {
-            taskBuffer->Run();
+            if (taskQueue.Pop(taskBuffer))
+            {
+                taskBuffer->Run();
+            }
+            else
+            {
+                std::unique_lock<std::mutex> conditionLock(waitForNewtaskConditionMutex);
+                waitForNewTaskCondition.wait(conditionLock);
+            }
         }
-        else
-        {
-            std::unique_lock<std::mutex> conditionLock(waitForNewtaskConditionMutex);
-            waitForNewTaskCondition.wait(conditionLock);
-        }
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << "A fatal exception ocurred in a threadpool thread: " << e.what() << "\n";
     }
 }
 
