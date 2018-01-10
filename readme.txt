@@ -1,0 +1,1 @@
+Maakt gebruik van CMake als build tool. Getest met Visual Studio 2017.

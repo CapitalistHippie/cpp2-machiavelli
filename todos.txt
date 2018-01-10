@@ -1,7 +1,0 @@
-Machiavelli TODOs
- - Systeem voor versturen commands client -> server bouwen
- - Domain library maken met domein logica
- - DAL library maken met repositories voor ophalen data
- - Alle destructors noexcept maken om te kijken of we nog ergens potentiele resource leaks hebben
- - ConcurrentOstream bouwen
- - Afhandelen wanneer een client niet met de server kan connecten.
