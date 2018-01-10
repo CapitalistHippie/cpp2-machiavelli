@@ -1,1 +1,1 @@
-Maakt gebruik van CMake als build tool. Getest met Visual Studio 2017.
+Maakt gebruik van CMake als build tool. Getest met Visual Studio 2017. Voor het draaien moet de assets folder op de plek staan waar de server wordt uitgevoerd.
